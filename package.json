@@ -6,6 +6,7 @@
   "description": "Developer tools: UUID, JSON, Base64, JWT, Hash, and more",
   "author": "Álvaro TC",
   "license": "MIT",
+  "homepage": "https://devtools.alvarotc.com",
   "engines": {
     "node": ">=20"
   },
