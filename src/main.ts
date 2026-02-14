@@ -46,3 +46,15 @@ window.addEventListener('hashchange', () => {
   const id = window.location.hash.slice(1);
   if (id) switchTool(id);
 });
+
+const boot = document.getElementById('boot');
+const app = document.getElementById('app');
+
+if (boot && app) {
+  setTimeout(() => {
+    boot.classList.add('fade-out');
+    app.classList.remove('app-hidden');
+    app.classList.add('app-visible');
+    boot.addEventListener('transitionend', () => boot.remove());
+  }, 2800);
+}

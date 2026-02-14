@@ -11,7 +11,18 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
   <body>
-    <div id="app">
+    <div id="boot" class="boot">
+      <div class="boot-screen">
+        <div class="boot-line" style="animation-delay: 0s">DEVTOOLS v0.1.0</div>
+        <div class="boot-line" style="animation-delay: 0.3s">&gt; Booting system...</div>
+        <div class="boot-line" style="animation-delay: 0.7s">&gt; Loading modules............. <span class="boot-ok">OK</span></div>
+        <div class="boot-line" style="animation-delay: 1.0s">&gt; Checking environment....... <span class="boot-ok">OK</span></div>
+        <div class="boot-line" style="animation-delay: 1.3s">&gt; Mounting tools.............. <span class="boot-ok">OK</span></div>
+        <div class="boot-line" style="animation-delay: 1.6s">&gt; 14 tools loaded</div>
+        <div class="boot-line" style="animation-delay: 2.0s">&gt; System ready.<span class="boot-cursor">_</span></div>
+      </div>
+    </div>
+    <div id="app" class="app-hidden">
       <aside id="sidebar">
         <div class="sidebar-header">
           <h1>DevTools</h1>

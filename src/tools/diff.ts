@@ -82,8 +82,7 @@ export const diffTool: Tool = {
 
       output.innerHTML = diff
         .map((line) => {
-          const prefix = line.type === 'add' ? '+ ' : line.type === 'remove' ? '- ' : '  ';
-          return `<div class="diff-line ${line.type}">${prefix}${escapeHtml(line.text)}</div>`;
+          return `<div class="diff-line ${line.type}">${escapeHtml(line.text)}</div>`;
         })
         .join('');
     });
