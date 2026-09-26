@@ -26,7 +26,7 @@ import Lorem from '../tools/lorem/Lorem.svelte';
 
 // import Timestamp from '../tools/timestamp/Timestamp.svelte';
 
-// import Color from '../tools/color/Color.svelte';
+import Color from '../tools/color/Color.svelte';
 
 import NumberBase from '../tools/number-base/NumberBase.svelte';
 
@@ -60,6 +60,6 @@ const { id, locale } = Astro.props;
 
 {/* {id === 'timestamp' && <Timestamp client:load locale={locale} />} */}
 
-{/* {id === 'color' && <Color client:load locale={locale} />} */}
+{id === 'color' && <Color client:load locale={locale} />}
 
 {id === 'number-base' && <NumberBase client:load locale={locale} />}
