@@ -23,8 +23,8 @@ export function persistedInput(toolId: string, initial: string, rememberDefault 
 
   $effect(() => {
     const v = value;
-    if (!ready || !remember || v.length > MAX_REMEMBERED) return;
     clearTimeout(timer);
+    if (!ready || !remember || v.length > MAX_REMEMBERED) return;
     timer = setTimeout(() => saveInput(toolId, v), 300);
   });
 
@@ -41,7 +41,11 @@ export function persistedInput(toolId: string, initial: string, rememberDefault 
     set remember(r: boolean) {
       remember = r;
       setRemember(toolId, r);
-      if (r && value.length <= MAX_REMEMBERED) saveInput(toolId, value);
+      if (!r) {
+        clearTimeout(timer);
+      } else if (value.length <= MAX_REMEMBERED) {
+        saveInput(toolId, value);
+      }
     },
   };
 }

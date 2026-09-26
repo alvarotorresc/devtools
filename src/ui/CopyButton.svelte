@@ -29,7 +29,7 @@
     if (!text) return;
     const ok = await copyText(text);
     if (!ok) {
-      toast(t(locale, 'ui.copy') + ' ✕', 'bad');
+      toast(t(locale, 'ui.copyFailed'), 'bad');
       return;
     }
     copied = true;

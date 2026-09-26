@@ -37,6 +37,7 @@ export const es = {
   'tool.howItWorks': 'Cómo funciona',
   'tool.faq': 'Preguntas frecuentes',
   'ui.copy': 'Copiar',
+  'ui.copyFailed': 'No se pudo copiar. Selecciona el texto y pulsa Ctrl+C.',
   'ui.copied': 'Copiado',
   'ui.copiedValue': 'Copiado: {v}',
   'ui.clear': 'Borrar',
