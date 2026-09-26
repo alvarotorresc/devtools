@@ -100,3 +100,13 @@ describe('detectDirection', () => {
     });
   });
 });
+
+describe('Object.prototype names are not entities', () => {
+  it('leaves &constructor; and &toString; untouched', () => {
+    expect(decodeHtmlEntities('&constructor; &toString;')).toBe('&constructor; &toString;');
+  });
+
+  it('does not switch to decode for a prototype name', () => {
+    expect(detectDirection('Tom &toString; Jerry')).toBe('encode');
+  });
+});

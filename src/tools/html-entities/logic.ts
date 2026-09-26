@@ -102,7 +102,7 @@ export function encodeHtmlEntities(text: string, mode: EntityMode = 'minimal'): 
 const ENTITY = /&(#[0-9]+|#[xX][0-9a-fA-F]+|[A-Za-z][A-Za-z0-9]*);/g;
 
 function decodeOne(body: string): string | null {
-  if (body[0] !== '#') return NAMED_ENTITIES[body] ?? null;
+  if (body[0] !== '#') return Object.hasOwn(NAMED_ENTITIES, body) ? NAMED_ENTITIES[body] : null;
   const hex = body[1] === 'x' || body[1] === 'X';
   const cp = parseInt(body.slice(hex ? 2 : 1), hex ? 16 : 10);
   // Same rule as browsers: NUL, surrogates and out-of-range values become U+FFFD.
