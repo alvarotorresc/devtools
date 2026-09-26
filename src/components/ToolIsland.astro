@@ -14,7 +14,7 @@ import Url from '../tools/url/Url.svelte';
 
 import Jwt from '../tools/jwt/Jwt.svelte';
 
-// import Hash from '../tools/hash/Hash.svelte';
+import Hash from '../tools/hash/Hash.svelte';
 
 // import Diff from '../tools/diff/Diff.svelte';
 
@@ -48,7 +48,7 @@ const { id, locale } = Astro.props;
 
 {id === 'jwt' && <Jwt client:load locale={locale} />}
 
-{/* {id === 'hash' && <Hash client:load locale={locale} />} */}
+{id === 'hash' && <Hash client:load locale={locale} />}
 
 {/* {id === 'diff' && <Diff client:load locale={locale} />} */}
 

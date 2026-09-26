@@ -14,7 +14,7 @@ import { meta as url } from './url/meta';
 
 import { meta as jwt } from './jwt/meta';
 
-// import { meta as hash } from './hash/meta';
+import { meta as hash } from './hash/meta';
 
 // import { meta as diff } from './diff/meta';
 
@@ -42,7 +42,7 @@ export const tools: ToolMeta[] = [
 
   jwt,
 
-  // hash,
+  hash,
 
   // diff,
 
