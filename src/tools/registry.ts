@@ -8,7 +8,7 @@ import type { Category, CategoryId, Locale, ToolMeta } from './types';
 
 // import { meta as base64 } from './base64/meta';
 
-// import { meta as url } from './url/meta';
+import { meta as url } from './url/meta';
 
 // import { meta as htmlEntities } from './html-entities/meta';
 
@@ -36,7 +36,7 @@ export const tools: ToolMeta[] = [
 
   // base64,
 
-  // url,
+  url,
 
   // htmlEntities,
 
