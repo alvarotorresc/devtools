@@ -31,7 +31,7 @@ import { meta as numberBase } from './number-base/meta';
 
 // import { meta as phone } from './phone/meta';
 
-// import { meta as bic } from './bic/meta';
+import { meta as bic } from './bic/meta';
 
 // import { meta as eanIsbn } from './ean-isbn/meta';
 
@@ -71,7 +71,7 @@ export const tools: ToolMeta[] = [
 
   // phone,
 
-  // bic,
+  bic,
 
   // eanIsbn,
 
