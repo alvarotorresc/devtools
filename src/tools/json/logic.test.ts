@@ -3,6 +3,7 @@ import {
   DEBOUNCE_THRESHOLD,
   byteSize,
   errorLocation,
+  firstInvalidIndex,
   formatJson,
   jsonPath,
   jsonType,
@@ -79,6 +80,15 @@ describe('parseJson', () => {
     expect(r.ok).toBe(false);
     if (!r.ok) expect(r.error.line).toBe(3);
   });
+
+  it('does not confuse an invalid token with a bare true/false/null it sits next to', () => {
+    const r = parseJson('{"ok": true, "v": undefined}');
+    expect(r.ok).toBe(false);
+    if (!r.ok) {
+      expect(r.error.line).toBe(1);
+      expect(r.error.column).toBe(19);
+    }
+  });
 });
 
 describe('errorLocation', () => {
@@ -98,9 +108,24 @@ describe('errorLocation', () => {
   });
 
   it('never trusts a fake location inside the V8 snippet', () => {
-    expect(
-      errorLocation('Unexpected token \'x\', "position 5" is not valid JSON', 'abc'),
-    ).toBeNull();
+    // The message claims "position 5", which would clamp to column 4 in 'abc' (length 3).
+    // The real answer comes from the token walker: 'abc' is a bare word, invalid at index 0,
+    // i.e. column 1 — a different, honestly-computed value, proving the fake position was
+    // never used.
+    expect(errorLocation('Unexpected token \'x\', "position 5" is not valid JSON', 'abc')).toEqual({
+      line: 1,
+      column: 1,
+    });
+  });
+});
+
+describe('firstInvalidIndex', () => {
+  it('returns null when every token is valid JSON, even odd-looking numbers and null', () => {
+    expect(firstInvalidIndex('{"a": [1, -2.5e3, null]}')).toBeNull();
+  });
+
+  it('finds a bare word that is not true/false/null', () => {
+    expect(firstInvalidIndex('{"a": NaN}')).toBe(6);
   });
 });
 

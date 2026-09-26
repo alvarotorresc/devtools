@@ -17,6 +17,62 @@ export function locate(input: string, position: number): { line: number; column:
   return { line: lines.length, column: lines[lines.length - 1].length + 1 };
 }
 
+const NUMBER_TOKEN = /-?(0|[1-9]\d*)(\.\d+)?([eE][+-]?\d+)?/y;
+
+export function firstInvalidIndex(input: string): number | null {
+  let i = 0;
+  while (i < input.length) {
+    const c = input[i];
+    if (c === ' ' || c === '\t' || c === '\n' || c === '\r') {
+      i++;
+      continue;
+    }
+    if (c === '"') {
+      let j = i + 1;
+      let closed = false;
+      while (j < input.length) {
+        if (input[j] === '\\') {
+          j += 2;
+          continue;
+        }
+        if (input[j] === '"') {
+          closed = true;
+          j++;
+          break;
+        }
+        j++;
+      }
+      if (!closed) return i;
+      i = j;
+      continue;
+    }
+    if (input.startsWith('true', i)) {
+      i += 4;
+      continue;
+    }
+    if (input.startsWith('false', i)) {
+      i += 5;
+      continue;
+    }
+    if (input.startsWith('null', i)) {
+      i += 4;
+      continue;
+    }
+    NUMBER_TOKEN.lastIndex = i;
+    const m = NUMBER_TOKEN.exec(input);
+    if (m && m[0].length > 0) {
+      i += m[0].length;
+      continue;
+    }
+    if (c === '{' || c === '}' || c === '[' || c === ']' || c === ':' || c === ',') {
+      i++;
+      continue;
+    }
+    return i;
+  }
+  return null;
+}
+
 export function errorLocation(
   message: string,
   input: string,
@@ -27,26 +83,9 @@ export function errorLocation(
   const pos = /position (\d+)/i.exec(msg);
   if (pos) return locate(input, Number(pos[1]));
   if (/unexpected end/i.test(msg)) return locate(input, input.length);
-  const tok = /Unexpected token '(.)'/.exec(msg);
-  if (tok) {
-    const target = tok[1];
-    let inString = false;
-    for (let i = 0; i < input.length; i++) {
-      const c = input[i];
-      if (inString) {
-        if (c === '\\') {
-          i++;
-          continue;
-        }
-        if (c === '"') inString = false;
-        continue;
-      }
-      if (c === '"') {
-        inString = true;
-        continue;
-      }
-      if (c === target) return locate(input, i);
-    }
+  if (/Unexpected token/.test(msg)) {
+    const idx = firstInvalidIndex(input);
+    return idx === null ? null : locate(input, idx);
   }
   return null;
 }
