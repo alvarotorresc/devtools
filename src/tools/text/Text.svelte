@@ -13,7 +13,7 @@
   import type { Locale } from '../types';
   import { CASES, DEFAULT_LINE_OPTIONS, countText, processLines, type LineOptions } from './logic';
   import { meta } from './meta';
-  import { strings } from './strings';
+  import { caseNames, strings } from './strings';
 
   let { locale }: { locale: Locale } = $props();
   const s = $derived(strings[locale]);
@@ -84,10 +84,10 @@
             {#each converted as c (c.id)}
               <div class="display-row">
                 <span class="case">
-                  <span class="name">{c.label}</span>
+                  <span class="name">{caseNames[locale][c.id] ?? c.label}</span>
                   <span class="value">{preview(c.value)}</span>
                 </span>
-                <CopyButton value={c.value} {locale} compact label={c.label} />
+                <CopyButton value={() => c.value} {locale} compact />
               </div>
             {/each}
           </div>

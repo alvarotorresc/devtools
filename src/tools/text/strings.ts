@@ -1,4 +1,5 @@
 import type { Locale } from '../types';
+import type { CaseId } from './logic';
 
 export const strings = {
   es: {
@@ -54,3 +55,9 @@ export const strings = {
     resultLines: '{n} lines',
   },
 } satisfies Record<Locale, Record<string, string>>;
+
+/** Display names for the prose cases. Code styles (camelCase, snake_case…) keep the label from CASES. */
+export const caseNames: Record<Locale, Partial<Record<CaseId, string>>> = {
+  es: { upper: 'MAYÚSCULAS', lower: 'minúsculas', title: 'Tipo Título', sentence: 'Tipo oración' },
+  en: { upper: 'UPPER CASE', lower: 'lower case', title: 'Title Case', sentence: 'Sentence case' },
+};
