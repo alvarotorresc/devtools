@@ -35,7 +35,7 @@ import { meta as bic } from './bic/meta';
 
 // import { meta as eanIsbn } from './ean-isbn/meta';
 
-// import { meta as postalCode } from './postal-code/meta';
+import { meta as postalCode } from './postal-code/meta';
 
 // import { meta as mock } from './mock/meta';
 
@@ -75,7 +75,7 @@ export const tools: ToolMeta[] = [
 
   // eanIsbn,
 
-  // postalCode,
+  postalCode,
 
   // mock,
 ];
