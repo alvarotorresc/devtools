@@ -15,7 +15,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview --ignore-lock",
-    "check": "astro check",
+    "check": "astro check && svelte-check --tsconfig ./tsconfig.json",
     "lint": "eslint . && prettier --check src",
     "format": "prettier --write src",
     "test": "vitest run",
@@ -42,6 +42,7 @@
     "prettier": "^3.9.9",
     "prettier-plugin-astro": "^1.1.0",
     "prettier-plugin-svelte": "^4.1.1",
+    "svelte-check": "^4.7.6",
     "typescript": "^6",
     "typescript-eslint": "^8.70.1",
     "vitest": "^5.0.2"
