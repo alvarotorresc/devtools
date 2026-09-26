@@ -1,0 +1,101 @@
+---
+import type { TransitionDirectionalAnimations } from 'astro';
+import { ClientRouter } from 'astro:transitions';
+import '@fontsource-variable/unbounded';
+import '@fontsource-variable/instrument-sans';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import '@fontsource/ibm-plex-mono/600.css';
+import '../styles/global.css';
+import BootScreen from '../components/BootScreen.astro';
+import MobileHeader from '../components/MobileHeader.astro';
+import SeoHead from '../components/SeoHead.astro';
+import Sidebar from '../components/Sidebar.astro';
+import Toaster from '../islands/Toaster.svelte';
+import { t } from '../i18n';
+import type { Locale } from '../tools/types';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  alternates: Record<Locale, string>;
+  jsonLd?: Record<string, unknown>[];
+  noindex?: boolean;
+  toolId?: string;
+}
+
+const { locale, toolId, ...seo } = Astro.props;
+
+const pageAnim: TransitionDirectionalAnimations = {
+  forwards: {
+    old: { name: 'dt-out', duration: '120ms', easing: 'ease-in', fillMode: 'both' },
+    new: { name: 'dt-in', duration: '200ms', easing: 'cubic-bezier(.2,.8,.2,1)', fillMode: 'both' },
+  },
+  backwards: {
+    old: { name: 'dt-out', duration: '120ms', easing: 'ease-in', fillMode: 'both' },
+    new: { name: 'dt-in', duration: '200ms', easing: 'cubic-bezier(.2,.8,.2,1)', fillMode: 'both' },
+  },
+};
+---
+
+<!doctype html>
+<html lang={locale} data-theme="terminal" data-sidebar="expanded">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0a0a0a" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script is:inline>
+      (() => {
+        const THEMES = ['terminal', 'dark', 'light'];
+        const COLORS = { terminal: '#0a0a0a', dark: '#161719', light: '#e3e1dc' };
+        const read = (area, key) => {
+          try {
+            return window[area].getItem('devtools:' + key);
+          } catch {
+            return null;
+          }
+        };
+        const apply = (doc) => {
+          const root = doc.documentElement;
+          const theme = read('localStorage', 'theme');
+          root.dataset.theme = THEMES.includes(theme) ? theme : 'terminal';
+          root.dataset.sidebar =
+            read('localStorage', 'sidebar.collapsed') === '1' ? 'collapsed' : 'expanded';
+          const meta = doc.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', COLORS[root.dataset.theme]);
+        };
+        apply(document);
+        const root = document.documentElement;
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (root.dataset.theme === 'terminal' && !read('sessionStorage', 'booted') && !reduce) {
+          root.dataset.boot = 'on';
+        }
+        if (!window.__devtoolsHooked) {
+          window.__devtoolsHooked = true;
+          document.addEventListener('astro:before-swap', (e) => apply(e.newDocument));
+        }
+      })();
+    </script>
+    <SeoHead locale={locale} {...seo} />
+    <ClientRouter />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">
+      {t(locale, 'nav.skip')}
+    </a>
+    <BootScreen locale={locale} />
+    <div class="app">
+      <Sidebar locale={locale} />
+      <div class="menu-backdrop" data-menu-close aria-hidden="true"></div>
+      <div class="main-col">
+        <MobileHeader locale={locale} />
+        <main id="main" class="main" data-tool-page={toolId} transition:animate={pageAnim}>
+          <slot />
+        </main>
+      </div>
+    </div>
+    <Toaster client:load transition:persist="toaster" />
+  </body>
+</html>

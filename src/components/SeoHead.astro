@@ -1,0 +1,39 @@
+---
+import { LOCALES, type Locale } from '../tools/types';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  alternates: Record<Locale, string>;
+  jsonLd?: Record<string, unknown>[];
+  noindex?: boolean;
+}
+
+const { locale, title, description, alternates, jsonLd = [], noindex = false } = Astro.props;
+const site = Astro.site!;
+const canonical = new URL(alternates[locale], site).href;
+const ogImage = new URL('/og.png', site).href;
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{LOCALES.map((l) => (
+  <link rel="alternate" hreflang={l} href={new URL(alternates[l], site).href} />
+))}
+<link rel="alternate" hreflang="x-default" href={new URL('/', site).href} />
+{noindex && <meta name="robots" content="noindex" />}
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="devtools" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:locale" content={locale === 'es' ? 'es_ES' : 'en_US'} />
+<meta name="twitter:card" content="summary_large_image" />
+{jsonLd.map((d) => (
+  <script type="application/ld+json" set:html={JSON.stringify(d)} />
+))}

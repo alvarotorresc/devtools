@@ -1,0 +1,60 @@
+---
+import { t } from '../i18n';
+import { tools } from '../tools/registry';
+import type { Locale } from '../tools/types';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const steps = [
+  'Loading modules.............',
+  'Checking environment.......',
+  'Mounting tools..............',
+];
+---
+
+<div id="boot" class="boot" aria-hidden="true">
+  <div class="boot-screen">
+    <div class="boot-line boot-title" style="animation-delay: 0s">
+      DEVTOOLS v0.2.0
+    </div>
+    <div class="boot-line" style="animation-delay: 0.3s">
+      &gt; Booting system...
+    </div>
+    {steps.map((s, i) => (
+      <div class="boot-line" style={`animation-delay: ${0.7 + i * 0.3}s`}>
+        &gt; {s} <span class="boot-ok">OK</span>
+      </div>
+    ))}
+    <div class="boot-line" style="animation-delay: 1.6s">
+      &gt; {t(locale, 'boot.loaded', { n: tools.length })}
+    </div>
+    <div class="boot-line" style="animation-delay: 2s">
+      &gt; System ready.<span class="boot-cursor">_</span>
+    </div>
+    <p class="boot-skip">{t(locale, 'boot.skip')}</p>
+  </div>
+</div>
+
+<script>
+  import { writeString } from '../lib/storage';
+
+  const root = document.documentElement;
+  if (root.dataset.boot === 'on') {
+    const boot = document.getElementById('boot');
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      writeString('booted', '1', 'session');
+      boot?.classList.add('fade-out');
+      window.removeEventListener('keydown', finish, true);
+      window.removeEventListener('pointerdown', finish, true);
+      setTimeout(() => delete root.dataset.boot, 400);
+    };
+    window.addEventListener('keydown', finish, true);
+    window.addEventListener('pointerdown', finish, true);
+    setTimeout(finish, 2800);
+  }
+</script>

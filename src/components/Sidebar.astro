@@ -1,0 +1,9 @@
+---
+import type { Locale } from '../tools/types';
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+---
+
+<aside id="sidebar" class="sidebar" data-locale={locale}></aside>
