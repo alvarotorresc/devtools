@@ -125,7 +125,7 @@
             label={!input.value.trim()
               ? t(locale, 'led.idle')
               : parsed
-                ? parsed.hostname
+                ? parsed.hostname || s.none
                 : s.invalidUrl}
           />
         {/snippet}
@@ -143,7 +143,7 @@
               <dd>{parsed.password}</dd>
             {/if}
             <dt>{s.host}</dt>
-            <dd>{parsed.hostname}</dd>
+            <dd>{parsed.hostname || s.none}</dd>
             <dt>{s.port}</dt>
             <dd>
               {parsed.port ||
