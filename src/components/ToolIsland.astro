@@ -12,7 +12,7 @@ import type { Locale } from '../tools/types';
 
 // import HtmlEntities from '../tools/html-entities/HtmlEntities.svelte';
 
-// import Jwt from '../tools/jwt/Jwt.svelte';
+import Jwt from '../tools/jwt/Jwt.svelte';
 
 // import Hash from '../tools/hash/Hash.svelte';
 
@@ -46,7 +46,7 @@ const { id, locale } = Astro.props;
 
 {/* {id === 'html-entities' && <HtmlEntities client:load locale={locale} />} */}
 
-{/* {id === 'jwt' && <Jwt client:load locale={locale} />} */}
+{id === 'jwt' && <Jwt client:load locale={locale} />}
 
 {/* {id === 'hash' && <Hash client:load locale={locale} />} */}
 

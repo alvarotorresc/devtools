@@ -12,7 +12,7 @@ import type { Category, CategoryId, Locale, ToolMeta } from './types';
 
 // import { meta as htmlEntities } from './html-entities/meta';
 
-// import { meta as jwt } from './jwt/meta';
+import { meta as jwt } from './jwt/meta';
 
 // import { meta as hash } from './hash/meta';
 
@@ -40,7 +40,7 @@ export const tools: ToolMeta[] = [
 
   // htmlEntities,
 
-  // jwt,
+  jwt,
 
   // hash,
 
