@@ -59,6 +59,14 @@ describe('time zones', () => {
     expect(formatOffset(0)).toBe('+00:00');
   });
 
+  it('returns null instead of NaN at the edge of the Date range', () => {
+    // At MAX_MS, Madrid's wall clock is already past the last representable instant.
+    expect(tzOffsetMinutes(MAX_MS, 'Europe/Madrid')).toBeNull();
+    expect(tzOffsetMinutes(-MAX_MS, 'Europe/Madrid')).toBeNull();
+    expect(formatOffset(null)).toBeNull();
+    expect(formatOffset(NaN)).toBeNull();
+  });
+
   it('converts wall-clock times to UTC across the DST switch', () => {
     // Madrid, 31 March 2024: 02:00 CET jumps to 03:00 CEST.
     expect(zonedToUtc(2024, 3, 31, 1, 30, 0, 0, 'Europe/Madrid')).toBe(
@@ -103,6 +111,18 @@ describe('parseDate', () => {
     expect(parseDate('', 'UTC')).toBeNull();
     expect(parseDate('mañana', 'UTC')).toBeNull();
     expect(parseDate('2024-13-01', 'UTC')).toBeNull();
+  });
+
+  it('rejects days that do not exist in that month', () => {
+    expect(parseDate('2024-02-30', 'UTC')).toBeNull();
+    expect(parseDate('2024-04-31', 'UTC')).toBeNull();
+    expect(parseDate('2023-02-29', 'UTC')).toBeNull();
+    expect(parseDate('2024-02-29', 'UTC')).toBe(Date.UTC(2024, 1, 29));
+  });
+
+  it('does not fall back to the browser zone for other formats', () => {
+    expect(parseDate('2024/07/01 12:00', 'America/New_York')).toBeNull();
+    expect(parseDate('1', 'UTC')).toBeNull();
   });
 
   it('handles years before 100', () => {

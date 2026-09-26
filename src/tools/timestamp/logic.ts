@@ -61,7 +61,8 @@ export function isValidTimeZone(timeZone: string): boolean {
 }
 
 /** Offset of `timeZone` from UTC at instant `ms`, in minutes (Madrid in summer → 120). */
-export function tzOffsetMinutes(ms: number, timeZone: string): number {
+export function tzOffsetMinutes(ms: number, timeZone: string): number | null {
+  if (!Number.isFinite(new Date(ms).getTime())) return null;
   const parts = Object.fromEntries(
     formatterFor(timeZone)
       .formatToParts(new Date(ms))
@@ -75,10 +76,14 @@ export function tzOffsetMinutes(ms: number, timeZone: string): number {
     Number(parts.minute),
     Number(parts.second),
   );
-  return Math.round((asUtc - Math.floor(ms / 1000) * 1000) / 60_000);
+  // Near the edge of the Date range the zone's wall clock may not be representable in UTC, and
+  // BC years come back without their era; real offsets always stay within a day.
+  const minutes = Math.round((asUtc - Math.floor(ms / 1000) * 1000) / 60_000);
+  return Number.isFinite(minutes) && Math.abs(minutes) < 24 * 60 ? minutes : null;
 }
 
-export function formatOffset(minutes: number): string {
+export function formatOffset(minutes: number | null): string | null {
+  if (minutes === null || !Number.isFinite(minutes)) return null;
   const sign = minutes < 0 ? '-' : '+';
   const abs = Math.abs(minutes);
   return `${sign}${String(Math.floor(abs / 60)).padStart(2, '0')}:${String(abs % 60).padStart(2, '0')}`;
@@ -94,18 +99,20 @@ export function zonedToUtc(
   s: number,
   msPart: number,
   timeZone: string,
-): number {
+): number | null {
   const guess = utc(y, mo, d, h, mi, s, msPart);
-  const first = guess - tzOffsetMinutes(guess, timeZone) * 60_000;
-  const second = guess - tzOffsetMinutes(first, timeZone) * 60_000;
-  return second;
+  const off1 = tzOffsetMinutes(guess, timeZone);
+  if (off1 === null) return null;
+  const first = guess - off1 * 60_000;
+  const off2 = tzOffsetMinutes(first, timeZone);
+  return off2 === null ? null : guess - off2 * 60_000;
 }
 
 const WALL_CLOCK = /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,3}))?)?)?$/;
 
 /**
  * Parses a date. "2024-01-15 12:00" (no offset) is read in `timeZone`;
- * anything with an offset or "Z", or another format Date understands, is taken as is.
+ * anything else must end in "Z" or "±hh:mm" and is taken as is.
  */
 export function parseDate(input: string, timeZone: string): number | null {
   const s = input.trim();
@@ -117,8 +124,15 @@ export function parseDate(input: string, timeZone: string): number | null {
       .map((v) => (v === undefined ? 0 : Number(v)));
     const msPart = m[7] ? Number(m[7].padEnd(3, '0')) : 0;
     if (mo < 1 || mo > 12 || d < 1 || d > 31 || h > 23 || mi > 59 || sec > 59) return null;
+    // Round trip: 2024-02-30 would roll over to 1 March, so the day must survive unchanged.
+    const day = new Date(utc(y, mo, d, 0, 0, 0));
+    if (day.getUTCFullYear() !== y || day.getUTCMonth() + 1 !== mo || day.getUTCDate() !== d)
+      return null;
     return zonedToUtc(y, mo, d, h, mi, sec, msPart, timeZone);
   }
+  // Other formats only when they carry their own offset; otherwise Date.parse would silently
+  // read them in the browser's zone instead of the chosen one.
+  if (!/(?:Z|[+-]\d{2}:\d{2})$/i.test(s)) return null;
   const ms = Date.parse(s);
   return Number.isNaN(ms) ? null : ms;
 }

@@ -54,7 +54,7 @@
   const invalid = $derived(!!input.value.trim() && !parsed);
 
   function zoned(ms: number): string {
-    return `${wallClock(ms, zone)} (${formatOffset(tzOffsetMinutes(ms, zone))})`;
+    return `${wallClock(ms, zone)} (${formatOffset(tzOffsetMinutes(ms, zone)) ?? s.offsetOutOfRange})`;
   }
 
   const formats = $derived.by(() => {
