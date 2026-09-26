@@ -25,7 +25,7 @@ import NumberBase from '../tools/number-base/NumberBase.svelte';
 
 // import Plate from '../tools/plate/Plate.svelte';
 
-// import Nss from '../tools/nss/Nss.svelte';
+import Nss from '../tools/nss/Nss.svelte';
 
 // import Card from '../tools/card/Card.svelte';
 
@@ -71,7 +71,7 @@ const { id, locale } = Astro.props;
 
 {/* {id === 'plate' && <Plate client:load locale={locale} />} */}
 
-{/* {id === 'nss' && <Nss client:load locale={locale} />} */}
+{id === 'nss' && <Nss client:load locale={locale} />}
 
 {/* {id === 'card' && <Card client:load locale={locale} />} */}
 
