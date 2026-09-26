@@ -88,6 +88,11 @@
     border-color: var(--disp-line);
     font-size: 13px;
   }
+  @media (pointer: coarse) {
+    .compact {
+      min-height: 44px;
+    }
+  }
   .copied {
     color: var(--ok);
     border-color: var(--ok);

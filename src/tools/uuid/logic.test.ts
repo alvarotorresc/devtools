@@ -64,6 +64,11 @@ describe('nanoid', () => {
     expect(nanoid(50, 'ab')).toMatch(/^[ab]{50}$/);
     expect(nanoid(4, NANOID_ALPHABETS.urlsafe, zeros)).toBe('AAAA');
   });
+
+  it('rejects a non-positive-integer size instead of hanging', () => {
+    expect(() => nanoid(0)).toThrow(RangeError);
+    expect(() => nanoid(2.5)).toThrow(RangeError);
+  });
 });
 
 describe('formatId', () => {
@@ -89,6 +94,11 @@ describe('generate', () => {
   it('returns unique ids', () => {
     const ids = generate('v7', 200, opts);
     expect(new Set(ids).size).toBe(200);
+  });
+
+  it('clamps a fractional or NaN nanoid size instead of hanging', () => {
+    expect(generate('nanoid', 1, { size: 2.5, alphabet: 'ab' })[0]).toHaveLength(2);
+    expect(generate('nanoid', 1, { size: NaN, alphabet: 'ab' })[0]).toHaveLength(21);
   });
 });
 

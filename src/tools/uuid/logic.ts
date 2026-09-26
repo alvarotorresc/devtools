@@ -74,6 +74,7 @@ export function nanoid(
   alphabet: string = NANOID_ALPHABETS.urlsafe,
   rand: RandomBytes = randomBytes,
 ): string {
+  if (!Number.isInteger(size) || size < 1) throw new RangeError('Size must be a positive integer');
   if (alphabet.length < 2 || alphabet.length > 256)
     throw new RangeError('Alphabet must have 2-256 symbols');
   const mask = (2 << (31 - Math.clz32((alphabet.length - 1) | 1))) - 1;
@@ -107,11 +108,12 @@ export function generate(
   opts: { size: number; alphabet: string },
 ): string[] {
   const n = Math.min(MAX_COUNT, Math.max(1, Math.floor(count) || 1));
+  const size = Math.min(64, Math.max(2, Math.floor(opts.size) || 21));
   const make = {
     v4: () => uuidV4(),
     v7: () => uuidV7(),
     ulid: () => ulid(),
-    nanoid: () => nanoid(opts.size, opts.alphabet),
+    nanoid: () => nanoid(size, opts.alphabet),
   }[kind];
   return Array.from({ length: n }, make);
 }
