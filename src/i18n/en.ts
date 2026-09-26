@@ -39,6 +39,7 @@ export const en: Record<keyof typeof es, string> = {
   'tool.faq': 'FAQ',
   'ui.copy': 'Copy',
   'ui.copyFailed': 'Could not copy. Select the text and press Ctrl+C.',
+  'ui.copyFailedMac': 'Could not copy. Select the text and press Cmd+C.',
   'ui.copied': 'Copied',
   'ui.copiedValue': 'Copied: {v}',
   'ui.clear': 'Clear',

@@ -15,7 +15,8 @@
       const detail = (e as CustomEvent<ToastDetail>).detail;
       current = { ...detail, id: ++seq };
       clearTimeout(timer);
-      timer = setTimeout(() => (current = null), 1600);
+      // An error needs time to be read and acted on; a confirmation only needs a glance.
+      timer = setTimeout(() => (current = null), detail.kind === 'bad' ? 4000 : 1600);
     };
     window.addEventListener(TOAST_EVENT, onToast);
     return () => window.removeEventListener(TOAST_EVENT, onToast);

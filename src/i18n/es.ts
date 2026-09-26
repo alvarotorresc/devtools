@@ -38,6 +38,7 @@ export const es = {
   'tool.faq': 'Preguntas frecuentes',
   'ui.copy': 'Copiar',
   'ui.copyFailed': 'No se pudo copiar. Selecciona el texto y pulsa Ctrl+C.',
+  'ui.copyFailedMac': 'No se pudo copiar. Selecciona el texto y pulsa Cmd+C.',
   'ui.copied': 'Copiado',
   'ui.copiedValue': 'Copiado: {v}',
   'ui.clear': 'Borrar',

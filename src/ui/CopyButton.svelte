@@ -1,6 +1,7 @@
 <script lang="ts">
   import { t } from '../i18n';
   import { copyText } from '../lib/clipboard';
+  import { isMac } from '../lib/platform';
   import { toast, truncate } from '../lib/toast';
   import type { Locale } from '../tools/types';
   import Icon from './Icon.svelte';
@@ -34,7 +35,7 @@
     if (!text) return;
     const ok = await copyText(text);
     if (!ok) {
-      toast(t(locale, 'ui.copyFailed'), 'bad');
+      toast(t(locale, isMac() ? 'ui.copyFailedMac' : 'ui.copyFailed'), 'bad');
       return;
     }
     copied = true;

@@ -3,6 +3,7 @@
   import JsonTree from './JsonTree.svelte';
   import { t } from '../../i18n';
   import { copyText } from '../../lib/clipboard';
+  import { isMac } from '../../lib/platform';
   import { toast, truncate } from '../../lib/toast';
   import type { Locale } from '../types';
   import Icon from '../../ui/Icon.svelte';
@@ -34,7 +35,7 @@
 
   async function copy(text: string) {
     if (!(await copyText(text))) {
-      toast(t(locale, 'ui.copyFailed'), 'bad');
+      toast(t(locale, isMac() ? 'ui.copyFailedMac' : 'ui.copyFailed'), 'bad');
       return;
     }
     toast(truncate(text));
