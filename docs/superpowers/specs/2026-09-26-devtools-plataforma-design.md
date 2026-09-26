@@ -38,7 +38,7 @@ DevTools (devtools.alvarotc.com) es hoy una SPA vanilla TS con 14 herramientas, 
 
 **Fuera:**
 
-- herramientas nuevas (subproyecto 2: España + mock data, conversores + azar, resto);
+- herramientas nuevas (subproyecto 2: identificadores + mock data, conversores + azar, resto);
 - imágenes OG por herramienta (una genérica basta);
 - PWA/offline (mejora futura, encaja sin rediseño);
 - cuentas o sincronización entre dispositivos.
@@ -94,7 +94,7 @@ src/
 ```ts
 // src/tools/types.ts
 export type Locale = 'es' | 'en';
-export type CategoryId = 'gen' | 'enc' | 'data' | 'es' | 'conv' | 'rand' | 'ref';
+export type CategoryId = 'gen' | 'enc' | 'data' | 'ids' | 'conv' | 'rand' | 'ref';
 
 export interface ToolMeta {
   id: string;                          // estable, p. ej. 'uuid'
@@ -188,11 +188,12 @@ Tres temas en `<html data-theme="terminal|dark|light">`. Por defecto `terminal`.
 
 ### Sidebar
 
-- De arriba abajo: logo + botón de plegar, Inicio, grupo **Favoritos** (solo si hay alguno), las 7 categorías (Generadores, Codificación, Texto y datos, España, Conversores, Azar, Referencia) con icono y contador, y en el pie el selector de tema y ES/EN.
+- De arriba abajo: logo + botón de plegar, Inicio, grupo **Favoritos** (solo si hay alguno), las 7 categorías (Generadores, Codificación, Texto y datos, Identificadores, Conversores, Azar, Referencia) con icono y contador, y en el pie el selector de tema y ES/EN.
 - Las categorías son acordeones. Por defecto se abre la de la herramienta actual. Las abiertas se guardan en `localStorage`.
 - La herramienta actual lleva `aria-current="page"` y el estilo con relleno de acento.
 - **Plegada:** solo iconos, con tooltip. Al pasar el ratón por una categoría, o al darle foco y Enter, aparece un menú flotante con sus herramientas. El estado se guarda en `localStorage`.
-- Las categorías vacías (España, Azar y Referencia, hasta el subproyecto 2) **no se muestran**.
+- Las categorías vacías (Identificadores, Azar y Referencia, hasta el subproyecto 2) **no se muestran**.
+- **Identificadores** (EN: *Identifiers*, id `ids`) agrupa documentos y códigos oficiales: DNI/NIE, CIF, IBAN, matrículas, NSS… De momento solo cubre formatos de España. Lo indican la descripción de la categoría (visible en el catálogo de la Home y en el menú flotante) y la de cada herramienta ("formato español"). El nombre no se ata a un país, así que en el futuro se pueden añadir otros sin renombrar nada. Las URLs de estas herramientas incluyen el país solo cuando aporta búsquedas (`/es/validador-dni-nie`, `/en/spanish-dni-nie-validator`).
 
 ### Home
 
