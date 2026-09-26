@@ -10,7 +10,7 @@ import { meta as base64 } from './base64/meta';
 
 import { meta as url } from './url/meta';
 
-// import { meta as htmlEntities } from './html-entities/meta';
+import { meta as htmlEntities } from './html-entities/meta';
 
 import { meta as jwt } from './jwt/meta';
 
@@ -38,7 +38,7 @@ export const tools: ToolMeta[] = [
 
   url,
 
-  // htmlEntities,
+  htmlEntities,
 
   jwt,
 
