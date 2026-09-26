@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const PORT = 4322;
+const PORT = 4642;
 
 export default defineConfig({
   testDir: 'e2e',
@@ -13,7 +13,7 @@ export default defineConfig({
   webServer: {
     command: `pnpm exec astro preview --port ${PORT} --ignore-lock`,
     url: `http://localhost:${PORT}/es`,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 60_000,
   },
 });
