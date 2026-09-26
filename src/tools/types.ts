@@ -25,3 +25,11 @@ export interface Category {
   name: Localized<string>;
   description: Localized<string>;
 }
+
+export interface PaletteEntry {
+  id: string;
+  href: string;
+  name: string;
+  category: string;
+  icon: IconName;
+}

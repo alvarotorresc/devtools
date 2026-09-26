@@ -12,8 +12,13 @@ import MobileHeader from '../components/MobileHeader.astro';
 import SeoHead from '../components/SeoHead.astro';
 import Sidebar from '../components/Sidebar.astro';
 import Toaster from '../islands/Toaster.svelte';
-import { t } from '../i18n';
-import type { Locale } from '../tools/types';
+import CommandPalette from '../islands/CommandPalette.svelte';
+import ShortcutsDialog from '../islands/ShortcutsDialog.svelte';
+import { buildDoc } from '../lib/search';
+import { t, toolHref } from '../i18n';
+import { categories } from '../tools/categories';
+import { tools } from '../tools/registry';
+import type { Locale, PaletteEntry } from '../tools/types';
 
 interface Props {
   locale: Locale;
@@ -26,6 +31,15 @@ interface Props {
 }
 
 const { locale, toolId, ...seo } = Astro.props;
+
+const entries: PaletteEntry[] = tools.map((tool) => ({
+  id: tool.id,
+  href: toolHref(locale, tool),
+  name: tool.name[locale],
+  category: categories.find((c) => c.id === tool.category)!.name[locale],
+  icon: tool.icon,
+}));
+const docs = tools.map(buildDoc);
 
 const pageAnim: TransitionDirectionalAnimations = {
   forwards: {
@@ -104,5 +118,42 @@ const pageAnim: TransitionDirectionalAnimations = {
       </div>
     </div>
     <Toaster client:load transition:persist="toaster" />
+    <CommandPalette
+      client:load
+      transition:persist={`palette-${locale}`}
+      locale={locale}
+      entries={entries}
+      docs={docs}
+    />
+    <ShortcutsDialog client:load transition:persist={`help-${locale}`} locale={locale} />
+    <script>
+      import { dispatchShortcut, getSingleKeys, matchShortcut } from '../lib/shortcuts';
+
+      document.addEventListener('keydown', (e) => {
+        if (e.defaultPrevented || document.querySelector('dialog[open]')) return;
+        const action = matchShortcut(e, getSingleKeys());
+        if (!action) return;
+        if (action.type === 'copy') {
+          const btn = document.querySelector<HTMLButtonElement>('[data-copy-main]:not(:disabled)');
+          if (!btn) return;
+          e.preventDefault();
+          btn.click();
+          return;
+        }
+        if (action.type === 'tab') {
+          const radios = document.querySelectorAll<HTMLButtonElement>(
+            '[data-tabs-main] [role="radio"]',
+          );
+          const target = radios[action.index];
+          if (!target) return;
+          e.preventDefault();
+          target.click();
+          target.focus();
+          return;
+        }
+        e.preventDefault();
+        dispatchShortcut(action);
+      });
+    </script>
   </body>
 </html>
