@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.2.0",
   "type": "module",
-  "description": "Developer tools: JSON, UUID, JWT, Base64, hashes, Spanish IDs and more. Everything runs in your browser.",
+  "description": "Developer tools that run in your browser: JSON, UUID, JWT, Base64, hashes, regex, diff and more.",
   "author": "Álvaro TC",
   "license": "MIT",
   "homepage": "https://devtools.alvarotc.com",
