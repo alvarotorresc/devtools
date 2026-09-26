@@ -1,34 +1,19 @@
 ---
 import Json from '../tools/json/Json.svelte';
 import Uuid from '../tools/uuid/Uuid.svelte';
-import type { Locale } from '../tools/types';
-
-// Plan B: each tool task uncomments its import below and its line in the template.
-// Keep the blank lines between them: they let the parallel branches merge without conflicts.
-
 import Base64 from '../tools/base64/Base64.svelte';
-
 import Url from '../tools/url/Url.svelte';
-
 import HtmlEntities from '../tools/html-entities/HtmlEntities.svelte';
-
 import Jwt from '../tools/jwt/Jwt.svelte';
-
 import Hash from '../tools/hash/Hash.svelte';
-
 import Diff from '../tools/diff/Diff.svelte';
-
 import Regex from '../tools/regex/Regex.svelte';
-
 import Text from '../tools/text/Text.svelte';
-
 import Lorem from '../tools/lorem/Lorem.svelte';
-
 import Timestamp from '../tools/timestamp/Timestamp.svelte';
-
 import Color from '../tools/color/Color.svelte';
-
 import NumberBase from '../tools/number-base/NumberBase.svelte';
+import type { Locale } from '../tools/types';
 
 interface Props {
   id: string;
@@ -39,27 +24,15 @@ const { id, locale } = Astro.props;
 
 {id === 'json' && <Json client:load locale={locale} />}
 {id === 'uuid' && <Uuid client:load locale={locale} />}
-
 {id === 'base64' && <Base64 client:load locale={locale} />}
-
 {id === 'url' && <Url client:load locale={locale} />}
-
 {id === 'html-entities' && <HtmlEntities client:load locale={locale} />}
-
 {id === 'jwt' && <Jwt client:load locale={locale} />}
-
 {id === 'hash' && <Hash client:load locale={locale} />}
-
 {id === 'diff' && <Diff client:load locale={locale} />}
-
 {id === 'regex' && <Regex client:load locale={locale} />}
-
 {id === 'text' && <Text client:load locale={locale} />}
-
 {id === 'lorem' && <Lorem client:load locale={locale} />}
-
 {id === 'timestamp' && <Timestamp client:load locale={locale} />}
-
 {id === 'color' && <Color client:load locale={locale} />}
-
 {id === 'number-base' && <NumberBase client:load locale={locale} />}
