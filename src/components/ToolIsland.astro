@@ -27,7 +27,7 @@ import NumberBase from '../tools/number-base/NumberBase.svelte';
 
 // import Nss from '../tools/nss/Nss.svelte';
 
-// import Card from '../tools/card/Card.svelte';
+import Card from '../tools/card/Card.svelte';
 
 // import Phone from '../tools/phone/Phone.svelte';
 
@@ -73,7 +73,7 @@ const { id, locale } = Astro.props;
 
 {/* {id === 'nss' && <Nss client:load locale={locale} />} */}
 
-{/* {id === 'card' && <Card client:load locale={locale} />} */}
+{id === 'card' && <Card client:load locale={locale} />}
 
 {/* {id === 'phone' && <Phone client:load locale={locale} />} */}
 
