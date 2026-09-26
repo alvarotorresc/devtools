@@ -14,6 +14,7 @@
 
 <style>
   .toggle {
+    position: relative;
     display: inline-flex;
     align-items: center;
     gap: 10px;
@@ -23,9 +24,12 @@
   }
   input {
     position: absolute;
+    inset: 0;
+    /* Above the positioned .track, so pointer events land on the input itself. */
+    z-index: 1;
     opacity: 0;
-    width: 1px;
-    height: 1px;
+    margin: 0;
+    cursor: pointer;
   }
   .track {
     position: relative;

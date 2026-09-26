@@ -174,8 +174,7 @@ test.describe('shortcuts', () => {
     await page.keyboard.press('?');
     const help = page.locator('dialog.help');
     await expect(help).toBeVisible();
-    // The toggle's checkbox is visually covered by its track; the click must be forced.
-    await help.getByRole('switch').uncheck({ force: true });
+    await help.getByRole('switch').uncheck();
     await page.keyboard.press('Escape');
     await page.keyboard.press('/');
     await expect(page.locator('dialog.palette')).not.toBeVisible();
