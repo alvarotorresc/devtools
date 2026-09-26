@@ -27,7 +27,7 @@ import { meta as plate } from './plate/meta';
 
 import { meta as nss } from './nss/meta';
 
-// import { meta as card } from './card/meta';
+import { meta as card } from './card/meta';
 
 // import { meta as phone } from './phone/meta';
 
@@ -67,7 +67,7 @@ export const tools: ToolMeta[] = [
 
   nss,
 
-  // card,
+  card,
 
   // phone,
 
