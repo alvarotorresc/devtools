@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { fill } from '../../i18n/fill';
   import { t } from '../../i18n';
+  import { downloadBlob } from '../../lib/download';
   import Button from '../../ui/Button.svelte';
   import CopyButton from '../../ui/CopyButton.svelte';
   import Display from '../../ui/Display.svelte';
@@ -67,12 +68,7 @@
   });
 
   function download() {
-    const url = URL.createObjectURL(new Blob([shown.join('\n')], { type: 'text/plain' }));
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = s.file;
-    a.click();
-    URL.revokeObjectURL(url);
+    downloadBlob(shown.join('\n'), s.file);
   }
 </script>
 

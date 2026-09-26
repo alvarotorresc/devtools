@@ -1,5 +1,6 @@
 <script lang="ts">
   import { t } from '../../i18n';
+  import { downloadBlob } from '../../lib/download';
   import Button from '../../ui/Button.svelte';
   import CopyButton from '../../ui/CopyButton.svelte';
   import Display from '../../ui/Display.svelte';
@@ -81,12 +82,7 @@
   }
 
   function download() {
-    const url = URL.createObjectURL(new Blob([formatted], { type: 'application/json' }));
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = s.file;
-    a.click();
-    URL.revokeObjectURL(url);
+    downloadBlob(formatted, s.file, 'application/json');
   }
 </script>
 
