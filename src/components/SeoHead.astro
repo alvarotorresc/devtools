@@ -35,5 +35,5 @@ const ogImage = new URL('/og.png', site).href;
 <meta property="og:locale" content={locale === 'es' ? 'es_ES' : 'en_US'} />
 <meta name="twitter:card" content="summary_large_image" />
 {jsonLd.map((d) => (
-  <script type="application/ld+json" set:html={JSON.stringify(d)} />
+  <script type="application/ld+json" set:html={JSON.stringify(d).replace(/</g, '\\u003c')} />
 ))}
