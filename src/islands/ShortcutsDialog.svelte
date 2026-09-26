@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { t } from '../i18n';
+  import { isMac } from '../lib/platform';
   import {
     getSingleKeys,
     setSingleKeys,
@@ -13,15 +14,18 @@
   let { locale }: { locale: Locale } = $props();
   let dialog: HTMLDialogElement;
   let singleKeys = $state(true);
+  // Set after mount: the server cannot know the platform, and hydration must match its HTML.
+  let mod = $state('Ctrl');
 
   const rows = $derived([
-    { keys: ['Ctrl K', '/'], label: t(locale, 'shortcuts.search') },
+    { keys: [`${mod} K`, '/'], label: t(locale, 'shortcuts.search') },
     { keys: ['c'], label: t(locale, 'shortcuts.copy') },
     { keys: ['1 … 9'], label: t(locale, 'shortcuts.tabs') },
     { keys: ['?'], label: t(locale, 'shortcuts.help') },
   ]);
 
   onMount(() => {
+    if (isMac()) mod = '⌘';
     const on = (e: Event) => {
       if ((e as CustomEvent<ShortcutAction>).detail.type === 'help' && !dialog.open) open();
     };

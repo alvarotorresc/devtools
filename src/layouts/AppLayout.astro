@@ -127,7 +127,16 @@ const pageAnim: TransitionDirectionalAnimations = {
     />
     <ShortcutsDialog client:load transition:persist={`help-${locale}`} locale={locale} />
     <script>
+      import { isMac } from '../lib/platform';
       import { dispatchShortcut, getSingleKeys, matchShortcut } from '../lib/shortcuts';
+
+      // Static shortcut hints are rendered as "Ctrl K"; Apple keyboards read "⌘ K".
+      document.addEventListener('astro:page-load', () => {
+        if (!isMac()) return;
+        for (const el of document.querySelectorAll('[data-kbd-mod]')) {
+          el.textContent = (el.textContent ?? '').replace('Ctrl', '⌘');
+        }
+      });
 
       document.addEventListener('keydown', (e) => {
         if (e.defaultPrevented || document.querySelector('dialog[open]')) return;

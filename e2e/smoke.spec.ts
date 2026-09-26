@@ -188,6 +188,18 @@ test.describe('shortcuts', () => {
     await expect(page.locator('dialog.palette')).toBeVisible();
   });
 
+  test('shortcut hints read ⌘ K on a Mac', async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, 'platform', { get: () => 'MacIntel' });
+      Object.defineProperty(navigator, 'userAgentData', { get: () => ({ platform: 'macOS' }) });
+    });
+    await page.goto('/es/probador-regex');
+    await waitForIslands(page);
+    await expect(page.locator('.sb-search kbd')).toHaveText('⌘ K');
+    await page.keyboard.press('?');
+    await expect(page.locator('dialog.help kbd').first()).toHaveText('⌘ K');
+  });
+
   test('pressing "c" outside a field copies the main result', async ({ page, context }) => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     await page.goto('/es/formateador-json');
