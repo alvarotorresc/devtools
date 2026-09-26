@@ -52,7 +52,9 @@ export function decodeJWT(token: string): DecodedJwt | null {
 
 export function claimDate(payload: Record<string, unknown>, claim: TimeClaim): Date | null {
   const v = payload[claim];
-  return typeof v === 'number' && Number.isFinite(v) ? new Date(v * 1000) : null;
+  if (typeof v !== 'number' || !Number.isFinite(v)) return null;
+  const d = new Date(v * 1000);
+  return Number.isFinite(d.getTime()) ? d : null;
 }
 
 export function validity(payload: Record<string, unknown>, nowMs: number): Validity {

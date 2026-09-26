@@ -104,6 +104,8 @@
       </dl>
     {:else if !jwt}
       <p class="display-note">{s.empty}</p>
+    {:else}
+      <p class="display-note">{s.noDates}</p>
     {/if}
   </Display>
 

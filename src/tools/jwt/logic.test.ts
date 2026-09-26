@@ -73,4 +73,9 @@ describe('time claims', () => {
     expect(validity({ nbf: at(NOW - 60_000) }, NOW)).toBe('valid');
     expect(validity({ iat: at(NOW) }, NOW)).toBe('none');
   });
+
+  it('ignores claims outside the Date range instead of calling them valid', () => {
+    expect(claimDate({ exp: 1e13 }, 'exp')).toBeNull();
+    expect(validity({ exp: 1e13 }, Date.now())).not.toBe('valid');
+  });
 });
