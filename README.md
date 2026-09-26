@@ -8,6 +8,27 @@
 
 Sitio estático bilingüe (ES/EN) hecho con Astro 7 y Svelte 5. Nada de lo que pegas sale de tu equipo.
 
+## Herramientas
+
+Todas tienen versión en español (`/es/…`) y en inglés (`/en/…`).
+
+| Categoría | Herramienta | Página |
+|---|---|---|
+| Generadores | UUID v4 y v7, ULID y NanoID | [/es/generador-uuid](https://devtools.alvarotc.com/es/generador-uuid) |
+| Generadores | Lorem ipsum | [/es/generador-lorem-ipsum](https://devtools.alvarotc.com/es/generador-lorem-ipsum) |
+| Codificación | Base64 (texto y archivos) | [/es/codificar-decodificar-base64](https://devtools.alvarotc.com/es/codificar-decodificar-base64) |
+| Codificación | URL (codificar y analizar) | [/es/codificar-decodificar-url](https://devtools.alvarotc.com/es/codificar-decodificar-url) |
+| Codificación | Entidades HTML | [/es/codificar-entidades-html](https://devtools.alvarotc.com/es/codificar-entidades-html) |
+| Codificación | JWT | [/es/decodificador-jwt](https://devtools.alvarotc.com/es/decodificador-jwt) |
+| Codificación | Hash (MD5, SHA-1, SHA-256, SHA-384, SHA-512) | [/es/generador-hash-md5-sha256](https://devtools.alvarotc.com/es/generador-hash-md5-sha256) |
+| Texto y datos | JSON | [/es/formateador-json](https://devtools.alvarotc.com/es/formateador-json) |
+| Texto y datos | Comparar textos | [/es/comparar-textos](https://devtools.alvarotc.com/es/comparar-textos) |
+| Texto y datos | Regex | [/es/probador-regex](https://devtools.alvarotc.com/es/probador-regex) |
+| Texto y datos | Mayúsculas y líneas | [/es/convertir-mayusculas-minusculas](https://devtools.alvarotc.com/es/convertir-mayusculas-minusculas) |
+| Conversores | Timestamp Unix | [/es/conversor-timestamp-unix](https://devtools.alvarotc.com/es/conversor-timestamp-unix) |
+| Conversores | Colores (HEX, RGB, HSL, OKLCH) | [/es/conversor-colores](https://devtools.alvarotc.com/es/conversor-colores) |
+| Conversores | Bases numéricas | [/es/conversor-bases-numericas](https://devtools.alvarotc.com/es/conversor-bases-numericas) |
+
 ## Desarrollo
 
 Requiere Node 22.12+ y pnpm 10.
