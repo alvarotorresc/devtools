@@ -5,6 +5,7 @@ import {
   formatBigInt,
   groupDigits,
   groupSizeFor,
+  isValidBase,
   parseBigInt,
 } from './logic';
 
@@ -98,5 +99,16 @@ describe('bitLength', () => {
     expect(bitLength(256n)).toBe(9);
     expect(bitLength(-255n)).toBe(8);
     expect(bitLength(2n ** 64n)).toBe(65);
+  });
+});
+
+describe('isValidBase', () => {
+  it('accepts whole numbers from 2 to 36', () => {
+    for (const b of [2, 10, 16, 36]) expect(isValidBase(b)).toBe(true);
+  });
+
+  it('rejects what a half-typed radix field can hold', () => {
+    for (const b of [0, 1, 37, 2.5, NaN, Infinity, null, undefined, '16'])
+      expect(isValidBase(b)).toBe(false);
   });
 });

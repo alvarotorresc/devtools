@@ -2,6 +2,11 @@ export const DIGITS = '0123456789abcdefghijklmnopqrstuvwxyz';
 export const MIN_BASE = 2;
 export const MAX_BASE = 36;
 
+/** True for a whole number from 2 to 36, the radixes that BigInt#toString accepts. */
+export function isValidBase(b: unknown): b is number {
+  return typeof b === 'number' && Number.isInteger(b) && b >= MIN_BASE && b <= MAX_BASE;
+}
+
 const PREFIXES: Record<number, RegExp> = { 2: /^0b/i, 8: /^0o/i, 16: /^0x/i };
 
 /**

@@ -18,6 +18,7 @@
     formatBigInt,
     groupDigits,
     groupSizeFor,
+    isValidBase,
     parseBigInt,
   } from './logic';
   import { meta } from './meta';
@@ -33,8 +34,14 @@
 
   let customBase = $state(36);
   let grouping = $state(false);
+  // While the radix field is half-typed (empty, or "1" on the way to "16"), keep the last good base.
+  let lastValidBase = $state(36);
+  $effect(() => {
+    if (isValidBase(customBase)) lastValidBase = customBase;
+  });
+  const effectiveBase = $derived(isValidBase(customBase) ? customBase : lastValidBase);
 
-  const baseOf = (f: FieldId) => ({ bin: 2, oct: 8, dec: 10, hex: 16, custom: customBase })[f];
+  const baseOf = (f: FieldId) => ({ bin: 2, oct: 8, dec: 10, hex: 16, custom: effectiveBase })[f];
   const value = $derived(input.value.trim() ? parseBigInt(input.value, 10) : null);
 
   function render(n: bigint | null, f: FieldId): string {
@@ -72,7 +79,7 @@
   // custom base change. `untrack` keeps typing in a field from re-running this and moving the cursor.
   $effect(() => {
     void grouping;
-    void customBase;
+    void effectiveBase;
     untrack(() => sync(null));
   });
 
@@ -91,7 +98,7 @@
     sync(f);
   }
 
-  const labelOf = (f: FieldId) => (f === 'custom' ? fill(s.custom, { b: customBase }) : s[f]);
+  const labelOf = (f: FieldId) => (f === 'custom' ? fill(s.custom, { b: effectiveBase }) : s[f]);
   const digitsOf = (f: FieldId) => {
     const base = baseOf(f);
     return base <= 10 ? `0-${base - 1}` : fill(s.digitsLetters, { last: DIGITS[base - 1] });
