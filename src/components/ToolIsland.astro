@@ -29,7 +29,7 @@ import NumberBase from '../tools/number-base/NumberBase.svelte';
 
 // import Card from '../tools/card/Card.svelte';
 
-// import Phone from '../tools/phone/Phone.svelte';
+import Phone from '../tools/phone/Phone.svelte';
 
 // import Bic from '../tools/bic/Bic.svelte';
 
@@ -75,7 +75,7 @@ const { id, locale } = Astro.props;
 
 {/* {id === 'card' && <Card client:load locale={locale} />} */}
 
-{/* {id === 'phone' && <Phone client:load locale={locale} />} */}
+{id === 'phone' && <Phone client:load locale={locale} />}
 
 {/* {id === 'bic' && <Bic client:load locale={locale} />} */}
 

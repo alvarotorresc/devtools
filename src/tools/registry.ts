@@ -29,7 +29,7 @@ import { meta as numberBase } from './number-base/meta';
 
 // import { meta as card } from './card/meta';
 
-// import { meta as phone } from './phone/meta';
+import { meta as phone } from './phone/meta';
 
 // import { meta as bic } from './bic/meta';
 
@@ -69,7 +69,7 @@ export const tools: ToolMeta[] = [
 
   // card,
 
-  // phone,
+  phone,
 
   // bic,
 
