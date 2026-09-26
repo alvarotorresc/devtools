@@ -33,7 +33,7 @@ import Phone from '../tools/phone/Phone.svelte';
 
 import Bic from '../tools/bic/Bic.svelte';
 
-// import EanIsbn from '../tools/ean-isbn/EanIsbn.svelte';
+import EanIsbn from '../tools/ean-isbn/EanIsbn.svelte';
 
 import PostalCode from '../tools/postal-code/PostalCode.svelte';
 
@@ -79,7 +79,7 @@ const { id, locale } = Astro.props;
 
 {id === 'bic' && <Bic client:load locale={locale} />}
 
-{/* {id === 'ean-isbn' && <EanIsbn client:load locale={locale} />} */}
+{id === 'ean-isbn' && <EanIsbn client:load locale={locale} />}
 
 {id === 'postal-code' && <PostalCode client:load locale={locale} />}
 
