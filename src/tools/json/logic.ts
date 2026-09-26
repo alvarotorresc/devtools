@@ -21,11 +21,33 @@ export function errorLocation(
   message: string,
   input: string,
 ): { line: number; column: number } | null {
-  const lc = /line (\d+) column (\d+)/i.exec(message);
+  const msg = message.replace(/,\s*".*"\s+is not valid JSON\s*$/s, '');
+  const lc = /line (\d+) column (\d+)/i.exec(msg);
   if (lc) return { line: Number(lc[1]), column: Number(lc[2]) };
-  const pos = /position (\d+)/i.exec(message);
+  const pos = /position (\d+)/i.exec(msg);
   if (pos) return locate(input, Number(pos[1]));
-  if (/unexpected end/i.test(message)) return locate(input, input.length);
+  if (/unexpected end/i.test(msg)) return locate(input, input.length);
+  const tok = /Unexpected token '(.)'/.exec(msg);
+  if (tok) {
+    const target = tok[1];
+    let inString = false;
+    for (let i = 0; i < input.length; i++) {
+      const c = input[i];
+      if (inString) {
+        if (c === '\\') {
+          i++;
+          continue;
+        }
+        if (c === '"') inString = false;
+        continue;
+      }
+      if (c === '"') {
+        inString = true;
+        continue;
+      }
+      if (c === target) return locate(input, i);
+    }
+  }
   return null;
 }
 

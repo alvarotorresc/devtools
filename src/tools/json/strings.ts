@@ -15,8 +15,10 @@ export const strings = {
     sortKeys: 'Ordenar claves',
     result: 'Resultado',
     valid: 'JSON válido',
-    errorAt: 'Error en la línea {line}, columna {column}',
-    errorNoLine: 'JSON no válido',
+    errorAt:
+      'Error en la línea {line}, columna {column}. Revisa comas, comillas y llaves en esa línea.',
+    errorNoLine:
+      'JSON no válido. Revisa que claves y textos usen comillas dobles y que no sobren comas.',
     goToError: 'Ir a la línea del error',
     empty: 'Pega o escribe JSON y aparecerá formateado aquí.',
     treeEmpty: 'El árbol aparece cuando el JSON es válido.',
@@ -39,8 +41,9 @@ export const strings = {
     sortKeys: 'Sort keys',
     result: 'Result',
     valid: 'Valid JSON',
-    errorAt: 'Error on line {line}, column {column}',
-    errorNoLine: 'Invalid JSON',
+    errorAt: 'Error on line {line}, column {column}. Check commas, quotes and braces on that line.',
+    errorNoLine:
+      'Invalid JSON. Make sure keys and strings use double quotes and there are no extra commas.',
     goToError: 'Go to the error line',
     empty: 'Paste or type JSON and it will appear formatted here.',
     treeEmpty: 'The tree appears once the JSON is valid.',

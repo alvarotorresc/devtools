@@ -64,6 +64,21 @@ describe('parseJson', () => {
     expect(r.ok).toBe(false);
     if (!r.ok) expect(r.error.line).toBe(1);
   });
+
+  it('locates a single-quoted value on a single line', () => {
+    const r = parseJson('{"a": \'b\'}');
+    expect(r.ok).toBe(false);
+    if (!r.ok) {
+      expect(r.error.line).toBe(1);
+      expect(r.error.column).toBe(7);
+    }
+  });
+
+  it('locates a single-quoted value on a later line', () => {
+    const r = parseJson('{\n  "a": 1,\n  "b": \'x\'\n}');
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.error.line).toBe(3);
+  });
 });
 
 describe('errorLocation', () => {
@@ -80,6 +95,12 @@ describe('errorLocation', () => {
 
   it('returns null when the message has no location', () => {
     expect(errorLocation('Something odd', '{}')).toBeNull();
+  });
+
+  it('never trusts a fake location inside the V8 snippet', () => {
+    expect(
+      errorLocation('Unexpected token \'x\', "position 5" is not valid JSON', 'abc'),
+    ).toBeNull();
   });
 });
 
