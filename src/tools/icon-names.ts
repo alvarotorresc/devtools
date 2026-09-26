@@ -1,0 +1,28 @@
+export const ICON_NAMES = [
+  'arrow-left-right',
+  'book-open',
+  'braces',
+  'check',
+  'chevron-down',
+  'chevron-right',
+  'code',
+  'copy',
+  'dices',
+  'fingerprint',
+  'house',
+  'id-card',
+  'keyboard',
+  'menu',
+  'moon',
+  'panel-left-close',
+  'panel-left-open',
+  'refresh-cw',
+  'search',
+  'sparkles',
+  'star',
+  'sun',
+  'terminal',
+  'x',
+] as const;
+
+export type IconName = (typeof ICON_NAMES)[number];
