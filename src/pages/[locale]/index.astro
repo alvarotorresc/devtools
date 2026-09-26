@@ -1,10 +1,8 @@
 ---
 import Catalog from '../../components/Catalog.astro';
-import ToolTile from '../../components/ToolTile.astro';
 import AppLayout from '../../layouts/AppLayout.astro';
 import Icon from '../../ui/Icon.svelte';
 import { t, toolHref } from '../../i18n';
-import { categories } from '../../tools/categories';
 import { toolById, tools } from '../../tools/registry';
 import type { Locale, ToolMeta } from '../../tools/types';
 
@@ -15,8 +13,6 @@ export function getStaticPaths() {
 const locale = Astro.params.locale as Locale;
 const STARTER_IDS = ['json', 'uuid', 'jwt', 'base64'];
 const starters = STARTER_IDS.map(toolById).filter((x): x is ToolMeta => Boolean(x));
-const catName = (tool: ToolMeta) => categories.find((c) => c.id === tool.category)!.name[locale];
-const quick = tools.slice(0, 5);
 const site = Astro.site!;
 const jsonLd = [
   {
@@ -37,47 +33,76 @@ const jsonLd = [
   alternates={{ es: '/es', en: '/en' }}
   jsonLd={jsonLd}
 >
-  <section class="hero">
-    <h1>{t(locale, 'home.title')}</h1>
-    <p class="lead">{t(locale, 'home.count', { n: tools.length })}</p>
-    <label class="hero-search">
-      <Icon name="search" size={20} />
-      <span class="visually-hidden">{t(locale, 'home.search')}</span>
-      <input
-        id="home-search"
-        type="search"
-        autocomplete="off"
-        placeholder={t(locale, 'home.searchPlaceholder')}
-      />
-      <kbd>Ctrl K</kbd>
-    </label>
-    <ul class="chips">
-      {quick.map((tool) => (
-        <li>
-          <a href={toolHref(locale, tool)}>{tool.name[locale]}</a>
-        </li>
-      ))}
-    </ul>
-  </section>
+  <section class="front" aria-labelledby="home-h">
+    <div class="front-grid">
+      <div class="front-main">
+        <h1 id="home-h">{t(locale, 'home.title')}</h1>
+        <p class="lead">{t(locale, 'home.count', { n: tools.length })}</p>
+        <label class="hero-search">
+          <Icon name="search" size={22} />
+          <span class="visually-hidden">{t(locale, 'home.search')}</span>
+          <input
+            id="home-search"
+            type="search"
+            autocomplete="off"
+            placeholder={t(locale, 'home.searchPlaceholder')}
+          />
+          <kbd data-kbd-mod>Ctrl K</kbd>
+        </label>
+        <div class="recent">
+          <h2
+            class="recent-label"
+            id="recent-h"
+            data-recent-title
+            data-recent-label={t(locale, 'home.recent')}
+          >
+            {t(locale, 'home.starter')}
+          </h2>
+          <div class="keys" data-recent-grid>
+            {starters.map((tool) => (
+              <a class="key" href={toolHref(locale, tool)}>
+                <span class="key-icon">
+                  <Icon name={tool.icon} size={16} />
+                </span>
+                {tool.name[locale]}
+              </a>
+            ))}
+          </div>
+          {tools.map((tool) => (
+            <template data-tile={tool.id}>
+              <a class="key" href={toolHref(locale, tool)}>
+                <span class="key-icon">
+                  <Icon name={tool.icon} size={16} />
+                </span>
+                {tool.name[locale]}
+              </a>
+            </template>
+          ))}
+        </div>
+      </div>
 
-  <section class="recent" aria-labelledby="recent-h">
-    <h2 id="recent-h" data-recent-title data-recent-label={t(locale, 'home.recent')}>
-      {t(locale, 'home.starter')}
-    </h2>
-    <div class="tiles" data-recent-grid>
-      {starters.map((tool) => (
-        <ToolTile locale={locale} tool={tool} category={catName(tool)} />
-      ))}
+      <div class="display lcd" role="group" aria-labelledby="lcd-h">
+        <p class="display-head lcd-head" id="lcd-h">
+          {t(locale, 'home.lcd')}
+        </p>
+        <div class="lcd-rows">
+          <p class="lcd-row">
+            <span class="lcd-led" aria-hidden="true"></span>
+            {t(locale, 'home.lcdTools', { n: tools.length })}
+          </p>
+          <p class="lcd-row">
+            <span class="lcd-led" aria-hidden="true"></span>
+            {t(locale, 'home.lcdSent')}
+          </p>
+        </div>
+      </div>
     </div>
-    {tools.map((tool) => (
-      <template data-tile={tool.id}>
-        <ToolTile locale={locale} tool={tool} category={catName(tool)} />
-      </template>
-    ))}
   </section>
 
-  <section aria-labelledby="all-h" class="stack">
-    <h2 id="all-h">{t(locale, 'home.all')}</h2>
+  <section class="modules" aria-labelledby="all-h">
+    <h2 id="all-h" class="visually-hidden">
+      {t(locale, 'home.all')}
+    </h2>
     <Catalog locale={locale} />
   </section>
 </AppLayout>
@@ -85,19 +110,21 @@ const jsonLd = [
 <script>
   import { getRecent } from '../../lib/prefs';
 
+  const MAX_KEYS = 6;
+
   function renderRecent() {
     const grid = document.querySelector<HTMLElement>('[data-recent-grid]');
     const title = document.querySelector<HTMLElement>('[data-recent-title]');
     if (!grid || !title) return;
-    const tiles = getRecent()
+    const keys = getRecent()
       .map((id) =>
         document.querySelector<HTMLTemplateElement>(`template[data-tile="${CSS.escape(id)}"]`),
       )
       .filter((tpl): tpl is HTMLTemplateElement => tpl !== null)
-      .slice(0, 4)
+      .slice(0, MAX_KEYS)
       .map((tpl) => tpl.content.cloneNode(true));
-    if (tiles.length === 0) return;
-    grid.replaceChildren(...tiles);
+    if (keys.length === 0) return;
+    grid.replaceChildren(...keys);
     title.textContent = title.dataset.recentLabel ?? title.textContent;
   }
 
@@ -105,30 +132,62 @@ const jsonLd = [
 </script>
 
 <style>
-  .hero {
+  /* Home only: give the front panel and the modules more of the column than tool pages get. */
+  :global(.main):has(.front) {
+    max-width: 1600px;
+  }
+
+  .front {
+    container: front / inline-size;
+    padding: clamp(20px, 3vw, 36px);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+  }
+  .front-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+  @container front (min-width: 820px) {
+    .front-grid {
+      grid-template-columns: minmax(0, 1fr) minmax(300px, 0.42fr);
+      gap: clamp(28px, 4vw, 56px);
+      align-items: stretch;
+    }
+  }
+  .front-main {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    max-width: 760px;
+    gap: 18px;
+    min-width: 0;
   }
   h1 {
-    font-size: clamp(30px, 5vw, 44px);
+    font-size: clamp(32px, 4.2vw, 56px);
   }
   .lead {
+    max-width: 60ch;
     color: var(--text-dim);
-    font-size: 15.5px;
+    font-size: clamp(16px, 1.3vw, 18px);
+    line-height: 1.5;
+    text-wrap: pretty;
   }
   .hero-search {
     display: flex;
     align-items: center;
-    gap: 12px;
-    height: 56px;
-    margin-top: 8px;
-    padding: 0 16px;
+    gap: 14px;
+    height: 60px;
+    margin-top: 6px;
+    padding: 0 18px;
     background: var(--raised);
     border: 1px solid var(--border-strong);
     border-radius: var(--radius-lg);
+    box-shadow: var(--inset);
     color: var(--accent-text);
+    cursor: text;
+    transition:
+      border-color 160ms,
+      box-shadow 160ms;
   }
   .hero-search:focus-within {
     border-color: var(--accent);
@@ -142,57 +201,149 @@ const jsonLd = [
     border: 0;
     outline: none;
     color: var(--text);
-    font: 16px var(--font-body);
+    font: 17px var(--font-body);
   }
   .hero-search input::placeholder {
     color: var(--text-dim);
   }
   kbd {
-    padding: 2px 8px;
-    font: 12px var(--font-mono);
+    flex-shrink: 0;
+    padding: 3px 9px;
+    font: 12.5px var(--font-mono);
     color: var(--text-dim);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-  }
-  .chips {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .chips a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 36px;
-    padding: 0 14px;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius-pill);
-    color: var(--text);
-    font-size: 13.5px;
-    text-decoration: none;
+    border-radius: 6px;
+    box-shadow: inset 0 -2px 0 var(--border);
   }
-  @media (pointer: coarse) {
-    .chips a {
-      min-height: 44px;
-    }
-  }
+
   .recent {
     display: flex;
-    flex-direction: column;
-    gap: 14px;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 14px;
+  }
+  .recent-label {
+    font: 600 12.5px var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-shadow: none;
+    color: var(--text-dim);
+  }
+  .keys {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .key {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 44px;
+    padding: 0 16px 2px;
+    background: var(--raised);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    box-shadow: inset 0 -2px 0 var(--border-strong);
+    color: var(--text);
+    font: 600 14.5px var(--font-body);
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      transform 90ms var(--ease),
+      box-shadow 90ms var(--ease),
+      border-color 160ms;
+  }
+  .key:hover {
+    border-color: var(--accent);
+  }
+  .key:active {
+    transform: translateY(1px);
+    box-shadow: inset 0 -1px 0 var(--border-strong);
+  }
+  .key-icon {
+    display: inline-flex;
+    color: var(--accent-text);
+  }
+
+  .lcd {
     container-type: inline-size;
+    gap: 14px;
+    padding: 20px 26px 24px;
+    border-radius: var(--radius-lg);
   }
-  .tiles {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 16px;
+  .lcd-head {
+    font: 500 12px var(--font-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }
-  @container (min-width: 848px) {
-    .tiles {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+  .lcd-rows {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 14px;
+  }
+  .lcd-row {
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font: 500 clamp(18px, 8cqi, 30px) / 1.2 var(--font-mono);
+    letter-spacing: 0.04em;
+    text-shadow: var(--disp-glow);
+  }
+  .lcd-row + .lcd-row {
+    padding-top: 14px;
+    border-top: 1px solid var(--disp-line);
+  }
+  .lcd-led {
+    flex-shrink: 0;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--ok);
+    box-shadow: 0 0 8px var(--ok);
+  }
+  @container front (max-width: 819px) {
+    .lcd {
+      gap: 10px;
+      padding: 14px 18px;
+      border-radius: var(--radius);
     }
+    .lcd-rows {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      gap: 8px 24px;
+    }
+    .lcd-row {
+      font-size: 16px;
+      gap: 10px;
+    }
+    .lcd-row + .lcd-row {
+      padding-top: 0;
+      border-top: 0;
+    }
+  }
+
+  /* Phones: one scrolling row of keys instead of a tall stack. */
+  @container front (max-width: 559px) {
+    .keys {
+      flex-wrap: nowrap;
+      width: calc(100% + 8px);
+      overflow-x: auto;
+      margin: -4px;
+      padding: 4px;
+      scrollbar-width: none;
+      scroll-snap-type: x proximity;
+    }
+    .key {
+      scroll-snap-align: start;
+    }
+  }
+
+  .modules {
+    margin-top: 12px;
   }
 </style>
