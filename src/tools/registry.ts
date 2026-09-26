@@ -25,7 +25,7 @@ import { meta as iban } from './iban/meta';
 
 import { meta as plate } from './plate/meta';
 
-// import { meta as nss } from './nss/meta';
+import { meta as nss } from './nss/meta';
 
 // import { meta as card } from './card/meta';
 
@@ -65,7 +65,7 @@ export const tools: ToolMeta[] = [
 
   plate,
 
-  // nss,
+  nss,
 
   // card,
 
