@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { convert, decodeUrl, detectDirection, encodeUrl, parseUrl } from './logic';
+import { convert, decodeUrl, detectDirection, encodeUrl, hasCredentials, parseUrl } from './logic';
 
 describe('encodeUrl / decodeUrl', () => {
   it('encodes a component like encodeURIComponent (legacy behaviour)', () => {
@@ -119,5 +119,20 @@ describe('parseUrl', () => {
     expect(parseUrl('')).toBeNull();
     expect(parseUrl('http://')).toBeNull();
     expect(parseUrl('not a url')).toBeNull();
+  });
+});
+
+describe('hasCredentials', () => {
+  it('spots user:pass@ in plain and percent-encoded URLs', () => {
+    expect(hasCredentials('https://ana:s3cret@x.com/a')).toBe(true);
+    expect(hasCredentials('see ftp://u:p@host')).toBe(true);
+    expect(hasCredentials('https%3A%2F%2Fana%3As3cret%40x.com')).toBe(true);
+  });
+
+  it('ignores URLs without a password', () => {
+    expect(hasCredentials('https://x.com/a?mail=a@b.com')).toBe(false);
+    expect(hasCredentials('https://ana@x.com')).toBe(false);
+    expect(hasCredentials('https://x.com:8080/a')).toBe(false);
+    expect(hasCredentials('%E0%A4%A')).toBe(false);
   });
 });

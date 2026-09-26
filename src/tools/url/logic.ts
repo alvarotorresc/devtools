@@ -97,3 +97,16 @@ export function parseUrl(input: string): ParsedUrl | null {
     assumedScheme,
   };
 }
+
+// `scheme://user:pass@` anywhere in the text, also once percent-decoded (pasted encoded URLs).
+const CREDENTIALS = /[a-z][a-z\d+.-]*:\/\/[^\s/?#@]*:[^\s/?#@]*@/i;
+
+/** True when the text holds a URL with a password in it: such input must not be remembered. */
+export function hasCredentials(text: string): boolean {
+  if (CREDENTIALS.test(text)) return true;
+  try {
+    return CREDENTIALS.test(decodeURIComponent(text));
+  } catch {
+    return false;
+  }
+}

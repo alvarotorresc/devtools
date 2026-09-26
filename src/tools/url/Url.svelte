@@ -11,14 +11,15 @@
   import Toggle from '../../ui/Toggle.svelte';
   import { persistedInput } from '../../ui/persisted.svelte';
   import type { Locale } from '../types';
-  import { convert, parseUrl, type DirectionMode, type UrlMode } from './logic';
+  import { convert, hasCredentials, parseUrl, type DirectionMode, type UrlMode } from './logic';
   import { meta } from './meta';
   import { strings } from './strings';
 
   let { locale }: { locale: Locale } = $props();
   const s = $derived(strings[locale]);
   // One input for both tabs: paste a URL once, then encode it or look at its parts.
-  const input = persistedInput('url', '', meta.rememberInput ?? true);
+  // A URL with user:pass@ is never written to storage.
+  const input = persistedInput('url', '', meta.rememberInput ?? true, (v) => !hasCredentials(v));
 
   let tab = $state<'encode' | 'parse'>('encode');
   let mode = $state<DirectionMode>('auto');

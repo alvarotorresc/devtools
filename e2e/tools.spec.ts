@@ -77,6 +77,15 @@ test.describe('one real interaction per tool', () => {
     await expect(page.locator('.display-row').first()).toContainText('café');
   });
 
+  test('url never remembers a URL with a password', async ({ page }) => {
+    await page.goto('/es/codificar-decodificar-url');
+    const stored = () => page.evaluate(() => localStorage.getItem('devtools:input.url'));
+    await page.locator('#url-input').fill('https://ejemplo.com');
+    await expect.poll(stored).toBe('https://ejemplo.com');
+    await page.locator('#url-input').fill('https://ana:s3cret@ejemplo.com');
+    await expect.poll(stored).toBeNull();
+  });
+
   test('html entities encodes and decodes', async ({ page }) => {
     await page.goto('/es/codificar-entidades-html');
     await page.locator('#html-entities-input').fill('<p>');
