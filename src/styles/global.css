@@ -319,7 +319,8 @@ button {
 
 .main {
   width: 100%;
-  max-width: 1064px;
+  max-width: 1240px;
+  margin-inline: auto;
   padding: 48px 64px 72px;
   display: flex;
   flex-direction: column;

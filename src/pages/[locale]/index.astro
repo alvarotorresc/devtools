@@ -183,10 +183,16 @@ const jsonLd = [
     display: flex;
     flex-direction: column;
     gap: 14px;
+    container-type: inline-size;
   }
   .tiles {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 16px;
+  }
+  @container (min-width: 848px) {
+    .tiles {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
   }
 </style>
