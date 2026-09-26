@@ -51,6 +51,17 @@ describe('validateCode', () => {
     expect(validateCode(code)).toMatchObject({ ok: true, isbn: true, isbn10: null });
   });
 
+  it('treats 9790 (ISMN, sheet music) as a plain EAN-13, not an ISBN', () => {
+    expect(validateCode('9790123456785')).toEqual({
+      ok: true,
+      format: 'ean13',
+      code: '9790123456785',
+      isbn: false,
+      isbn10: null,
+      prefix: 'ismn',
+    });
+  });
+
   it('reads 10 characters as ISBN-10 and accepts a lower-case x', () => {
     expect(validateCode('0306406152')).toEqual({
       ok: true,

@@ -16,7 +16,7 @@ export type CodeResult =
       ok: true;
       format: 'ean13';
       code: string;
-      /** 978 or 979: it is also an ISBN-13. */
+      /** True for the 978/979 registrant group, excluding 9790 (ISMN, not an ISBN). */
       isbn: boolean;
       /** Only for 978; 979 has no 10-digit equivalent. */
       isbn10: string | null;
@@ -82,14 +82,15 @@ export function validateCode(raw: string): CodeResult {
       if (s[12] !== expected) {
         return { ok: false, reason: 'eanCheck', expected, completed: s.slice(0, 12) + expected };
       }
-      const isbn = /^97[89]/.test(s);
+      const prefix = gs1Prefix(s);
+      const isbn = prefix === 'isbn';
       return {
         ok: true,
         format: 'ean13',
         code: s,
         isbn,
         isbn10: isbn ? isbn13to10(s) : null,
-        prefix: gs1Prefix(s),
+        prefix,
       };
     }
     case 12: {

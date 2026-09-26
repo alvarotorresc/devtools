@@ -88,21 +88,23 @@
     {:else if single}
       {#if single.ok}
         <div class="display-value">{single.code}</div>
-        <dl class="display-kv">
-          {#if single.format === 'ean13'}
-            {#if single.isbn10}
-              <dt>{s.isbn10}</dt>
-              <dd>{single.isbn10}</dd>
+        {#if single.format === 'isbn10' || (single.format === 'ean13' && (single.isbn10 || single.prefix))}
+          <dl class="display-kv">
+            {#if single.format === 'ean13'}
+              {#if single.isbn10}
+                <dt>{s.isbn10}</dt>
+                <dd>{single.isbn10}</dd>
+              {/if}
+              {#if single.prefix}
+                <dt>{s.prefix}</dt>
+                <dd>{prefixNames[locale][single.prefix]}</dd>
+              {/if}
+            {:else}
+              <dt>{s.isbn13}</dt>
+              <dd>{single.isbn13}</dd>
             {/if}
-            {#if single.prefix}
-              <dt>{s.prefix}</dt>
-              <dd>{prefixNames[locale][single.prefix]}</dd>
-            {/if}
-          {:else}
-            <dt>{s.isbn13}</dt>
-            <dd>{single.isbn13}</dd>
-          {/if}
-        </dl>
+          </dl>
+        {/if}
         {#if single.format === 'ean13' && single.isbn && !single.isbn10}
           <p class="display-note">{s.no979}</p>
         {/if}
