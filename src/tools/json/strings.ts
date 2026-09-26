@@ -51,6 +51,8 @@ export const strings = {
   },
 } satisfies Record<Locale, Record<string, string>>;
 
+export type JsonStrings = (typeof strings)['es'];
+
 export function fill(s: string, vars: Record<string, string | number>): string {
   return s.replace(/\{(\w+)\}/g, (m, k: string) => (k in vars ? String(vars[k]) : m));
 }
