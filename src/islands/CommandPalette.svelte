@@ -120,6 +120,8 @@
         autocomplete="off"
         spellcheck="false"
         placeholder={t(locale, 'search.placeholder')}
+        aria-label={t(locale, 'search.placeholder')}
+        aria-autocomplete="list"
       />
       <kbd>Esc</kbd>
     </div>
