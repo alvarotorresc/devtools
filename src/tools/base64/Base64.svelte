@@ -67,15 +67,19 @@
       fileError = fill(s.tooBig, { max: formatBytes(MAX_FILE_BYTES, locale) });
       return;
     }
-    const bytes = new Uint8Array(await f.arrayBuffer());
-    const mime = f.type || sniffMime(bytes) || 'application/octet-stream';
-    file = {
-      name: f.name,
-      size: f.size,
-      mime,
-      dataUri: toDataUri(bytes, mime),
-      base64: bytesToBase64(bytes),
-    };
+    try {
+      const bytes = new Uint8Array(await f.arrayBuffer());
+      const mime = f.type || sniffMime(bytes) || 'application/octet-stream';
+      file = {
+        name: f.name,
+        size: f.size,
+        mime,
+        dataUri: toDataUri(bytes, mime),
+        base64: bytesToBase64(bytes),
+      };
+    } catch {
+      fileError = s.readFailed;
+    }
   }
 
   let payload = $state('');
