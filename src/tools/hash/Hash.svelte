@@ -65,12 +65,15 @@
     const id = ++fileRun;
     if (f.size > MAX_FILE_BYTES) {
       fileError = fill(s.tooBig, { max: `${MAX_FILE_BYTES / 1024 / 1024} MB` });
+      busy = false;
       return;
     }
     busy = true;
     try {
       const h = await hashAll(new Uint8Array(await f.arrayBuffer()));
       if (id === fileRun) fileHashes = h;
+    } catch {
+      if (id === fileRun) fileError = s.fileError;
     } finally {
       if (id === fileRun) busy = false;
     }
@@ -148,7 +151,7 @@
           {/each}
         </div>
         {#if compareState === 'bad'}<p class="display-note">{s.noMatchHint}</p>{/if}
-      {:else if busy}
+      {:else if busy && tab === 'file'}
         <p class="display-note">{s.reading}</p>
       {:else}
         <p class="display-note">{tab === 'text' ? s.empty : s.fileEmpty}</p>
