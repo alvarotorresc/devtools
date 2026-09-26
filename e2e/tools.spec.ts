@@ -210,12 +210,20 @@ test.describe('one real interaction per tool', () => {
   });
 
   test('color keeps every field in sync and shows the contrast', async ({ page }) => {
+    const warnings: string[] = [];
+    page.on('console', (m) => {
+      if (m.type() === 'warning') warnings.push(m.text());
+    });
     await page.goto('/es/conversor-colores');
+    await expect(page.locator('input[type="color"]')).toHaveValue('#58a6ff');
     await page.locator('#color-hex').fill('#ff0000');
     await expect(page.locator('#color-rgb')).toHaveValue('rgb(255, 0, 0)');
     await expect(page.locator('#color-oklch')).toHaveValue('oklch(62.8% 0.258 29.2)');
     await page.locator('#color-rgb').fill('rgb(0, 0, 0)');
     await expect(page.locator('#color-hex')).toHaveValue('#000000');
+    await expect(page.locator('input[type="color"]')).toHaveValue('#000000');
+    // Hydration used to strip the picker's value attribute and Chrome warned about "".
+    expect(warnings.filter((w) => w.includes('valid CSS color'))).toEqual([]);
     await expect(page.getByText('Contraste 21.00:1')).toBeVisible();
   });
 

@@ -135,7 +135,11 @@
       <span class="visually-hidden">{s.picker}</span>
       <input
         type="color"
-        value={hex}
+        {@attach (el: HTMLInputElement) => {
+          // Set as a property, not an attribute: hydration strips a server-rendered `value`
+          // attribute, which leaves "" for an instant and makes Chrome warn in the console.
+          el.value = hex;
+        }}
         oninput={(e) => {
           clipped = false;
           const next = hexToRgb(e.currentTarget.value);
