@@ -1,0 +1,12 @@
+---
+import Json from '../tools/json/Json.svelte';
+import type { Locale } from '../tools/types';
+
+interface Props {
+  id: string;
+  locale: Locale;
+}
+const { id, locale } = Astro.props;
+---
+
+{id === 'json' && <Json client:load locale={locale} />}
