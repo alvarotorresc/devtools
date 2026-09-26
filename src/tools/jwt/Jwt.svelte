@@ -153,7 +153,7 @@
   }
   .warning :global(svg) {
     flex-shrink: 0;
-    color: var(--bad);
+    color: var(--bad-text);
     margin-top: 1px;
   }
   .grid {

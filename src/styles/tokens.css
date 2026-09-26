@@ -28,6 +28,8 @@
   --disp-dim: #1fae1f;
   --ok: #33ff33;
   --bad: #ffcc00;
+  --ok-text: #33ff33;
+  --bad-text: #ffcc00;
   --idle: #1a5a1a;
   --font-display: var(--font-mono);
   --font-body: var(--font-mono);
@@ -58,6 +60,8 @@
   --disp-dim: #9a8d74;
   --ok: #2bd46b;
   --bad: #ff5a1f;
+  --ok-text: #2bd46b;
+  --bad-text: #ff5a1f;
   --idle: #6b6a66;
   --font-display: 'Unbounded Variable', 'Unbounded', system-ui, sans-serif;
   --font-body: 'Instrument Sans Variable', 'Instrument Sans', system-ui, sans-serif;
@@ -89,6 +93,8 @@
   --disp-dim: #a89b80;
   --ok: #2bd46b;
   --bad: #ff5419;
+  --ok-text: #1b703f;
+  --bad-text: #b83a0a;
   --idle: #6b6a66;
   --font-display: 'Unbounded Variable', 'Unbounded', system-ui, sans-serif;
   --font-body: 'Instrument Sans Variable', 'Instrument Sans', system-ui, sans-serif;

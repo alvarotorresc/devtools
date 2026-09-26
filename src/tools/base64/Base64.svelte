@@ -238,7 +238,7 @@
     font-size: 15px;
   }
   .error {
-    color: var(--bad);
+    color: var(--bad-text);
     font-size: 14px;
     font-weight: 600;
   }

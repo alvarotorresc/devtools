@@ -187,7 +187,7 @@
     color: var(--ok);
   }
   .error {
-    color: var(--bad);
+    color: var(--bad-text);
     font-size: 14px;
     font-weight: 600;
   }

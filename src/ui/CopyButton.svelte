@@ -94,7 +94,11 @@
     }
   }
   .copied {
-    color: var(--ok);
+    color: var(--ok-text);
     border-color: var(--ok);
+  }
+  /* The compact button sits on the dark display, where --ok already passes. */
+  .compact.copied {
+    color: var(--ok);
   }
 </style>

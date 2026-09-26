@@ -45,6 +45,6 @@
   .error {
     font-size: 13px;
     font-weight: 600;
-    color: var(--bad);
+    color: var(--bad-text);
   }
 </style>
