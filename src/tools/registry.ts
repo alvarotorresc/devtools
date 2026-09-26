@@ -22,7 +22,7 @@ import { meta as diff } from './diff/meta';
 
 import { meta as text } from './text/meta';
 
-// import { meta as lorem } from './lorem/meta';
+import { meta as lorem } from './lorem/meta';
 
 // import { meta as timestamp } from './timestamp/meta';
 
@@ -50,7 +50,7 @@ export const tools: ToolMeta[] = [
 
   text,
 
-  // lorem,
+  lorem,
 
   // timestamp,
 
