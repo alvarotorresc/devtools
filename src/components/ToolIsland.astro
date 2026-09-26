@@ -24,7 +24,7 @@ import Text from '../tools/text/Text.svelte';
 
 import Lorem from '../tools/lorem/Lorem.svelte';
 
-// import Timestamp from '../tools/timestamp/Timestamp.svelte';
+import Timestamp from '../tools/timestamp/Timestamp.svelte';
 
 import Color from '../tools/color/Color.svelte';
 
@@ -58,7 +58,7 @@ const { id, locale } = Astro.props;
 
 {id === 'lorem' && <Lorem client:load locale={locale} />}
 
-{/* {id === 'timestamp' && <Timestamp client:load locale={locale} />} */}
+{id === 'timestamp' && <Timestamp client:load locale={locale} />}
 
 {id === 'color' && <Color client:load locale={locale} />}
 

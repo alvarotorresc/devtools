@@ -24,7 +24,7 @@ import { meta as text } from './text/meta';
 
 import { meta as lorem } from './lorem/meta';
 
-// import { meta as timestamp } from './timestamp/meta';
+import { meta as timestamp } from './timestamp/meta';
 
 import { meta as color } from './color/meta';
 
@@ -52,7 +52,7 @@ export const tools: ToolMeta[] = [
 
   lorem,
 
-  // timestamp,
+  timestamp,
 
   color,
 
