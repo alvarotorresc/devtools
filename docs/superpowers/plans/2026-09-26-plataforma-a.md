@@ -22,6 +22,8 @@
 - `@astrojs/sitemap` **sin** opción `i18n` (con slugs traducidos no empareja las URLs). El hreflang va en `<head>`.
 - Tema en `<html data-theme>`: el script en línea del `<head>` lo aplica en la carga y en `astro:before-swap` sobre `event.newDocument`. Si no, cada navegación lo reinicia (comprobado en la prueba).
 - `astro preview` en v7 es un demonio con archivo de bloqueo: usar siempre `astro preview --ignore-lock`.
+- Hosting: **Netlify** (comprobado por cabeceras). Con `build.format: 'directory'`, Netlify responde `301` de `/es/x` a `/es/x/` y todas las canónicas quedarían redirigidas. Por eso `build.format: 'file'` + `trailingSlash: 'never'`: `/es/x` → `es/x.html` con `200`. Node 22 en Netlify vía `netlify.toml` (Task 16).
+- Antes de cada `pnpm lint`, ejecuta `pnpm format`: el código del plan no está garantizado byte a byte con el formato de Prettier.
 - `logic.ts` de cada herramienta es puro: sin `document`, `window` ni `localStorage`. Se testea en el entorno `node` de Vitest.
 - Ningún componente usa colores hex: todo sale de las variables de `src/styles/tokens.css`.
 - Claves de almacenamiento con prefijo `devtools:`. Todo acceso pasa por `src/lib/storage.ts`.
@@ -147,7 +149,7 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://devtools.alvarotc.com',
   trailingSlash: 'never',
-  build: { format: 'directory' },
+  build: { format: 'file' },
   integrations: [svelte(), sitemap({ filter: (page) => !page.endsWith('/404') })],
 });
 ```
@@ -1217,6 +1219,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
   --radius-pill: 999px;
   --glow: none;
   --disp-glow: 0 0 12px rgb(255 194 102 / 0.25);
+  --inset: inset 0 1px 3px rgb(0 0 0 / 0.45);
 }
 
 :root[data-theme='light'] {
@@ -2228,6 +2231,10 @@ El valor guardado se carga en `onMount`, no al crear el estado, para que el HTML
 import { onMount } from 'svelte';
 import { getRemember, loadInput, saveInput, setRemember } from '../lib/prefs';
 
+// Bigger inputs are not remembered: a multi-MB synchronous write would block typing and
+// usually exceeds the storage quota, leaving an older value to reappear on reload.
+export const MAX_REMEMBERED = 100_000;
+
 export function persistedInput(toolId: string, initial: string, rememberDefault = true) {
   let value = $state(initial);
   let remember = $state(rememberDefault);
@@ -2246,7 +2253,7 @@ export function persistedInput(toolId: string, initial: string, rememberDefault 
 
   $effect(() => {
     const v = value;
-    if (!ready || !remember) return;
+    if (!ready || !remember || v.length > MAX_REMEMBERED) return;
     clearTimeout(timer);
     timer = setTimeout(() => saveInput(toolId, v), 300);
   });
@@ -2264,7 +2271,7 @@ export function persistedInput(toolId: string, initial: string, rememberDefault 
     set remember(r: boolean) {
       remember = r;
       setRemember(toolId, r);
-      if (r) saveInput(toolId, value);
+      if (r && value.length <= MAX_REMEMBERED) saveInput(toolId, value);
     },
   };
 }
@@ -2296,7 +2303,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Produces:
   - `copyText(text: string): Promise<boolean>`
   - `TOAST_EVENT = 'devtools:toast'`, `toast(message: string, kind?: 'ok' | 'bad'): void`, `truncate(s: string, max?: number = 40): string`
-  - `Display { label?: string; live?: boolean = false; head?: Snippet; children: Snippet }` (`live` añade `role="status" aria-live="polite"`)
+  - `Display { label?: string; live?: boolean = false; head?: Snippet; children: Snippet }` (`live` pone `role="status" aria-live="polite"` solo en la cabecera `head`: el LED y el resumen se anuncian, la salida completa no)
   - `Led { state: 'ok' | 'bad' | 'idle'; label: string }`
   - `CopyButton { value: string | (() => string); locale: Locale; main?: boolean (añade data-copy-main); compact?: boolean; label?: string }`
   - `FileDrop { locale: Locale; accept?: string; onfile: (file: File) => void }`
@@ -2395,13 +2402,13 @@ Expected: PASS.
   }: { label?: string; live?: boolean; head?: Snippet; children: Snippet } = $props();
 </script>
 
-<section
-  class="display"
-  aria-label={label}
-  role={live ? 'status' : undefined}
-  aria-live={live ? 'polite' : undefined}
->
-  {#if head}<div class="display-head">{@render head()}</div>{/if}
+<section class="display" aria-label={label}>
+  {#if head}
+    <!-- Only the short summary line is announced, never the whole (possibly huge) output. -->
+    <div class="display-head" role={live ? 'status' : undefined} aria-live={live ? 'polite' : undefined}>
+      {@render head()}
+    </div>
+  {/if}
   {@render children()}
 </section>
 ```
@@ -2934,7 +2941,8 @@ const pageAnim: TransitionDirectionalAnimations = {
       is:inline
       defer
       src="https://analytics.alvarotc.com/script.js"
-      data-website-id="e22cc3f5-18df-4c52-8bb4-14d481ea64da"></script>
+      data-website-id="e22cc3f5-18df-4c52-8bb4-14d481ea64da"
+      data-domains="devtools.alvarotc.com"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">{t(locale, 'nav.skip')}</a>
@@ -2949,7 +2957,7 @@ const pageAnim: TransitionDirectionalAnimations = {
         </main>
       </div>
     </div>
-    <Toaster client:idle transition:persist="toaster" />
+    <Toaster client:load transition:persist="toaster" />
   </body>
 </html>
 ```
@@ -4320,7 +4328,7 @@ import { homeHref, t } from '../i18n';
 - [ ] **Step 10: Verificar**
 
 Run: `pnpm test && pnpm build && pnpm check && pnpm lint`
-Expected: todo en verde y en `dist/` existen `index.html`, `404.html`, `es/index.html` y `en/index.html`.
+Expected: todo en verde y en `dist/` existen `index.html`, `404.html`, `es.html` y `en.html`.
 A mano con `pnpm preview`: `/` redirige a `/es` (o a `/en` si el navegador está en inglés) y `/#json` también redirige a la Home (JSON aún no está en el registro).
 
 - [ ] **Step 11: Commit**
@@ -4846,12 +4854,12 @@ const docs = tools.map(buildDoc);
 ```
 
 
-Sustituye la línea `<Toaster client:idle transition:persist="toaster" />` por:
+Sustituye la línea `<Toaster client:load transition:persist="toaster" />` por:
 
 ```astro
-    <Toaster client:idle transition:persist="toaster" />
-    <CommandPalette client:idle transition:persist={`palette-${locale}`} locale={locale} entries={entries} docs={docs} />
-    <ShortcutsDialog client:idle transition:persist={`help-${locale}`} locale={locale} />
+    <Toaster client:load transition:persist="toaster" />
+    <CommandPalette client:load transition:persist={`palette-${locale}`} locale={locale} entries={entries} docs={docs} />
+    <ShortcutsDialog client:load transition:persist={`help-${locale}`} locale={locale} />
     <script>
       import { dispatchShortcut, matchShortcut } from '../lib/shortcuts';
 
@@ -5935,7 +5943,7 @@ if (faq?.length) {
 - [ ] **Step 6: Verificar**
 
 Run: `pnpm test && pnpm check && pnpm lint && pnpm build`
-Expected: todo en verde y existen `dist/es/formateador-json/index.html` y `dist/en/json-formatter/index.html`.
+Expected: todo en verde y existen `dist/es/formateador-json.html` y `dist/en/json-formatter.html`.
 
 A mano con `pnpm preview`:
 1. En `/es/formateador-json`, al escribir `{"b":1,"a":[1,2]}` aparece formateado al instante y el LED se pone verde.
@@ -6630,14 +6638,27 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 ---
 
-### Task 16: `robots.txt` e imagen Open Graph
+### Task 16: `robots.txt`, imagen Open Graph y configuración de Netlify
 
 **Files:**
-- Create: `public/robots.txt`, `scripts/og.html`, `scripts/og.mjs`, `public/og.png` (generada)
+- Create: `netlify.toml`, `public/robots.txt`, `scripts/og.html`, `scripts/og.mjs`, `public/og.png` (generada)
 - Modify: `package.json` (script `og`), `eslint.config.js` (nada: `scripts/` usa globals de node ya declarados)
 
 **Interfaces:**
 - Produces: `/robots.txt`, `/og.png` (1200×630) referenciada por `SeoHead`.
+
+- [ ] **Step 0: `netlify.toml`**
+
+```toml
+[build]
+  command = "pnpm build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+```
+
+Si la configuración de build del panel de Netlify tiene otro comando o directorio, este archivo manda sobre ella. Revisa en el panel que no haya variables que la contradigan.
 
 - [ ] **Step 1: `public/robots.txt`**
 
@@ -6761,8 +6782,8 @@ Expected: los tres archivos existen y el sitemap tiene 7 URLs (`/`, `/es`, `/en`
 - [ ] **Step 6: Commit**
 
 ```bash
-git add public scripts package.json
-git commit -m "feat: robots.txt e imagen Open Graph generada con Playwright
+git add netlify.toml public scripts package.json
+git commit -m "feat: robots.txt, imagen Open Graph y configuración de Netlify
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
@@ -6805,7 +6826,15 @@ export default defineConfig({
 - [ ] **Step 2: `e2e/smoke.spec.ts`**
 
 ```ts
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test as base, type Page } from '@playwright/test';
+
+// Never hit the real analytics from tests: it would count CI runs and add an external dependency.
+const test = base.extend({
+  page: async ({ page }, use) => {
+    await page.route('**/analytics.alvarotc.com/**', (r) => r.abort());
+    await use(page);
+  },
+});
 
 async function skipBoot(page: Page) {
   await page.addInitScript(() => sessionStorage.setItem('devtools:booted', '1'));
@@ -6815,6 +6844,7 @@ test.describe('routing', () => {
   test('root redirects to the browser language', async ({ browser }) => {
     const ctx = await browser.newContext({ locale: 'en-US' });
     const page = await ctx.newPage();
+    await page.route('**/analytics.alvarotc.com/**', (r) => r.abort());
     await skipBoot(page);
     await page.goto('/');
     await expect(page).toHaveURL(/\/en$/);
@@ -7074,6 +7104,18 @@ pnpm exec astro preview stop; rm -f lh.json
 ```
 Expected: las 4 categorías ≥ 95. Repite con `/es`. Lighthouse arranca sin almacenamiento, así que mide el tema terminal; para medir el claro, cambia temporalmente el tema por defecto del script del `<head>` a `light`, mide y deshaz el cambio.
 Si alguna baja de 95, el informe (`--output=html`) dice qué corregir. Lo habitual: contraste de `--text-dim` o tamaño de objetivos táctiles.
+
+- [ ] **Step 2b: Las canónicas responden 200**
+
+```bash
+pnpm preview &
+sleep 3
+for u in / /es /en /es/formateador-json /en/uuid-generator /robots.txt /og.png; do
+  printf '%s ' "$u"; curl -s -o /dev/null -w '%{http_code}\n' "http://localhost:4321$u"
+done
+pnpm exec astro preview stop
+```
+Expected: todas `200`. Después del primer deploy de la rama (deploy preview de Netlify), repite el bucle contra esa URL: ahí es donde importa que no haya `301`.
 
 - [ ] **Step 3: Verificación final completa**
 
