@@ -1,9 +1,275 @@
 ---
+import Icon from '../ui/Icon.svelte';
+import { homeHref, otherLocale, t, toolHref } from '../i18n';
+import { toolsInCategory, visibleCategories } from '../tools/registry';
 import type { Locale } from '../tools/types';
+
 interface Props {
   locale: Locale;
 }
 const { locale } = Astro.props;
+const other = otherLocale(locale);
+const themes = [
+  { id: 'terminal', icon: 'terminal', label: t(locale, 'theme.terminal') },
+  { id: 'dark', icon: 'moon', label: t(locale, 'theme.dark') },
+  { id: 'light', icon: 'sun', label: t(locale, 'theme.light') },
+] as const;
 ---
 
-<aside id="sidebar" class="sidebar" data-locale={locale}></aside>
+<aside
+  id="sidebar"
+  class="sidebar"
+  aria-label={t(locale, 'nav.tools')}
+  transition:persist={`sidebar-${locale}`}
+>
+  <div class="sb-head">
+    <a class="logo" href={homeHref(locale)}>
+      <span class="logo-full">devtools</span>
+      <span class="logo-short" aria-hidden="true">
+        d/
+      </span>
+    </a>
+    <button
+      type="button"
+      class="sb-icon-btn sb-collapse"
+      data-collapse
+      aria-expanded="true"
+      aria-label={t(locale, 'nav.collapse')}
+      data-label-collapse={t(locale, 'nav.collapse')}
+      data-label-expand={t(locale, 'nav.expand')}
+    >
+      <Icon name="panel-left-close" class="when-expanded" />
+      <Icon name="panel-left-open" class="when-collapsed" />
+    </button>
+    <button
+      type="button"
+      class="sb-icon-btn sb-close"
+      data-menu-close
+      aria-label={t(locale, 'nav.closeMenu')}
+    >
+      <Icon name="x" />
+    </button>
+  </div>
+
+  <button type="button" class="sb-search" data-open-search>
+    <Icon name="search" size={16} />
+    <span class="sb-label">{t(locale, 'home.search')}</span>
+    <kbd class="sb-label">Ctrl K</kbd>
+  </button>
+
+  <nav class="sb-nav">
+    <a class="sb-item" href={homeHref(locale)} title={t(locale, 'nav.home')}>
+      <Icon name="house" />
+      <span class="sb-label">{t(locale, 'nav.home')}</span>
+    </a>
+
+    <div class="sb-cat sb-favs" data-favorites hidden>
+      <p class="sb-item sb-group-title" title={t(locale, 'nav.favorites')}>
+        <Icon name="star" />
+        <span class="sb-label">{t(locale, 'nav.favorites')}</span>
+      </p>
+      <div class="sb-tools" data-favorites-list></div>
+    </div>
+
+    {visibleCategories().map((c) => {
+      const list = toolsInCategory(c.id);
+      return (
+        <div class="sb-cat" data-cat={c.id}>
+          <button
+            type="button"
+            class="sb-item sb-cat-toggle"
+            aria-expanded="false"
+            aria-controls={`cat-${c.id}`}
+            title={c.name[locale]}
+          >
+            <Icon name={c.icon} />
+            <span class="sb-label">{c.name[locale]}</span>
+            <span class="sb-count sb-label">{list.length}</span>
+            <Icon name="chevron-right" size={14} class="sb-chev sb-label" />
+          </button>
+          <div class="sb-tools" id={`cat-${c.id}`} hidden>
+            <p class="sb-flyout-title">{c.name[locale]}</p>
+            {list.map((tool) => (
+              <a class="sb-tool" href={toolHref(locale, tool)} data-tool-id={tool.id}>
+                {tool.name[locale]}
+              </a>
+            ))}
+          </div>
+        </div>
+      );
+    })}
+  </nav>
+
+  <div class="sb-foot">
+    <div class="sb-theme" role="radiogroup" aria-label={t(locale, 'theme.label')}>
+      {themes.map((th) => (
+        <button
+          type="button"
+          role="radio"
+          aria-checked="false"
+          tabindex="-1"
+          data-theme-choice={th.id}
+          aria-label={th.label}
+          title={th.label}
+        >
+          <Icon name={th.icon} size={16} />
+        </button>
+      ))}
+    </div>
+    <button
+      type="button"
+      class="sb-lang"
+      data-open-help
+      aria-label={t(locale, 'shortcuts.title')}
+      title={t(locale, 'shortcuts.title')}
+    >
+      <Icon name="keyboard" size={16} />
+    </button>
+    <a
+      class="sb-lang"
+      data-lang-link
+      href={homeHref(other)}
+      hreflang={other}
+      lang={other}
+      title={t(locale, 'lang.switch')}
+    >
+      {other.toUpperCase()}
+    </a>
+  </div>
+</aside>
+
+<script>
+  import { getFavorites, PREFS_EVENT } from '../lib/prefs';
+  import { readJSON, writeJSON, writeString } from '../lib/storage';
+
+  const root = document.documentElement;
+  const COLORS: Record<string, string> = { terminal: '#0a0a0a', dark: '#161719', light: '#e3e1dc' };
+  const sidebar = () => document.getElementById('sidebar');
+
+  function syncThemeButtons() {
+    document.querySelectorAll<HTMLElement>('[data-theme-choice]').forEach((b) => {
+      const on = b.dataset.themeChoice === root.dataset.theme;
+      b.setAttribute('aria-checked', String(on));
+      b.tabIndex = on ? 0 : -1;
+    });
+  }
+
+  function setTheme(theme: string) {
+    root.dataset.theme = theme;
+    writeString('theme', theme);
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', COLORS[theme]);
+    syncThemeButtons();
+  }
+
+  function syncCollapseButton() {
+    const btn = document.querySelector<HTMLElement>('[data-collapse]');
+    if (!btn) return;
+    const collapsed = root.dataset.sidebar === 'collapsed';
+    btn.setAttribute('aria-expanded', String(!collapsed));
+    btn.setAttribute(
+      'aria-label',
+      (collapsed ? btn.dataset.labelExpand : btn.dataset.labelCollapse) ?? '',
+    );
+  }
+
+  function setCollapsed(collapsed: boolean) {
+    root.dataset.sidebar = collapsed ? 'collapsed' : 'expanded';
+    writeString('sidebar.collapsed', collapsed ? '1' : '0');
+    syncCollapseButton();
+  }
+
+  function setCatOpen(id: string, open: boolean, persist: boolean) {
+    const cat = sidebar()?.querySelector<HTMLElement>(`[data-cat="${id}"]`);
+    if (!cat) return;
+    cat.querySelector('.sb-cat-toggle')?.setAttribute('aria-expanded', String(open));
+    const list = cat.querySelector<HTMLElement>('.sb-tools');
+    if (list) list.hidden = !open;
+    if (!persist) return;
+    const set = new Set(readJSON<string[]>('sidebar.open', []));
+    if (open) set.add(id);
+    else set.delete(id);
+    writeJSON('sidebar.open', [...set]);
+  }
+
+  function renderFavorites() {
+    const el = sidebar();
+    const group = el?.querySelector<HTMLElement>('[data-favorites]');
+    const list = el?.querySelector<HTMLElement>('[data-favorites-list]');
+    if (!group || !list) return;
+    const links = getFavorites()
+      .map((id) => el!.querySelector<HTMLElement>(`[data-cat] [data-tool-id="${id}"]`))
+      .filter((a): a is HTMLElement => a !== null)
+      .map((a) => a.cloneNode(true) as HTMLElement);
+    list.replaceChildren(...links);
+    group.hidden = links.length === 0;
+    syncCurrent();
+  }
+
+  function syncCurrent() {
+    const el = sidebar();
+    if (!el) return;
+    const path = location.pathname.replace(/\/$/, '') || '/';
+    el.querySelectorAll('a[href]').forEach((a) => {
+      if (a.getAttribute('href') === path) a.setAttribute('aria-current', 'page');
+      else a.removeAttribute('aria-current');
+    });
+    const current = el.querySelector('[data-cat] [aria-current="page"]');
+    const catId = current?.closest<HTMLElement>('[data-cat]')?.dataset.cat;
+    if (catId) setCatOpen(catId, true, false);
+    const lang = el.querySelector<HTMLAnchorElement>('[data-lang-link]');
+    const alt = document.querySelector<HTMLLinkElement>(
+      `link[rel="alternate"][hreflang="${lang?.getAttribute('hreflang')}"]`,
+    );
+    if (lang && alt) lang.href = new URL(alt.href).pathname;
+  }
+
+  function closeMenu() {
+    if (root.dataset.menu !== 'open') return;
+    delete root.dataset.menu;
+    document.querySelector<HTMLElement>('[data-menu-open]')?.focus();
+  }
+
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    const theme = target.closest<HTMLElement>('[data-theme-choice]');
+    if (theme?.dataset.themeChoice) return setTheme(theme.dataset.themeChoice);
+    if (target.closest('[data-collapse]'))
+      return setCollapsed(root.dataset.sidebar !== 'collapsed');
+    const toggle = target.closest<HTMLElement>('.sb-cat-toggle');
+    if (toggle) {
+      const id = toggle.closest<HTMLElement>('[data-cat]')?.dataset.cat;
+      if (id) setCatOpen(id, toggle.getAttribute('aria-expanded') !== 'true', true);
+      return;
+    }
+    if (target.closest('[data-menu-open]')) {
+      root.dataset.menu = 'open';
+      sidebar()?.querySelector<HTMLElement>('a, button')?.focus();
+      return;
+    }
+    if (target.closest('[data-menu-close]')) closeMenu();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeMenu();
+    const theme = (e.target as HTMLElement).closest?.('[data-theme-choice]');
+    if (!theme || !['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return;
+    e.preventDefault();
+    const all = [...document.querySelectorAll<HTMLElement>('[data-theme-choice]')];
+    const d = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : -1;
+    const next = all[(all.indexOf(theme as HTMLElement) + d + all.length) % all.length];
+    setTheme(next.dataset.themeChoice!);
+    next.focus();
+  });
+
+  window.addEventListener(PREFS_EVENT, (e) => {
+    if ((e as CustomEvent<{ key: string }>).detail.key === 'favorites') renderFavorites();
+  });
+
+  document.addEventListener('astro:page-load', () => {
+    for (const id of readJSON<string[]>('sidebar.open', [])) setCatOpen(id, true, false);
+    syncThemeButtons();
+    syncCollapseButton();
+    renderFavorites();
+    closeMenu();
+  });
+</script>

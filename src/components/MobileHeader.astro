@@ -1,9 +1,22 @@
 ---
+import Icon from '../ui/Icon.svelte';
+import { homeHref, t } from '../i18n';
 import type { Locale } from '../tools/types';
+
 interface Props {
   locale: Locale;
 }
 const { locale } = Astro.props;
 ---
 
-<header class="mobile-header" data-locale={locale}></header>
+<header class="mobile-header">
+  <button type="button" class="sb-icon-btn" data-menu-open aria-label={t(locale, 'nav.openMenu')}>
+    <Icon name="menu" size={22} />
+  </button>
+  <a class="logo" href={homeHref(locale)}>
+    devtools
+  </a>
+  <button type="button" class="sb-icon-btn" data-open-search aria-label={t(locale, 'home.search')}>
+    <Icon name="search" size={20} />
+  </button>
+</header>
