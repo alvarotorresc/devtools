@@ -21,7 +21,7 @@ import { meta as numberBase } from './number-base/meta';
 
 // import { meta as cif } from './cif/meta';
 
-// import { meta as iban } from './iban/meta';
+import { meta as iban } from './iban/meta';
 
 // import { meta as plate } from './plate/meta';
 
@@ -61,7 +61,7 @@ export const tools: ToolMeta[] = [
 
   // cif,
 
-  // iban,
+  iban,
 
   // plate,
 

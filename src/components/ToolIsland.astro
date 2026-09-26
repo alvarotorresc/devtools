@@ -21,7 +21,7 @@ import NumberBase from '../tools/number-base/NumberBase.svelte';
 
 // import Cif from '../tools/cif/Cif.svelte';
 
-// import Iban from '../tools/iban/Iban.svelte';
+import Iban from '../tools/iban/Iban.svelte';
 
 // import Plate from '../tools/plate/Plate.svelte';
 
@@ -67,7 +67,7 @@ const { id, locale } = Astro.props;
 
 {/* {id === 'cif' && <Cif client:load locale={locale} />} */}
 
-{/* {id === 'iban' && <Iban client:load locale={locale} />} */}
+{id === 'iban' && <Iban client:load locale={locale} />}
 
 {/* {id === 'plate' && <Plate client:load locale={locale} />} */}
 
