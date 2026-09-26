@@ -18,7 +18,7 @@ import Hash from '../tools/hash/Hash.svelte';
 
 import Diff from '../tools/diff/Diff.svelte';
 
-// import Regex from '../tools/regex/Regex.svelte';
+import Regex from '../tools/regex/Regex.svelte';
 
 import Text from '../tools/text/Text.svelte';
 
@@ -52,7 +52,7 @@ const { id, locale } = Astro.props;
 
 {id === 'diff' && <Diff client:load locale={locale} />}
 
-{/* {id === 'regex' && <Regex client:load locale={locale} />} */}
+{id === 'regex' && <Regex client:load locale={locale} />}
 
 {id === 'text' && <Text client:load locale={locale} />}
 

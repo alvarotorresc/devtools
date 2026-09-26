@@ -18,7 +18,7 @@ import { meta as hash } from './hash/meta';
 
 import { meta as diff } from './diff/meta';
 
-// import { meta as regex } from './regex/meta';
+import { meta as regex } from './regex/meta';
 
 import { meta as text } from './text/meta';
 
@@ -46,7 +46,7 @@ export const tools: ToolMeta[] = [
 
   diff,
 
-  // regex,
+  regex,
 
   text,
 
