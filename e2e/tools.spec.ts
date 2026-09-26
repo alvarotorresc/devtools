@@ -150,6 +150,22 @@ test.describe('one real interaction per tool', () => {
     await expect(page.locator('.display-code')).toHaveText('[A] [a]');
   });
 
+  test('regex pauses a remembered pattern whose last run never finished', async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem('devtools:input.regex-pattern', '(a+)+$');
+      localStorage.setItem('devtools:input.regex', 'a'.repeat(34) + '!');
+      sessionStorage.setItem('devtools:regex.running', '1');
+    });
+    await page.goto('/es/probador-regex');
+    await expect(page.locator('#regex-pattern')).toHaveValue('(a+)+$');
+    await expect(
+      page.getByText('La última expresión tardó demasiado y se ha pausado.'),
+    ).toBeVisible();
+    await page.locator('#regex-pattern').fill('a+');
+    await expect(page.getByText('1 coincidencia', { exact: true })).toBeVisible();
+    await expect(page.getByText('La última expresión tardó demasiado')).toHaveCount(0);
+  });
+
   test('text shows every case and processes lines', async ({ page }) => {
     await page.goto('/es/convertir-mayusculas-minusculas');
     await page.locator('#text-input').fill('hola mundo');

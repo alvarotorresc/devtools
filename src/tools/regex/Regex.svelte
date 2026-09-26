@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount, untrack } from 'svelte';
   import { t } from '../../i18n';
   import { fill } from '../../i18n/fill';
   import Button from '../../ui/Button.svelte';
@@ -9,6 +10,7 @@
   import Segmented from '../../ui/Segmented.svelte';
   import TextArea from '../../ui/TextArea.svelte';
   import Toggle from '../../ui/Toggle.svelte';
+  import { readString, removeKey, writeString } from '../../lib/storage';
   import { persistedInput } from '../../ui/persisted.svelte';
   import type { Locale } from '../types';
   import {
@@ -29,6 +31,16 @@
   let { locale }: { locale: Locale } = $props();
   const s = $derived(strings[locale]);
   const remember = meta.rememberInput ?? true;
+
+  // A catastrophic pattern freezes the tab and the remembered input would freeze it again on
+  // every reload. The flag is set around each run: if it survives, the last run never ended.
+  const RUNNING_KEY = 'regex.running';
+  let paused = $state(false);
+  let pausedAt: string | undefined;
+  // Declared before persistedInput so it runs before the remembered input loads.
+  onMount(() => {
+    paused = readString(RUNNING_KEY, '', 'session') === '1';
+  });
   const pattern = persistedInput('regex-pattern', '', remember);
   const text = persistedInput('regex', '', remember);
 
@@ -54,6 +66,14 @@
     const body = text.value;
     const replacing = tab === 'replace';
     const r = replacement;
+    if (untrack(() => paused)) {
+      // Any edit re-enables the runs; until then nothing runs.
+      const snapshot = [p, f, body, r].join('\u0000');
+      pausedAt ??= snapshot;
+      if (snapshot === pausedAt) return;
+      paused = false;
+      removeKey(RUNNING_KEY, 'session');
+    }
     if (!p) {
       result = null;
       replaced = null;
@@ -61,9 +81,12 @@
     }
     // Find and replace share the gate and the timer: with a long text neither runs per keystroke.
     const run = () => {
+      writeString(RUNNING_KEY, '1', 'session');
       const found = findMatches(p, f, body);
+      const out = replacing && found.ok ? replaceText(p, f, body, r) : null;
+      removeKey(RUNNING_KEY, 'session');
       result = found;
-      replaced = replacing && found.ok ? replaceText(p, f, body, r) : null;
+      replaced = out;
     };
     if (!shouldDebounce(body)) {
       run();
@@ -184,7 +207,9 @@
         {#if result?.ok && result.truncated}<span>{fill(s.truncated, { n: MAX_MATCHES })}</span
           >{/if}
       {/snippet}
-      {#if !result}
+      {#if paused}
+        <p class="display-note" role="status">{s.paused}</p>
+      {:else if !result}
         <p class="display-note">{s.empty}</p>
       {:else if !result.ok}
         <details class="tech">
