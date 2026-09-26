@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://devtools.alvarotc.com/sitemap-index.xml

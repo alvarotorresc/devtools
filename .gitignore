@@ -3,3 +3,8 @@ dist
 .env
 *.local
 .DS_Store
+.astro
+playwright-report
+test-results
+.claude/worktrees/
+.playwright-mcp/

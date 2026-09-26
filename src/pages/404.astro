@@ -1,0 +1,35 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+import { homeHref, t } from '../i18n';
+---
+
+<AppLayout
+  locale="es"
+  title={`404 · ${t('es', 'notFound.title')}`}
+  description={t('es', 'notFound.body')}
+  alternates={{ es: '/404', en: '/404' }}
+  noindex
+>
+  <h1>{t('es', 'notFound.title')}</h1>
+  <p>{t('es', 'notFound.body')}</p>
+  <p lang="en">
+    {t('en', 'notFound.title')}. {t('en', 'notFound.body')}
+  </p>
+  <p class="row">
+    <a class="back" href={homeHref('es')}>
+      {t('es', 'notFound.back')}
+    </a>
+    <a class="back" href={homeHref('en')} lang="en">
+      {t('en', 'notFound.back')}
+    </a>
+  </p>
+</AppLayout>
+
+<style>
+  .back {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 4px;
+  }
+</style>
