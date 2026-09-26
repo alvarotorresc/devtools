@@ -38,9 +38,15 @@ test.describe('routing', () => {
     await expect(page).toHaveURL(/\/es\/formateador-json$/);
   });
 
-  test('old links to tools not migrated yet land on the home page', async ({ page }) => {
+  test('old links to migrated tools land on the new page', async ({ page }) => {
     await skipBoot(page);
     await page.goto('/#number-base');
+    await expect(page).toHaveURL(/\/es\/conversor-bases-numericas$/);
+  });
+
+  test('old links to unknown tools land on the home page', async ({ page }) => {
+    await skipBoot(page);
+    await page.goto('/#no-existe');
     await expect(page).toHaveURL(/\/es$/);
   });
 });
