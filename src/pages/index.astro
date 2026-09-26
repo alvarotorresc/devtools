@@ -1,0 +1,45 @@
+---
+import '../styles/global.css';
+---
+
+<!doctype html>
+<html lang="es" data-theme="terminal">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>devtools</title>
+    <meta
+      name="description"
+      content="Developer tools that run in your browser · Herramientas para desarrolladores que funcionan en tu navegador."
+    />
+    <link rel="canonical" href={new URL('/', Astro.site).href} />
+    <link rel="alternate" hreflang="es" href={new URL('/es', Astro.site).href} />
+    <link rel="alternate" hreflang="en" href={new URL('/en', Astro.site).href} />
+    <link rel="alternate" hreflang="x-default" href={new URL('/', Astro.site).href} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <main class="main">
+      <h1>devtools</h1>
+      <p>
+        <a href="/es" hreflang="es" lang="es">
+          Español
+        </a>
+        {' · '}
+        <a href="/en" hreflang="en" lang="en">
+          English
+        </a>
+      </p>
+    </main>
+    <script>
+      import { pickLocale, resolveLegacyHash } from '../lib/legacy';
+      import { readString } from '../lib/storage';
+
+      const locale = pickLocale(
+        readString('locale', ''),
+        navigator.languages ?? [navigator.language],
+      );
+      location.replace(resolveLegacyHash(location.hash, locale));
+    </script>
+  </body>
+</html>

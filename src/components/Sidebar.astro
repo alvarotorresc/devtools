@@ -231,6 +231,8 @@ const themes = [
 
   document.addEventListener('click', (e) => {
     const target = e.target as HTMLElement;
+    const lang = target.closest<HTMLElement>('[data-lang-link]');
+    if (lang) writeString('locale', lang.getAttribute('hreflang') ?? 'es');
     const theme = target.closest<HTMLElement>('[data-theme-choice]');
     if (theme?.dataset.themeChoice) return setTheme(theme.dataset.themeChoice);
     if (target.closest('[data-collapse]'))

@@ -1,12 +1,32 @@
 ---
+import Catalog from '../../components/Catalog.astro';
 import AppLayout from '../../layouts/AppLayout.astro';
-import { t } from '../../i18n';
-import type { Locale } from '../../tools/types';
+import Icon from '../../ui/Icon.svelte';
+import { t, toolHref } from '../../i18n';
+import { categories } from '../../tools/categories';
+import { toolById, tools } from '../../tools/registry';
+import type { Locale, ToolMeta } from '../../tools/types';
 
 export function getStaticPaths() {
   return [{ params: { locale: 'es' } }, { params: { locale: 'en' } }];
 }
+
 const locale = Astro.params.locale as Locale;
+const STARTER_IDS = ['json', 'uuid', 'jwt', 'base64'];
+const starters = STARTER_IDS.map(toolById).filter((x): x is ToolMeta => Boolean(x));
+const catName = (tool: ToolMeta) => categories.find((c) => c.id === tool.category)!.name[locale];
+const quick = tools.slice(0, 5);
+const site = Astro.site!;
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'devtools',
+    url: new URL(`/${locale}`, site).href,
+    inLanguage: locale,
+    description: t(locale, 'site.description'),
+  },
+];
 ---
 
 <AppLayout
@@ -14,6 +34,216 @@ const locale = Astro.params.locale as Locale;
   title={`devtools · ${t(locale, 'home.title')}`}
   description={t(locale, 'site.description')}
   alternates={{ es: '/es', en: '/en' }}
+  jsonLd={jsonLd}
 >
-  <h1>{t(locale, 'home.title')}</h1>
+  <section class="hero">
+    <h1>{t(locale, 'home.title')}</h1>
+    <p class="lead">{t(locale, 'home.count', { n: tools.length })}</p>
+    <label class="hero-search">
+      <Icon name="search" size={20} />
+      <span class="visually-hidden">{t(locale, 'home.search')}</span>
+      <input
+        id="home-search"
+        type="search"
+        autocomplete="off"
+        placeholder={t(locale, 'home.searchPlaceholder')}
+      />
+      <kbd>Ctrl K</kbd>
+    </label>
+    <ul class="chips">
+      {quick.map((tool) => (
+        <li>
+          <a href={toolHref(locale, tool)}>{tool.name[locale]}</a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="recent" aria-labelledby="recent-h">
+    <h2 id="recent-h" data-recent-title data-recent-label={t(locale, 'home.recent')}>
+      {t(locale, 'home.starter')}
+    </h2>
+    <div class="tiles" data-recent-grid>
+      {starters.map((tool) => (
+        <a class="tile" href={toolHref(locale, tool)}>
+          <span class="tile-top">
+            <span class="tile-icon">
+              <Icon name={tool.icon} />
+            </span>
+            <span class="tile-cat">{catName(tool)}</span>
+          </span>
+          <span class="tile-name">{tool.name[locale]}</span>
+          <span class="tile-desc">{tool.description[locale]}</span>
+        </a>
+      ))}
+    </div>
+    {tools.map((tool) => (
+      <template data-tile={tool.id}>
+        <a class="tile" href={toolHref(locale, tool)}>
+          <span class="tile-top">
+            <span class="tile-icon">
+              <Icon name={tool.icon} />
+            </span>
+            <span class="tile-cat">{catName(tool)}</span>
+          </span>
+          <span class="tile-name">{tool.name[locale]}</span>
+          <span class="tile-desc">{tool.description[locale]}</span>
+        </a>
+      </template>
+    ))}
+  </section>
+
+  <section aria-labelledby="all-h" class="stack">
+    <h2 id="all-h">{t(locale, 'home.all')}</h2>
+    <Catalog locale={locale} />
+  </section>
 </AppLayout>
+
+<script>
+  import { getRecent } from '../../lib/prefs';
+
+  function renderRecent() {
+    const grid = document.querySelector<HTMLElement>('[data-recent-grid]');
+    const title = document.querySelector<HTMLElement>('[data-recent-title]');
+    if (!grid || !title) return;
+    const tiles = getRecent()
+      .map((id) => document.querySelector<HTMLTemplateElement>(`template[data-tile="${id}"]`))
+      .filter((tpl): tpl is HTMLTemplateElement => tpl !== null)
+      .slice(0, 4)
+      .map((tpl) => tpl.content.cloneNode(true));
+    if (tiles.length === 0) return;
+    grid.replaceChildren(...tiles);
+    title.textContent = title.dataset.recentLabel ?? title.textContent;
+  }
+
+  document.addEventListener('astro:page-load', renderRecent);
+</script>
+
+<style>
+  .hero {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 760px;
+  }
+  h1 {
+    font-size: clamp(30px, 5vw, 44px);
+  }
+  .lead {
+    color: var(--text-dim);
+    font-size: 15.5px;
+  }
+  .hero-search {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 56px;
+    margin-top: 8px;
+    padding: 0 16px;
+    background: var(--raised);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-lg);
+    color: var(--accent-text);
+    box-shadow: var(--focus-ring);
+  }
+  .hero-search:focus-within {
+    border-color: var(--accent);
+  }
+  .hero-search input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    background: transparent;
+    border: 0;
+    outline: none;
+    color: var(--text);
+    font: 16px var(--font-body);
+  }
+  .hero-search input::placeholder {
+    color: var(--text-dim);
+  }
+  kbd {
+    padding: 2px 8px;
+    font: 12px var(--font-mono);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+  .chips {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chips a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 0 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    color: var(--text);
+    font-size: 13.5px;
+    text-decoration: none;
+  }
+  .recent {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  .tiles :global(.tile) {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 124px;
+    padding: 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    color: var(--text);
+    text-decoration: none;
+    transition: border-color 160ms;
+  }
+  .tiles :global(.tile:hover) {
+    border-color: var(--border-strong);
+  }
+  .tiles :global(.tile-top) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .tiles :global(.tile-icon) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: var(--raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--accent-text);
+  }
+  .tiles :global(.tile-cat) {
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .tiles :global(.tile-name) {
+    font: 700 16px var(--font-display);
+  }
+  .tiles :global(.tile-desc) {
+    font-size: 13px;
+    color: var(--text-dim);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

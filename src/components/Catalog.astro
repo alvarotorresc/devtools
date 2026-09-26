@@ -1,0 +1,73 @@
+---
+import Icon from '../ui/Icon.svelte';
+import { toolHref } from '../i18n';
+import { toolsInCategory, visibleCategories } from '../tools/registry';
+import type { Locale } from '../tools/types';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+---
+
+<div class="catalog">
+  {visibleCategories().map((c) => (
+    <section class="cat-col" aria-labelledby={`catalog-${c.id}`}>
+      <h3 id={`catalog-${c.id}`} class="cat-head">
+        <Icon name={c.icon} size={16} />
+        <span>{c.name[locale]}</span>
+      </h3>
+      <p class="cat-desc">{c.description[locale]}</p>
+      <ul>
+        {toolsInCategory(c.id).map((tool) => (
+          <li>
+            <a href={toolHref(locale, tool)}>{tool.name[locale]}</a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+</div>
+
+<style>
+  .catalog {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 28px 32px;
+  }
+  .cat-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+    color: var(--accent-text);
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .cat-head span {
+    color: var(--text);
+  }
+  .cat-desc {
+    margin-top: 6px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+  }
+  ul {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  a {
+    color: var(--text-dim);
+    font-size: 14px;
+    text-decoration: none;
+  }
+  a:hover {
+    color: var(--text);
+    text-decoration: underline;
+  }
+</style>
