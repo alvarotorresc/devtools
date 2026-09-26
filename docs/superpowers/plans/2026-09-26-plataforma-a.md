@@ -30,7 +30,7 @@
 - Botones y objetivos táctiles ≥ 44 px. El foco siempre es visible. Con `prefers-reduced-motion: reduce` no hay desplazamientos.
 - Textos de interfaz en sentence case, sin mayúsculas sostenidas en etiquetas. Los errores dicen qué pasa y cómo arreglarlo.
 - Commits con el formato del repo (`feat:`, `chore:`, `test:`, `docs:`). El mensaje termina con `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` y, en la línea siguiente, `Claude-Session: https://claude.ai/code/session_01RuBvKMoRNcq5quxr9i1JjP` (los ejemplos de commit de cada task muestran solo la primera por brevedad; añade las dos).
-- **Atajos (pendiente de confirmar por el autor, ver Handoff):** `Ctrl/⌘+K` en todas partes. Fuera de campos de texto: `/` busca, `?` muestra la ayuda, `c` copia el resultado principal y `1…9` cambian de pestaña. Esto sustituye a `Ctrl+Shift+C` (abre el inspector del navegador) y a `Alt+1…9` (cambia de pestaña en Firefox en Linux), que proponía el spec.
+- **Atajos (decidido por el autor el 2026-09-26):** `Ctrl/⌘+K` en todas partes. Fuera de campos de texto: `/` busca, `?` muestra la ayuda, `c` copia el resultado principal y `1…9` cambian de pestaña. Sustituyen a `Ctrl+Shift+C` (abre el inspector del navegador) y `Alt+1…9` (cambia de pestaña en Firefox en Linux) del spec. Las teclas sueltas se pueden desactivar con un interruptor en el diálogo de ayuda (WCAG 2.1.4), guardado en `devtools:shortcuts.single` (`'1'` por defecto, `'0'` desactivadas). `Ctrl/⌘+K` funciona siempre.
 
 ## Review Focus
 
@@ -890,6 +890,7 @@ export const es = {
   'shortcuts.copy': 'Copiar el resultado principal',
   'shortcuts.tabs': 'Cambiar de pestaña',
   'shortcuts.help': 'Mostrar esta ayuda',
+  'shortcuts.singleKeys': 'Atajos de una sola tecla',
   'shortcuts.close': 'Cerrar',
   'boot.loaded': '{n} herramientas cargadas',
   'boot.skip': 'Pulsa cualquier tecla para entrar',
@@ -955,6 +956,7 @@ export const en: Record<keyof typeof es, string> = {
   'shortcuts.copy': 'Copy the main result',
   'shortcuts.tabs': 'Switch tab',
   'shortcuts.help': 'Show this help',
+  'shortcuts.singleKeys': 'Single-key shortcuts',
   'shortcuts.close': 'Close',
   'boot.loaded': '{n} tools loaded',
   'boot.skip': 'Press any key to enter',
@@ -3248,6 +3250,9 @@ const themes = [
         ))
       }
     </div>
+    <button type="button" class="sb-lang" data-open-help aria-label={t(locale, 'shortcuts.title')} title={t(locale, 'shortcuts.title')}>
+      <Icon name="keyboard" size={16} />
+    </button>
     <a class="sb-lang" data-lang-link href={homeHref(other)} hreflang={other} lang={other} title={t(locale, 'lang.switch')}>
       {other.toUpperCase()}
     </a>
@@ -3652,11 +3657,13 @@ const { locale } = Astro.props;
   justify-content: center;
   min-width: 44px;
   min-height: 44px;
+  background: transparent;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   color: var(--text-dim);
   font: 600 13px var(--font-mono);
   text-decoration: none;
+  cursor: pointer;
 }
 
 .sb-lang:hover {
@@ -4353,7 +4360,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Produces:
   - `type ShortcutAction = { type: 'search'; query?: string } | { type: 'help' } | { type: 'copy' } | { type: 'tab'; index: number }`
   - `isTypingTarget(target: unknown): boolean`
-  - `matchShortcut(e: KeyLike): ShortcutAction | null`
+  - `matchShortcut(e: KeyLike, singleKeys?: boolean = true): ShortcutAction | null`
+  - `getSingleKeys(): boolean`, `setSingleKeys(on: boolean): void` (clave `shortcuts.single`)
   - `SHORTCUT_EVENT = 'devtools:shortcut'`, `dispatchShortcut(a: ShortcutAction): void`
   - `PaletteEntry = { id: string; href: string; name: string; category: string; icon: IconName }`
   - Comportamiento global: `c` pulsa `[data-copy-main]` si existe; `1…9` pulsa el radio N de `[data-tabs-main]`.
@@ -4409,6 +4417,13 @@ describe('matchShortcut', () => {
     for (const k of ['/', '?', 'c', '1']) expect(matchShortcut(key(k, { target: input }))).toBeNull();
   });
 
+  it('only keeps Ctrl+K when single-key shortcuts are turned off', () => {
+    expect(matchShortcut(key('/'), false)).toBeNull();
+    expect(matchShortcut(key('c'), false)).toBeNull();
+    expect(matchShortcut(key('1'), false)).toBeNull();
+    expect(matchShortcut(key('k', { ctrlKey: true }), false)).toEqual({ type: 'search' });
+  });
+
   it('leaves browser and system combos alone', () => {
     expect(matchShortcut(key('c', { ctrlKey: true }))).toBeNull();
     expect(matchShortcut(key('C', { ctrlKey: true, shiftKey: true }))).toBeNull();
@@ -4427,6 +4442,8 @@ Expected: FAIL.
 - [ ] **Step 3: `src/lib/shortcuts.ts`**
 
 ```ts
+import { readString, writeString } from './storage';
+
 export type ShortcutAction =
   | { type: 'search'; query?: string }
   | { type: 'help' }
@@ -4456,16 +4473,24 @@ export function isTypingTarget(target: unknown): boolean {
   return false;
 }
 
-export function matchShortcut(e: KeyLike): ShortcutAction | null {
+export function matchShortcut(e: KeyLike, singleKeys = true): ShortcutAction | null {
   const mod = e.ctrlKey || e.metaKey;
   if (mod && !e.altKey && !e.shiftKey && e.key.toLowerCase() === 'k') return { type: 'search' };
-  if (mod || e.altKey) return null;
+  if (!singleKeys || mod || e.altKey) return null;
   if (isTypingTarget(e.target)) return null;
   if (e.key === '/') return { type: 'search' };
   if (e.key === '?') return { type: 'help' };
   if (e.key === 'c' && !e.shiftKey) return { type: 'copy' };
   if (/^[1-9]$/.test(e.key)) return { type: 'tab', index: Number(e.key) - 1 };
   return null;
+}
+
+export function getSingleKeys(): boolean {
+  return readString('shortcuts.single', '1') !== '0';
+}
+
+export function setSingleKeys(on: boolean): void {
+  writeString('shortcuts.single', on ? '1' : '0');
 }
 
 export function dispatchShortcut(action: ShortcutAction): void {
@@ -4756,11 +4781,13 @@ export interface PaletteEntry {
 <script lang="ts">
   import { onMount } from 'svelte';
   import { t } from '../i18n';
-  import { SHORTCUT_EVENT, type ShortcutAction } from '../lib/shortcuts';
+  import { getSingleKeys, setSingleKeys, SHORTCUT_EVENT, type ShortcutAction } from '../lib/shortcuts';
   import type { Locale } from '../tools/types';
+  import Toggle from '../ui/Toggle.svelte';
 
   let { locale }: { locale: Locale } = $props();
   let dialog: HTMLDialogElement;
+  let singleKeys = $state(true);
 
   const rows = $derived([
     { keys: ['Ctrl K', '/'], label: t(locale, 'shortcuts.search') },
@@ -4771,11 +4798,23 @@ export interface PaletteEntry {
 
   onMount(() => {
     const on = (e: Event) => {
-      if ((e as CustomEvent<ShortcutAction>).detail.type === 'help' && !dialog.open) dialog.showModal();
+      if ((e as CustomEvent<ShortcutAction>).detail.type === 'help' && !dialog.open) open();
     };
+    const onClick = (e: MouseEvent) => {
+      if ((e.target as HTMLElement).closest('[data-open-help]')) open();
+    };
+    document.addEventListener('click', onClick);
     window.addEventListener(SHORTCUT_EVENT, on);
-    return () => window.removeEventListener(SHORTCUT_EVENT, on);
+    return () => {
+      window.removeEventListener(SHORTCUT_EVENT, on);
+      document.removeEventListener('click', onClick);
+    };
   });
+
+  function open() {
+    singleKeys = getSingleKeys();
+    dialog.showModal();
+  }
 </script>
 
 <dialog bind:this={dialog} class="help" aria-labelledby="help-title" onclick={(e) => e.target === dialog && dialog.close()}>
@@ -4786,6 +4825,7 @@ export interface PaletteEntry {
       <dd>{r.label}</dd>
     {/each}
   </dl>
+  <Toggle bind:checked={singleKeys} label={t(locale, 'shortcuts.singleKeys')} onchange={setSingleKeys} />
   <form method="dialog"><button class="close">{t(locale, 'shortcuts.close')}</button></form>
 </dialog>
 
@@ -4861,11 +4901,11 @@ Sustituye la línea `<Toaster client:load transition:persist="toaster" />` por:
     <CommandPalette client:load transition:persist={`palette-${locale}`} locale={locale} entries={entries} docs={docs} />
     <ShortcutsDialog client:load transition:persist={`help-${locale}`} locale={locale} />
     <script>
-      import { dispatchShortcut, matchShortcut } from '../lib/shortcuts';
+      import { dispatchShortcut, getSingleKeys, matchShortcut } from '../lib/shortcuts';
 
       document.addEventListener('keydown', (e) => {
         if (e.defaultPrevented || document.querySelector('dialog[open]')) return;
-        const action = matchShortcut(e);
+        const action = matchShortcut(e, getSingleKeys());
         if (!action) return;
         if (action.type === 'copy') {
           const btn = document.querySelector<HTMLButtonElement>('[data-copy-main]:not(:disabled)');
@@ -6966,6 +7006,23 @@ test.describe('tools', () => {
   test('UUID generates identifiers on load', async ({ page }) => {
     await page.goto('/es/generador-uuid');
     await expect(page.locator('.display-row')).toHaveCount(5);
+  });
+});
+
+test.describe('shortcuts', () => {
+  test.beforeEach(async ({ page }) => skipBoot(page));
+
+  test('single-key shortcuts can be turned off from the help dialog', async ({ page }) => {
+    await page.goto('/es');
+    await page.keyboard.press('?');
+    const help = page.locator('dialog.help');
+    await expect(help).toBeVisible();
+    await help.getByRole('switch').uncheck();
+    await page.keyboard.press('Escape');
+    await page.keyboard.press('/');
+    await expect(page.locator('dialog.palette')).not.toBeVisible();
+    await page.keyboard.press('Control+k');
+    await expect(page.locator('dialog.palette')).toBeVisible();
   });
 });
 
