@@ -6,7 +6,7 @@ import type { Locale } from '../tools/types';
 // Plan B: each tool task uncomments its import below and its line in the template.
 // Keep the blank lines between them: they let the parallel branches merge without conflicts.
 
-// import Base64 from '../tools/base64/Base64.svelte';
+import Base64 from '../tools/base64/Base64.svelte';
 
 import Url from '../tools/url/Url.svelte';
 
@@ -40,7 +40,7 @@ const { id, locale } = Astro.props;
 {id === 'json' && <Json client:load locale={locale} />}
 {id === 'uuid' && <Uuid client:load locale={locale} />}
 
-{/* {id === 'base64' && <Base64 client:load locale={locale} />} */}
+{id === 'base64' && <Base64 client:load locale={locale} />}
 
 {id === 'url' && <Url client:load locale={locale} />}
 

@@ -6,7 +6,7 @@ import type { Category, CategoryId, Locale, ToolMeta } from './types';
 // Plan B: each tool task uncomments its import and its entry in `tools`.
 // Keep the blank lines between them: they let the parallel branches merge without conflicts.
 
-// import { meta as base64 } from './base64/meta';
+import { meta as base64 } from './base64/meta';
 
 import { meta as url } from './url/meta';
 
@@ -34,7 +34,7 @@ export const tools: ToolMeta[] = [
   json,
   uuid,
 
-  // base64,
+  base64,
 
   url,
 
