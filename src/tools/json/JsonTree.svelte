@@ -1,6 +1,7 @@
 <script lang="ts">
   import { untrack } from 'svelte';
   import JsonTree from './JsonTree.svelte';
+  import { t } from '../../i18n';
   import { copyText } from '../../lib/clipboard';
   import { toast, truncate } from '../../lib/toast';
   import type { Locale } from '../types';
@@ -32,7 +33,11 @@
   const leaf = $derived(type === 'string' ? JSON.stringify(value) : String(value));
 
   async function copy(text: string) {
-    if (await copyText(text)) toast(truncate(text));
+    if (!(await copyText(text))) {
+      toast(t(locale, 'ui.copyFailed'), 'bad');
+      return;
+    }
+    toast(truncate(text));
   }
 </script>
 
