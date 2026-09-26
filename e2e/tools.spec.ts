@@ -163,7 +163,7 @@ test.describe('one real interaction per tool', () => {
     await page.addInitScript(() => {
       localStorage.setItem('devtools:input.regex-pattern', '(a+)+$');
       localStorage.setItem('devtools:input.regex', 'a'.repeat(34) + '!');
-      sessionStorage.setItem('devtools:regex.running', '1');
+      localStorage.setItem('devtools:regex.running', '1');
     });
     await page.goto('/es/probador-regex');
     await expect(page.locator('#regex-pattern')).toHaveValue('(a+)+$');

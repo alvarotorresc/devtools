@@ -39,7 +39,7 @@
   let pausedAt: string | undefined;
   // Declared before persistedInput so it runs before the remembered input loads.
   onMount(() => {
-    paused = readString(RUNNING_KEY, '', 'session') === '1';
+    paused = readString(RUNNING_KEY, '') === '1';
   });
   const pattern = persistedInput('regex-pattern', '', remember);
   const text = persistedInput('regex', '', remember);
@@ -72,7 +72,7 @@
       pausedAt ??= snapshot;
       if (snapshot === pausedAt) return;
       paused = false;
-      removeKey(RUNNING_KEY, 'session');
+      removeKey(RUNNING_KEY);
     }
     if (!p) {
       result = null;
@@ -81,10 +81,10 @@
     }
     // Find and replace share the gate and the timer: with a long text neither runs per keystroke.
     const run = () => {
-      writeString(RUNNING_KEY, '1', 'session');
+      writeString(RUNNING_KEY, '1');
       const found = findMatches(p, f, body);
       const out = replacing && found.ok ? replaceText(p, f, body, r) : null;
-      removeKey(RUNNING_KEY, 'session');
+      removeKey(RUNNING_KEY);
       result = found;
       replaced = out;
     };
