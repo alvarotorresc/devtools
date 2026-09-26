@@ -143,7 +143,6 @@ const themes = [
   import { readJSON, writeJSON, writeString } from '../lib/storage';
 
   const root = document.documentElement;
-  const COLORS: Record<string, string> = { terminal: '#0a0a0a', dark: '#161719', light: '#e3e1dc' };
   const sidebar = () => document.getElementById('sidebar');
 
   function syncThemeButtons() {
@@ -157,7 +156,9 @@ const themes = [
   function setTheme(theme: string) {
     root.dataset.theme = theme;
     writeString('theme', theme);
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', COLORS[theme]);
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', getComputedStyle(root).getPropertyValue('--bg').trim());
     syncThemeButtons();
   }
 

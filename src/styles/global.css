@@ -617,7 +617,7 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
+  width: 36px;
   height: 36px;
   border: 0;
   border-radius: var(--radius-pill);
@@ -651,6 +651,23 @@ button {
 
 .sb-lang:hover {
   color: var(--text);
+}
+
+@media (pointer: coarse) {
+  .sb-item,
+  .sb-search {
+    min-height: 44px;
+  }
+
+  .sb-tool {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .sb-theme button {
+    height: 44px;
+  }
 }
 
 .mobile-header,
