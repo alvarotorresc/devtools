@@ -1,5 +1,6 @@
 ---
 import Json from '../tools/json/Json.svelte';
+import Uuid from '../tools/uuid/Uuid.svelte';
 import type { Locale } from '../tools/types';
 
 interface Props {
@@ -10,3 +11,4 @@ const { id, locale } = Astro.props;
 ---
 
 {id === 'json' && <Json client:load locale={locale} />}
+{id === 'uuid' && <Uuid client:load locale={locale} />}

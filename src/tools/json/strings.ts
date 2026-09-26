@@ -1,5 +1,7 @@
 import type { Locale } from '../types';
 
+export { fill } from '../../i18n/fill';
+
 export const strings = {
   es: {
     mode: 'Modo',
@@ -55,7 +57,3 @@ export const strings = {
 } satisfies Record<Locale, Record<string, string>>;
 
 export type JsonStrings = (typeof strings)['es'];
-
-export function fill(s: string, vars: Record<string, string | number>): string {
-  return s.replace(/\{(\w+)\}/g, (m, k: string) => (k in vars ? String(vars[k]) : m));
-}
