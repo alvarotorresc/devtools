@@ -96,15 +96,15 @@ test.describe('preferences', () => {
       });
     });
     await page.goto('/es');
-    await page.locator('[data-theme-choice="light"]').click();
-    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await page.locator('[data-theme-choice="dark"]').click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
     await page.reload();
     expect(
       await page.evaluate(() => (window as unknown as { themeAtDcl: string }).themeAtDcl),
-    ).toBe('light');
+    ).toBe('dark');
     await page.locator('.catalog').getByRole('link', { name: 'JSON' }).click();
     await expect(page).toHaveURL(/formateador-json$/);
-    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   });
 
   test('collapsed sidebar and current tool survive navigation', async ({ page }) => {
@@ -145,7 +145,7 @@ test.describe('preferences', () => {
       Object.defineProperty(window, 'sessionStorage', blocked);
     });
     await page.goto('/es/formateador-json');
-    await expect(page.locator('html')).toHaveAttribute('data-theme', 'terminal');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
     await page.locator('#json-input').fill('{"a":1}');
     await expect(page.locator('.display-code')).toContainText('"a": 1');
     await page.locator('[data-favorite]').click();
@@ -222,6 +222,7 @@ test.describe('shortcuts', () => {
 
 test.describe('boot screen', () => {
   test('shows once per session in the terminal theme and any key skips it', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('devtools:theme', 'terminal'));
     await page.goto('/es');
     const boot = page.locator('#boot');
     await expect(boot).toBeVisible();

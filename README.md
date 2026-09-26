@@ -49,4 +49,4 @@ Requiere Node 22.12+ y pnpm 10.
 
 ## Temas
 
-Terminal (por defecto), oscuro (grafito) y claro (aluminio). Los tokens están en `src/styles/tokens.css`.
+Claro (aluminio, por defecto), oscuro (grafito) y terminal. Los tokens están en `src/styles/tokens.css`.

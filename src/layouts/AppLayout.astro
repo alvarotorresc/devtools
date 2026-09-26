@@ -54,11 +54,11 @@ const pageAnim: TransitionDirectionalAnimations = {
 ---
 
 <!doctype html>
-<html lang={locale} data-theme="terminal" data-sidebar="expanded">
+<html lang={locale} data-theme="light" data-sidebar="expanded">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#0a0a0a" />
+    <meta name="theme-color" content="#e3e1dc" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <script is:inline>
       (() => {
@@ -74,7 +74,7 @@ const pageAnim: TransitionDirectionalAnimations = {
         const apply = (doc) => {
           const root = doc.documentElement;
           const theme = read('localStorage', 'theme');
-          root.dataset.theme = THEMES.includes(theme) ? theme : 'terminal';
+          root.dataset.theme = THEMES.includes(theme) ? theme : 'light';
           root.dataset.sidebar =
             read('localStorage', 'sidebar.collapsed') === '1' ? 'collapsed' : 'expanded';
           const meta = doc.querySelector('meta[name="theme-color"]');
