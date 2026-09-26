@@ -19,7 +19,7 @@ import { meta as numberBase } from './number-base/meta';
 
 // import { meta as dni } from './dni/meta';
 
-// import { meta as cif } from './cif/meta';
+import { meta as cif } from './cif/meta';
 
 // import { meta as iban } from './iban/meta';
 
@@ -59,7 +59,7 @@ export const tools: ToolMeta[] = [
 
   // dni,
 
-  // cif,
+  cif,
 
   // iban,
 
