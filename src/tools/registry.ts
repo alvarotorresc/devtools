@@ -17,7 +17,7 @@ import { meta as numberBase } from './number-base/meta';
 // Lote 1: each tool task uncomments its import and its entry in `tools`.
 // Keep the blank lines between them: they let the parallel branches merge without conflicts.
 
-// import { meta as dni } from './dni/meta';
+import { meta as dni } from './dni/meta';
 
 // import { meta as cif } from './cif/meta';
 
@@ -57,7 +57,7 @@ export const tools: ToolMeta[] = [
   color,
   numberBase,
 
-  // dni,
+  dni,
 
   // cif,
 

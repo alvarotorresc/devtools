@@ -17,7 +17,7 @@ import NumberBase from '../tools/number-base/NumberBase.svelte';
 // Lote 1: each tool task uncomments its import below and its line in the template.
 // Keep the blank lines between them: they let the parallel branches merge without conflicts.
 
-// import Dni from '../tools/dni/Dni.svelte';
+import Dni from '../tools/dni/Dni.svelte';
 
 // import Cif from '../tools/cif/Cif.svelte';
 
@@ -63,7 +63,7 @@ const { id, locale } = Astro.props;
 {id === 'color' && <Color client:load locale={locale} />}
 {id === 'number-base' && <NumberBase client:load locale={locale} />}
 
-{/* {id === 'dni' && <Dni client:load locale={locale} />} */}
+{id === 'dni' && <Dni client:load locale={locale} />}
 
 {/* {id === 'cif' && <Cif client:load locale={locale} />} */}
 
