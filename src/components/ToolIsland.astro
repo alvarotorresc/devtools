@@ -28,7 +28,7 @@ import Lorem from '../tools/lorem/Lorem.svelte';
 
 // import Color from '../tools/color/Color.svelte';
 
-// import NumberBase from '../tools/number-base/NumberBase.svelte';
+import NumberBase from '../tools/number-base/NumberBase.svelte';
 
 interface Props {
   id: string;
@@ -62,4 +62,4 @@ const { id, locale } = Astro.props;
 
 {/* {id === 'color' && <Color client:load locale={locale} />} */}
 
-{/* {id === 'number-base' && <NumberBase client:load locale={locale} />} */}
+{id === 'number-base' && <NumberBase client:load locale={locale} />}

@@ -28,7 +28,7 @@ import { meta as lorem } from './lorem/meta';
 
 // import { meta as color } from './color/meta';
 
-// import { meta as numberBase } from './number-base/meta';
+import { meta as numberBase } from './number-base/meta';
 
 export const tools: ToolMeta[] = [
   json,
@@ -56,7 +56,7 @@ export const tools: ToolMeta[] = [
 
   // color,
 
-  // numberBase,
+  numberBase,
 ];
 
 export function toolById(id: string): ToolMeta | undefined {
