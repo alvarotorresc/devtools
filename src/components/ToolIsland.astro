@@ -23,7 +23,7 @@ import Dni from '../tools/dni/Dni.svelte';
 
 import Iban from '../tools/iban/Iban.svelte';
 
-// import Plate from '../tools/plate/Plate.svelte';
+import Plate from '../tools/plate/Plate.svelte';
 
 // import Nss from '../tools/nss/Nss.svelte';
 
@@ -69,7 +69,7 @@ const { id, locale } = Astro.props;
 
 {id === 'iban' && <Iban client:load locale={locale} />}
 
-{/* {id === 'plate' && <Plate client:load locale={locale} />} */}
+{id === 'plate' && <Plate client:load locale={locale} />}
 
 {/* {id === 'nss' && <Nss client:load locale={locale} />} */}
 

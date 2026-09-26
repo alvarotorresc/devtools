@@ -23,7 +23,7 @@ import { meta as dni } from './dni/meta';
 
 import { meta as iban } from './iban/meta';
 
-// import { meta as plate } from './plate/meta';
+import { meta as plate } from './plate/meta';
 
 // import { meta as nss } from './nss/meta';
 
@@ -63,7 +63,7 @@ export const tools: ToolMeta[] = [
 
   iban,
 
-  // plate,
+  plate,
 
   // nss,
 
