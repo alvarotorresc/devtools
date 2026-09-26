@@ -20,7 +20,7 @@ import { meta as diff } from './diff/meta';
 
 // import { meta as regex } from './regex/meta';
 
-// import { meta as text } from './text/meta';
+import { meta as text } from './text/meta';
 
 // import { meta as lorem } from './lorem/meta';
 
@@ -48,7 +48,7 @@ export const tools: ToolMeta[] = [
 
   // regex,
 
-  // text,
+  text,
 
   // lorem,
 
