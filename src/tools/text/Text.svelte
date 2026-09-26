@@ -87,7 +87,13 @@
                   <span class="name">{caseNames[locale][c.id] ?? c.label}</span>
                   <span class="value">{preview(c.value)}</span>
                 </span>
-                <CopyButton value={() => c.value} {locale} compact />
+                <CopyButton
+                  value={() => c.value}
+                  {locale}
+                  compact
+                  ariaLabel={`${t(locale, 'ui.copy')} ${caseNames[locale][c.id] ?? c.label}`}
+                  disabled={!c.value}
+                />
               </div>
             {/each}
           </div>

@@ -171,6 +171,9 @@ test.describe('one real interaction per tool', () => {
     await page.locator('#text-input').fill('hola mundo');
     await expect(page.locator('.display-rows')).toContainText('holaMundo');
     await expect(page.locator('.display-rows')).toContainText('HOLA_MUNDO');
+    // Each row's copy button is named after its case, not just "Copiar".
+    await expect(page.getByRole('button', { name: 'Copiar MAYÚSCULAS' })).toBeEnabled();
+    await expect(page.getByRole('button', { name: 'Copiar Tipo Título' })).toBeVisible();
     await page.locator('#text-input').fill('b\na\nb');
     await radio(page, 'Líneas').click();
     await page.locator('#text-sort').selectOption('az');

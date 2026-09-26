@@ -11,18 +11,23 @@
     main = false,
     compact = false,
     label,
+    ariaLabel,
+    disabled = false,
   }: {
     value: string | (() => string);
     locale: Locale;
     main?: boolean;
     compact?: boolean;
     label?: string;
+    /** Overrides the computed accessible name, e.g. when several rows share the same label. */
+    ariaLabel?: string;
+    disabled?: boolean;
   } = $props();
 
   let copied = $state(false);
   let timer: ReturnType<typeof setTimeout> | undefined;
   const resolved = $derived(typeof value === 'function' ? '' : value);
-  const disabled = $derived(typeof value === 'string' && value === '');
+  const inactive = $derived(disabled || (typeof value === 'string' && value === ''));
 
   async function copy() {
     const text = typeof value === 'function' ? value() : value;
@@ -44,10 +49,11 @@
   class="copy"
   class:compact
   class:copied
-  {disabled}
+  disabled={inactive}
   onclick={copy}
   data-copy-main={main ? '' : undefined}
-  aria-label={compact ? `${label ?? t(locale, 'ui.copy')} ${resolved}`.trim() : undefined}
+  aria-label={ariaLabel ??
+    (compact ? `${label ?? t(locale, 'ui.copy')} ${resolved}`.trim() : undefined)}
 >
   <Icon name={copied ? 'check' : 'copy'} size={16} />
   <span>{copied ? t(locale, 'ui.copied') : (label ?? t(locale, 'ui.copy'))}</span>
