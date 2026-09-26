@@ -1,5 +1,6 @@
 ---
 import Catalog from '../../components/Catalog.astro';
+import ToolTile from '../../components/ToolTile.astro';
 import AppLayout from '../../layouts/AppLayout.astro';
 import Icon from '../../ui/Icon.svelte';
 import { t, toolHref } from '../../i18n';
@@ -65,30 +66,12 @@ const jsonLd = [
     </h2>
     <div class="tiles" data-recent-grid>
       {starters.map((tool) => (
-        <a class="tile" href={toolHref(locale, tool)}>
-          <span class="tile-top">
-            <span class="tile-icon">
-              <Icon name={tool.icon} />
-            </span>
-            <span class="tile-cat">{catName(tool)}</span>
-          </span>
-          <span class="tile-name">{tool.name[locale]}</span>
-          <span class="tile-desc">{tool.description[locale]}</span>
-        </a>
+        <ToolTile locale={locale} tool={tool} category={catName(tool)} />
       ))}
     </div>
     {tools.map((tool) => (
       <template data-tile={tool.id}>
-        <a class="tile" href={toolHref(locale, tool)}>
-          <span class="tile-top">
-            <span class="tile-icon">
-              <Icon name={tool.icon} />
-            </span>
-            <span class="tile-cat">{catName(tool)}</span>
-          </span>
-          <span class="tile-name">{tool.name[locale]}</span>
-          <span class="tile-desc">{tool.description[locale]}</span>
-        </a>
+        <ToolTile locale={locale} tool={tool} category={catName(tool)} />
       </template>
     ))}
   </section>
@@ -107,7 +90,9 @@ const jsonLd = [
     const title = document.querySelector<HTMLElement>('[data-recent-title]');
     if (!grid || !title) return;
     const tiles = getRecent()
-      .map((id) => document.querySelector<HTMLTemplateElement>(`template[data-tile="${id}"]`))
+      .map((id) =>
+        document.querySelector<HTMLTemplateElement>(`template[data-tile="${CSS.escape(id)}"]`),
+      )
       .filter((tpl): tpl is HTMLTemplateElement => tpl !== null)
       .slice(0, 4)
       .map((tpl) => tpl.content.cloneNode(true));
@@ -144,10 +129,10 @@ const jsonLd = [
     border: 1px solid var(--border-strong);
     border-radius: var(--radius-lg);
     color: var(--accent-text);
-    box-shadow: var(--focus-ring);
   }
   .hero-search:focus-within {
     border-color: var(--accent);
+    box-shadow: var(--focus-ring);
   }
   .hero-search input {
     flex: 1;
@@ -189,6 +174,11 @@ const jsonLd = [
     font-size: 13.5px;
     text-decoration: none;
   }
+  @media (pointer: coarse) {
+    .chips a {
+      min-height: 44px;
+    }
+  }
   .recent {
     display: flex;
     flex-direction: column;
@@ -198,52 +188,5 @@ const jsonLd = [
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 16px;
-  }
-  .tiles :global(.tile) {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    min-height: 124px;
-    padding: 18px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    color: var(--text);
-    text-decoration: none;
-    transition: border-color 160ms;
-  }
-  .tiles :global(.tile:hover) {
-    border-color: var(--border-strong);
-  }
-  .tiles :global(.tile-top) {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .tiles :global(.tile-icon) {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    background: var(--raised);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--accent-text);
-  }
-  .tiles :global(.tile-cat) {
-    font-size: 12px;
-    color: var(--text-dim);
-  }
-  .tiles :global(.tile-name) {
-    font: 700 16px var(--font-display);
-  }
-  .tiles :global(.tile-desc) {
-    font-size: 13px;
-    color: var(--text-dim);
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
   }
 </style>

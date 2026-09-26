@@ -62,6 +62,9 @@ const { locale } = Astro.props;
     gap: 4px;
   }
   a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
     color: var(--text-dim);
     font-size: 14px;
     text-decoration: none;
@@ -69,5 +72,10 @@ const { locale } = Astro.props;
   a:hover {
     color: var(--text);
     text-decoration: underline;
+  }
+  @media (pointer: coarse) {
+    a {
+      min-height: 44px;
+    }
   }
 </style>
