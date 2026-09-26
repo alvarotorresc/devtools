@@ -1,0 +1,58 @@
+import type { Locale } from '../types';
+
+export const strings = {
+  es: {
+    mode: 'Modo',
+    input: 'Matrícula',
+    placeholder: '1234 BCD\nM-1234-AB',
+    help: 'Una por línea, hasta 1000.',
+    result: 'Resultado',
+    empty: 'Escribe una matrícula actual (1234 BCD) o provincial (M-1234-AB).',
+    valid: 'Matrícula válida',
+    count: '{ok} válidas · {bad} no válidas',
+    truncated: 'Solo se comprueban las primeras {n} líneas.',
+    format: 'Formato',
+    current: 'Actual (desde 2000)',
+    old: 'Provincial (1971–2000)',
+    position: 'Posición en la serie',
+    positionValue: '{n} de {total}',
+    province: 'Provincia',
+    errLetter: 'La letra {c} no se usa en las matrículas actuales: solo consonantes, sin Ñ ni Q.',
+    errOldLetter:
+      'La letra {c} no se usa en las matrículas provinciales: van de la A a la Z, sin Ñ ni Q.',
+    errProvince: '{p} no es la sigla de ninguna provincia.',
+    errSpecial:
+      'Las matrículas de ciclomotor, históricas, temporales, diplomáticas y anteriores a 1971 no están incluidas.',
+    errFormat:
+      'Formato no reconocido: una matrícula actual son 4 cifras y 3 letras (1234 BCD) y una provincial, sigla, 4 cifras y 1 o 2 letras (M-1234-AB).',
+    kind: 'Formato',
+    generated: 'Matrículas generadas',
+    copyAll: 'Copiar todas',
+  },
+  en: {
+    mode: 'Mode',
+    input: 'License plate',
+    placeholder: '1234 BCD\nM-1234-AB',
+    help: 'One per line, up to 1000.',
+    result: 'Result',
+    empty: 'Type a current plate (1234 BCD) or an old provincial one (M-1234-AB).',
+    valid: 'Valid plate',
+    count: '{ok} valid · {bad} not valid',
+    truncated: 'Only the first {n} lines are checked.',
+    format: 'Format',
+    current: 'Current (since 2000)',
+    old: 'Provincial (1971–2000)',
+    position: 'Place in the series',
+    positionValue: '{n} of {total}',
+    province: 'Province',
+    errLetter: 'The letter {c} is not used on current plates: consonants only, no Ñ or Q.',
+    errOldLetter: 'The letter {c} is not used on provincial plates: A to Z, without Ñ or Q.',
+    errProvince: '{p} is not the prefix of any province.',
+    errSpecial: 'Moped, historic, temporary, diplomatic and pre-1971 plates are not included.',
+    errFormat:
+      'Unrecognised format: a current plate is 4 digits and 3 letters (1234 BCD) and a provincial one is a prefix, 4 digits and 1 or 2 letters (M-1234-AB).',
+    kind: 'Format',
+    generated: 'Generated plates',
+    copyAll: 'Copy all',
+  },
+} satisfies Record<Locale, Record<string, string>>;
