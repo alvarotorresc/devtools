@@ -7,6 +7,10 @@ import { LOCALES } from './types';
 const contents = import.meta.glob('./*/content.*.md', { query: '?raw', eager: true });
 
 describe('registry', () => {
+  it('is not empty', () => {
+    expect(tools.length).toBeGreaterThan(0);
+  });
+
   it('has unique ids', () => {
     const ids = tools.map((t) => t.id);
     expect(new Set(ids).size).toBe(ids.length);
