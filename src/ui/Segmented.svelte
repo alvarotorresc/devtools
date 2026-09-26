@@ -75,6 +75,11 @@
       background-color 200ms,
       color 200ms;
   }
+  @media (pointer: coarse) {
+    button {
+      min-height: 44px;
+    }
+  }
   button[aria-checked='true'] {
     background: var(--raised);
     color: var(--text);
