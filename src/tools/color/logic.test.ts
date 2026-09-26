@@ -137,3 +137,27 @@ describe('CSS strings', () => {
     expect(parseOklch('oklch(150% 0.1 20)')).toBeNull();
   });
 });
+
+describe('OKLCH gamut check on displayed values', () => {
+  const roundTrip = (r: number, g: number, b: number) => {
+    const parsed = parseOklch(formatOklch(rgbToOklch(r, g, b)));
+    expect(parsed).not.toBeNull();
+    return oklchToRgb(parsed!.l, parsed!.c, parsed!.h);
+  };
+
+  it.each([
+    ['pure red', [255, 0, 0]],
+    ['pure green', [0, 255, 0]],
+    ['#58a6ff', hexToRgb('#58a6ff')!],
+  ] as [string, [number, number, number]][])(
+    'keeps %s in gamut after formatOklch → parseOklch',
+    (_, rgb) => {
+      expect(roundTrip(...rgb).inGamut).toBe(true);
+    },
+  );
+
+  it('still flags a colour that is really out of gamut', () => {
+    const o = parseOklch('oklch(70% 0.4 150)')!;
+    expect(oklchToRgb(o.l, o.c, o.h).inGamut).toBe(false);
+  });
+});

@@ -117,7 +117,8 @@ export function oklchToRgb(l: number, c: number, h: number): { rgb: Rgb; inGamut
     -1.2684380046 * L + 2.6097574011 * M - 0.3413193965 * S,
     -0.0041960863 * L - 0.7034186147 * M + 1.707614701 * S,
   ];
-  const EPS = 1e-4;
+  // Displayed OKLCH is rounded (0.1 %, 0.001, 0.1°); feeding it back must not flag sRGB primaries.
+  const EPS = 0.002;
   const inGamut = lin.every((v) => v >= -EPS && v <= 1 + EPS);
   const rgb = lin.map((v) =>
     Math.round(Math.max(0, Math.min(255, linearToSrgb(Math.max(0, Math.min(1, v)))))),

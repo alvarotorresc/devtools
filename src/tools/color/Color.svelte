@@ -110,9 +110,21 @@
     oklch: 'invalidOklch',
   };
 
+  // The verdict uses the same 2-decimal ratio that is shown, so "4.50:1" never comes with a fail.
+  const shownRatio = (r: number) => Math.round(r * 100) / 100;
   const contrast = $derived([
-    { id: 'white', label: s.onWhite, bg: 'white', ratio: contrastRatio(rgb, [255, 255, 255]) },
-    { id: 'black', label: s.onBlack, bg: 'black', ratio: contrastRatio(rgb, [0, 0, 0]) },
+    {
+      id: 'white',
+      label: s.onWhite,
+      bg: 'white',
+      ratio: shownRatio(contrastRatio(rgb, [255, 255, 255])),
+    },
+    {
+      id: 'black',
+      label: s.onBlack,
+      bg: 'black',
+      ratio: shownRatio(contrastRatio(rgb, [0, 0, 0])),
+    },
   ]);
   const levelText = (l: Level) => (l === 'fail' ? s.fail : l);
 </script>
