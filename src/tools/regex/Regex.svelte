@@ -21,6 +21,7 @@
     shouldDebounce,
     type FindResult,
     type Flag,
+    type ReplaceResult,
   } from './logic';
   import { meta } from './meta';
   import { cheatsheet, flagNames, hints, strings } from './strings';
@@ -43,6 +44,7 @@
   });
   let replacement = $state('');
   let result = $state<FindResult | null>(null);
+  let replaced = $state<ReplaceResult | null>(null);
 
   const flagString = $derived(FLAGS.filter((f) => flags[f]).join(''));
 
@@ -50,11 +52,19 @@
     const p = pattern.value;
     const f = flagString;
     const body = text.value;
+    const replacing = tab === 'replace';
+    const r = replacement;
     if (!p) {
       result = null;
+      replaced = null;
       return;
     }
-    const run = () => (result = findMatches(p, f, body));
+    // Find and replace share the gate and the timer: with a long text neither runs per keystroke.
+    const run = () => {
+      const found = findMatches(p, f, body);
+      result = found;
+      replaced = replacing && found.ok ? replaceText(p, f, body, r) : null;
+    };
     if (!shouldDebounce(body)) {
       run();
       return;
@@ -72,11 +82,6 @@
 
   const matches = $derived(result?.ok ? result.matches : []);
   const pieces = $derived(result?.ok ? highlight(text.value, matches) : []);
-  const replaced = $derived(
-    tab === 'replace' && pattern.value && result?.ok
-      ? replaceText(pattern.value, flagString, text.value, replacement)
-      : null,
-  );
   const ledState = $derived(!result ? 'idle' : !result.ok ? 'bad' : matches.length ? 'ok' : 'idle');
   const ledLabel = $derived.by(() => {
     if (!result) return t(locale, 'led.idle');
@@ -114,7 +119,7 @@
       error={result && !result.ok
         ? result.error.hint
           ? hints[locale][result.error.hint]
-          : result.error.message
+          : s.genericError
         : undefined}
     >
       {#snippet children({ describedby })}
@@ -182,7 +187,10 @@
       {#if !result}
         <p class="display-note">{s.empty}</p>
       {:else if !result.ok}
-        <p class="display-note">{result.error.message}</p>
+        <details class="tech">
+          <summary>{s.technicalDetail}</summary>
+          <p class="display-note">{result.error.message}</p>
+        </details>
       {:else if tab === 'find'}
         <pre class="display-code wrap">{#each pieces as p, i (i)}{#if p.match !== null}<mark
                 class:alt={p.match % 2 === 1}>{p.text}</mark
@@ -320,6 +328,14 @@
   }
   .muted {
     color: var(--disp-dim);
+  }
+  .tech summary {
+    cursor: pointer;
+    color: var(--disp-dim);
+    font-size: 13px;
+  }
+  .tech p {
+    margin-top: 6px;
   }
   .cheat summary {
     padding: 12px 0;

@@ -13,6 +13,11 @@ export type ErrorHint =
   | 'invalidGroup'
   | 'rangeOrder'
   | 'loneBracket'
+  | 'incompleteQuantifier'
+  | 'invalidEscape'
+  | 'invalidProperty'
+  | 'invalidNamedRef'
+  | 'invalidClass'
   | 'flags';
 
 export interface RegexError {
@@ -55,6 +60,11 @@ const HINTS: [RegExp, ErrorHint][] = [
   [/range out of order/i, 'rangeOrder'],
   [/lone quantifier brackets|raw bracket/i, 'loneBracket'],
   [/invalid (regexp )?group/i, 'invalidGroup'],
+  [/incomplete quantifier/i, 'incompleteQuantifier'],
+  [/invalid escape/i, 'invalidEscape'],
+  [/invalid property name/i, 'invalidProperty'],
+  [/invalid named (capture )?reference/i, 'invalidNamedRef'],
+  [/invalid character class/i, 'invalidClass'],
 ];
 
 export function explainError(message: string): ErrorHint | null {

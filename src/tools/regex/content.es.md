@@ -6,4 +6,4 @@ Se usa el motor de JavaScript del navegador, así que el resultado es exactament
 
 ## Reemplazar y errores
 
-En la pestaña **Reemplazar** puedes probar una sustitución con `$1`, `$<nombre>` o `$&` (toda la coincidencia) y ver el texto resultante y cuántos reemplazos se han hecho. Si la expresión tiene un error de sintaxis, en lugar del mensaje técnico verás qué falla y cómo arreglarlo, por ejemplo un paréntesis sin cerrar o un rango al revés. La chuleta plegable resume la sintaxis más usada.
+En la pestaña **Reemplazar** puedes probar una sustitución con `$1`, `$<nombre>` o `$&` (toda la coincidencia) y ver el texto resultante y cuántos reemplazos se han hecho. Si la expresión tiene un error de sintaxis, en lugar del mensaje técnico verás qué falla y cómo arreglarlo, por ejemplo un paréntesis sin cerrar o un rango al revés. El mensaje original del motor queda plegado en «Detalle técnico». La chuleta plegable resume la sintaxis más usada.

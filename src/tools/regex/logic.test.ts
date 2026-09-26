@@ -86,6 +86,22 @@ describe('errors', () => {
     if (!r.ok) expect(r.error.hint).toBe(hint);
   });
 
+  // Each pattern throws in V8 (Node, Chrome); the real engine message is what gets matched.
+  it.each([
+    ['a{', 'u', 'incompleteQuantifier'],
+    ['\\d{2', 'u', 'incompleteQuantifier'],
+    ['\\-', 'u', 'invalidEscape'],
+    ['\\a', 'u', 'invalidEscape'],
+    ['\\p{Foo}', 'u', 'invalidProperty'],
+    ['\\k<m>', 'u', 'invalidNamedRef'],
+    ['(?<n>a)\\k<m>', '', 'invalidNamedRef'],
+    ['[a-\\d]', 'u', 'invalidClass'],
+  ])('explains %j with flags %j', (pattern, flags, hint) => {
+    const r = buildRegex(pattern, flags);
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.error.hint).toBe(hint);
+  });
+
   it('explains bad flags and lone brackets in unicode mode', () => {
     const flags = buildRegex('a', 'gg');
     expect(!flags.ok && flags.error.hint).toBe('flags');

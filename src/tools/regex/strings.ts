@@ -28,6 +28,8 @@ export const strings = {
     output: 'Resultado',
     cheatsheet: 'Chuleta',
     copyMatches: 'Copiar coincidencias',
+    genericError: 'La expresión no es válida. Revisa paréntesis, corchetes y barras invertidas.',
+    technicalDetail: 'Detalle técnico',
   },
   en: {
     mode: 'Mode',
@@ -55,6 +57,8 @@ export const strings = {
     output: 'Result',
     cheatsheet: 'Cheat sheet',
     copyMatches: 'Copy matches',
+    genericError: 'The expression is not valid. Check parentheses, brackets and backslashes.',
+    technicalDetail: 'Technical detail',
   },
 } satisfies Record<Locale, Record<string, string>>;
 
@@ -94,6 +98,16 @@ export const hints: Record<Locale, Record<ErrorHint, string>> = {
       'Un rango de caracteres está al revés, como [z-a]. Escríbelo de menor a mayor: [a-z].',
     loneBracket:
       'Con el flag u, «]», «{» y «}» sueltos no valen. Escápalos (\\]) o quita el flag u.',
+    incompleteQuantifier:
+      'Un «{» no forma un cuantificador completo como {2} o {2,5}. Ciérralo con «}» o escápalo como \\{.',
+    invalidEscape:
+      'Con el flag u, esa barra invertida no escapa nada válido (como \\a, o \\- fuera de […]). Quita la «\\» o quita el flag u.',
+    invalidProperty:
+      'Esa propiedad Unicode no existe. Usa un nombre válido, como \\p{L} (letras) o \\p{Script=Greek}.',
+    invalidNamedRef:
+      '\\k<nombre> apunta a un grupo que no existe. Crea el grupo (?<nombre>…) o corrige el nombre.',
+    invalidClass:
+      'Un rango de […] tiene una clase como \\d en un extremo, como [a-\\d]. Pon el guion al final ([a\\d-]) o escápalo (\\-).',
     flags: 'Hay un flag repetido o desconocido. Los válidos son g, i, m, s, u, v, y y d.',
   },
   en: {
@@ -111,6 +125,16 @@ export const hints: Record<Locale, Record<ErrorHint, string>> = {
     rangeOrder: 'A character range is backwards, like [z-a]. Write it low to high: [a-z].',
     loneBracket:
       'With the u flag, a lone “]”, “{” or “}” is not allowed. Escape it (\\]) or drop the u flag.',
+    incompleteQuantifier:
+      'A “{” does not form a complete quantifier like {2} or {2,5}. Close it with “}” or escape it as \\{.',
+    invalidEscape:
+      'With the u flag, that backslash does not escape anything valid (like \\a, or \\- outside […]). Remove the “\\” or drop the u flag.',
+    invalidProperty:
+      'That Unicode property does not exist. Use a valid name, such as \\p{L} (letters) or \\p{Script=Greek}.',
+    invalidNamedRef:
+      '\\k<name> points to a group that does not exist. Add the group (?<name>…) or fix the name.',
+    invalidClass:
+      'A range inside […] has a class such as \\d at one end, like [a-\\d]. Put the hyphen last ([a\\d-]) or escape it (\\-).',
     flags: 'A flag is repeated or unknown. Valid ones are g, i, m, s, u, v, y and d.',
   },
 };
