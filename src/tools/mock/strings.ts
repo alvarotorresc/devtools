@@ -32,6 +32,8 @@ export const strings = {
     emptyName: 'Hay una columna sin nombre: escribe uno.',
     duplicate: 'Hay dos columnas llamadas "{name}": cambia una.',
     minMax: 'En "{name}", el mínimo es mayor que el máximo.',
+    numberStep:
+      'En "{name}", no hay ningún número con {decimals} decimales entre {min} y {max}: amplía el rango o sube los decimales.',
     dateRange:
       'En "{name}", escribe dos fechas válidas y que la inicial no sea posterior a la final.',
     emptyList: 'La lista de "{name}" está vacía: escribe al menos un valor.',
@@ -68,6 +70,8 @@ export const strings = {
     emptyName: 'A column has no name: type one.',
     duplicate: 'Two columns are called "{name}": rename one.',
     minMax: 'In "{name}", the minimum is greater than the maximum.',
+    numberStep:
+      'In "{name}", there is no number with {decimals} decimals between {min} and {max}: widen the range or add more decimals.',
     dateRange: 'In "{name}", type two valid dates and make sure the first is not after the second.',
     emptyList: 'The list for "{name}" is empty: type at least one value.',
     tableError:

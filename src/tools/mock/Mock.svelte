@@ -54,7 +54,11 @@
 
   $effect(() => {
     const json = JSON.stringify(config);
-    if (loaded) stored.value = json;
+    if (!loaded) return;
+    // Nothing changed from the locale's defaults: keep storage empty rather than saving a
+    // config that names its columns in this locale, which would leak onto the other locale
+    // (the storage key carries no locale) the next time this tool loads with nothing typed.
+    stored.value = json === JSON.stringify(defaultConfig(locale)) ? '' : json;
   });
 
   const result = $derived(session ? renderMock(config, now, session) : null);
@@ -67,6 +71,15 @@
         return s.emptyName;
       case 'table':
         return s.tableError;
+      case 'numberStep':
+        return fill(s.numberStep, {
+          name: e.name,
+          // maximumFractionDigits: toLocaleString defaults to 3, which would cut the very
+          // decimals (4th, e.g.) that make the range empty in the first place.
+          min: e.min.toLocaleString(locale, { maximumFractionDigits: 20 }),
+          max: e.max.toLocaleString(locale, { maximumFractionDigits: 20 }),
+          decimals: e.decimals,
+        });
       default:
         return fill(s[e.reason], { name: e.name });
     }
