@@ -80,6 +80,23 @@
     removed: s.kindRemoved,
     changed: s.kindChanged,
   });
+  // "Missing" is only accurate when the other side is actually empty; when both sides have
+  // content but at least one fails to parse, say so instead (its own error already sits under
+  // the field, so this is just the summary panel agreeing with reality).
+  const note = $derived(
+    parsedA === null && parsedB === null
+      ? s.empty
+      : parsedA === null || parsedB === null
+        ? s.waiting
+        : s.invalid,
+  );
+  const reportValue = $derived(
+    result && total > 0
+      ? result.hidden > 0
+        ? `${reportText(result.changes)}\n${fill(s.more, { n: result.hidden })}`
+        : reportText(result.changes)
+      : '',
+  );
 
   function swap() {
     const a = left.value;
@@ -135,7 +152,7 @@
       />
     {/snippet}
     {#if !result}
-      <p class="display-note">{parsedA?.ok || parsedB?.ok ? s.waiting : s.empty}</p>
+      <p class="display-note">{note}</p>
     {:else if total > 0}
       {#if shown.length}
         <ul class="display-rows changes">
@@ -161,12 +178,7 @@
   </Display>
 
   <div class="row">
-    <CopyButton
-      main
-      value={result && total > 0 ? reportText(result.changes) : ''}
-      {locale}
-      label={s.copyReport}
-    />
+    <CopyButton main value={reportValue} {locale} label={s.copyReport} />
     <Button
       variant="ghost"
       icon="arrow-left-right"
