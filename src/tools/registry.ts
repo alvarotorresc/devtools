@@ -28,7 +28,7 @@ import { meta as mock } from './mock/meta';
 // Lote 2: each tool task uncomments its import and its entry in `tools`.
 // Keep the blank lines between them: they let the parallel branches merge without conflicts.
 
-// import { meta as units } from './units/meta';
+import { meta as units } from './units/meta';
 
 // import { meta as currency } from './currency/meta';
 
@@ -85,7 +85,7 @@ export const tools: ToolMeta[] = [
   postalCode,
   mock,
 
-  // units,
+  units,
 
   // currency,
 
