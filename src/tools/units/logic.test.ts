@@ -47,7 +47,7 @@ describe('factor conversions', () => {
 
   it('converts mass', () => {
     expect(value('mass', 1, 'lb', 'kg')).toBe(0.45359237);
-    expect(value('mass', 1, 'kg', 'lb')).toBe(2.20462262185);
+    expect(value('mass', 1, 'kg', 'lb')).toBe(2.20462262184878);
     expect(value('mass', 1, 'st', 'lb')).toBe(14);
   });
 
@@ -55,9 +55,9 @@ describe('factor conversions', () => {
     expect(value('volume', 1, 'gal', 'ml')).toBe(3785.411784);
     expect(value('volume', 1, 'galuk', 'ptuk')).toBe(8);
     expect(value('area', 1, 'ac', 'ha')).toBe(0.40468564224);
-    expect(value('area', 1, 'ha', 'ac')).toBe(2.47105381467);
-    expect(value('speed', 100, 'kmh', 'mps')).toBe(27.7777777778);
-    expect(value('speed', 100, 'kmh', 'mph')).toBe(62.1371192237);
+    expect(value('area', 1, 'ha', 'ac')).toBe(2.47105381467165);
+    expect(value('speed', 100, 'kmh', 'mps')).toBe(27.7777777777778);
+    expect(value('speed', 100, 'kmh', 'mph')).toBe(62.1371192237334);
     expect(value('speed', 1, 'kn', 'kmh')).toBe(1.852);
   });
 
@@ -66,6 +66,18 @@ describe('factor conversions', () => {
     expect(value('data', 1, 'GB', 'bit')).toBe(8e9);
     expect(value('data', 1, 'MiB', 'KiB')).toBe(1024);
     expect(value('data', 1, 'B', 'bit')).toBe(8);
+  });
+
+  it('keeps exact integer results for 13+ significant digits', () => {
+    // toPrecision(12) used to corrupt these: 1099511627776 -> 1099511627780, etc.
+    expect(value('data', 1, 'TiB', 'B')).toBe(1099511627776);
+    expect(value('data', 1, 'TiB', 'bit')).toBe(8796093022208);
+    expect(value('area', 1, 'mi2', 'mm2')).toBe(2589988110336);
+  });
+
+  it('still removes floating-point noise on a real conversion', () => {
+    // Raw 4.54609 / 0.01 is 454.60900000000004 in IEEE 754; clean() must still round it.
+    expect(value('volume', 1, 'galuk', 'cl')).toBe(454.609);
   });
 
   it('keeps huge values (the view switches to scientific notation)', () => {

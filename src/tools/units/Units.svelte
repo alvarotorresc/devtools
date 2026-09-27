@@ -82,7 +82,7 @@
           <Select
             id="units-from"
             {describedby}
-            bind:value={froms[tab].value}
+            bind:value={() => fromId, (v) => (froms[tab].value = v)}
             options={units.map((u) => ({
               value: u.id,
               label: `${unitNames[locale][u.id]} (${u.symbol})`,
@@ -111,8 +111,8 @@
             </div>
           {/each}
         </div>
-      {:else}
-        <p class="display-note">{error ?? s.empty}</p>
+      {:else if !error}
+        <p class="display-note">{s.empty}</p>
       {/if}
     </Display>
 

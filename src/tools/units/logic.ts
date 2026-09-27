@@ -118,9 +118,13 @@ export function unitsOf(q: Quantity): Unit[] {
   return q === 'temperature' ? TEMPERATURE_UNITS : UNITS[q];
 }
 
-/** Removes floating-point noise: 0.3048 / 0.0254 = 12.000000000000002 → 12. */
+/**
+ * Removes floating-point noise: 0.3048 / 0.0254 = 12.000000000000002 → 12.
+ * 15 significant digits (not 12): 12 corrupted exact integer conversions with 13+
+ * significant digits, e.g. 1 TiB in bytes (1099511627776) rounded to 1099511627780.
+ */
 export function clean(x: number): number {
-  return Number(x.toPrecision(12));
+  return Number(x.toPrecision(15));
 }
 
 export function convertFactor(value: number, from: Unit, to: Unit): number {
