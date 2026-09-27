@@ -186,6 +186,22 @@ describe('parseCurl', () => {
       warnings: [{ kind: 'form-file', name: 'foto', file: 'yo.jpg' }],
     });
   });
+
+  it('drops the body and warns instead of handing out a fetch call that would throw on GET/HEAD', () => {
+    expect(request(`curl -X GET https://a.test -d '{"q":1}'`)).toMatchObject({
+      method: 'GET',
+      body: null,
+      form: null,
+    });
+    expect(warnings(`curl -X GET https://a.test -d '{"q":1}'`)).toEqual([
+      { kind: 'method-drops-body', method: 'GET' },
+    ]);
+
+    expect(request('curl -I https://a.test -d x')).toMatchObject({ method: 'HEAD', body: null });
+    expect(warnings('curl -I https://a.test -d x')).toEqual([
+      { kind: 'method-drops-body', method: 'HEAD' },
+    ]);
+  });
 });
 
 describe('toFetch', () => {
@@ -244,6 +260,33 @@ describe('toFetch', () => {
     const out = toFetch(request('curl https://a.test -H "Accept: */*" -H "X-Id: 1"'), 'es');
     expect(out).toContain("    Accept: '*/*',");
     expect(out).toContain("    'X-Id': '1',");
+  });
+
+  it("escapes a newline in a form file's name so it cannot break out of its `//` comment", () => {
+    const out = toFetch(request(`curl https://a.test -F $'foto=@a\\nb'`), 'es');
+    expect(out).toBe(
+      [
+        'const form = new FormData();',
+        '// a\\nb: fetch no puede leer archivos del disco: usa un File de un <input type="file">',
+        "form.append('foto', file);",
+        '',
+        "const response = await fetch('https://a.test', {",
+        "  method: 'POST',",
+        '  body: form,',
+        '});',
+      ].join('\n'),
+    );
+  });
+
+  it('sends a JSON body as-is, as a string, when an integer is too big to round-trip', () => {
+    const out = toFetch(
+      request(
+        `curl https://a.test -H 'Content-Type: application/json' -d '{"id":12345678901234567890}'`,
+      ),
+      'es',
+    );
+    expect(out).toContain(`  body: '{"id":12345678901234567890}',`);
+    expect(out).not.toContain('12345678901234567000');
   });
 
   it('escapes JavaScript strings', () => {

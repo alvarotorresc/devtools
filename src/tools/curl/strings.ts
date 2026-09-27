@@ -32,6 +32,8 @@ export const strings = {
     badHeader: 'Cabecera sin «:» ignorada: {text}',
     extraArgument: 'Argumento ignorado: {text}',
     noScheme: 'La URL no tiene esquema: se añade http://, como hace curl',
+    methodDropsBody:
+      'fetch no puede enviar cuerpo con el método {method}: se ha omitido para que el código funcione',
   },
   en: {
     input: 'cURL command',
@@ -64,5 +66,7 @@ export const strings = {
     badHeader: 'Header without “:” ignored: {text}',
     extraArgument: 'Argument ignored: {text}',
     noScheme: 'The URL has no scheme: http:// is added, like curl does',
+    methodDropsBody:
+      'fetch cannot send a body with the {method} method: it was left out so the code works',
   },
 } satisfies Record<Locale, Record<string, string>>;

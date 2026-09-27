@@ -31,7 +31,8 @@ export type CurlWarning =
   | { kind: 'duplicate-header'; name: string }
   | { kind: 'bad-header'; text: string }
   | { kind: 'extra-argument'; text: string }
-  | { kind: 'no-scheme' };
+  | { kind: 'no-scheme' }
+  | { kind: 'method-drops-body'; method: string };
 
 export type CurlError =
   | 'empty'
@@ -436,6 +437,16 @@ export function parseCurl(input: string): ParseResult {
 
   const finalMethod = method ?? (head ? 'HEAD' : !get && (body !== null || form) ? 'POST' : 'GET');
 
+  // fetch throws "Request with GET/HEAD method cannot have body" at runtime: curl itself has no
+  // such restriction, so drop the body/form here and warn instead of handing out broken code.
+  let finalBody = body;
+  let finalForm = form;
+  if ((finalMethod === 'GET' || finalMethod === 'HEAD') && (finalBody !== null || finalForm)) {
+    warnings.push({ kind: 'method-drops-body', method: finalMethod });
+    finalBody = null;
+    finalForm = null;
+  }
+
   return {
     ok: true,
     warnings,
@@ -443,8 +454,8 @@ export function parseCurl(input: string): ParseResult {
       url: finalUrl,
       method: finalMethod,
       headers: [...headers.values()],
-      body,
-      form,
+      body: finalBody,
+      form: finalForm,
       referrer,
       timeoutSeconds,
     },
@@ -475,6 +486,30 @@ const FILE_COMMENT: Record<Locale, string> = {
   en: 'fetch cannot read files from disk: use a File from an <input type="file">',
 };
 
+/**
+ * A value inside a generated `//` line comment: a raw line terminator in it (from `$'...'` or a
+ * literal newline inside quotes) would otherwise close the comment early and let the rest of the
+ * value run as bare, uncommented code in the snippet the user copies.
+ */
+function commentSafe(s: string): string {
+  return s
+    .replace(/\r\n/g, '\\n')
+    .replace(/[\r\n]/g, '\\n')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029');
+}
+
+/**
+ * Whether a JSON text has an integer literal (outside any string) too big for `Number` to
+ * represent exactly. `JSON.parse` + `JSON.stringify` would silently corrupt it (round-tripping to
+ * a different, nearby integer), so the caller should keep the original text instead.
+ */
+function hasUnsafeInteger(jsonText: string): boolean {
+  const withoutStrings = jsonText.replace(/"(?:[^"\\]|\\.)*"/g, '""');
+  const numbers = withoutStrings.match(/-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?/g) ?? [];
+  return numbers.some((n) => !/[.eE]/.test(n) && !Number.isSafeInteger(Number(n)));
+}
+
 /** `const response = await fetch(url, { … })`, leaving out every default. */
 export function toFetch(req: CurlRequest, locale: Locale): string {
   const lines: string[] = [];
@@ -482,7 +517,7 @@ export function toFetch(req: CurlRequest, locale: Locale): string {
     lines.push('const form = new FormData();');
     for (const f of req.form) {
       if (f.file) {
-        lines.push(`// ${f.value}: ${FILE_COMMENT[locale]}`);
+        lines.push(`// ${commentSafe(f.value)}: ${FILE_COMMENT[locale]}`);
         lines.push(`form.append(${jsString(f.name)}, file);`);
       } else {
         lines.push(`form.append(${jsString(f.name)}, ${jsString(f.value)});`);
@@ -507,7 +542,11 @@ export function toFetch(req: CurlRequest, locale: Locale): string {
     if (/json/i.test(type)) {
       try {
         parsed = JSON.parse(req.body);
-        isJson = true;
+        // A big integer would already have lost precision in `parsed`, and splicing the raw
+        // text into a `JSON.stringify(…)` call would only hide that: the literal would still
+        // evaluate to the same rounded float at runtime. Send the original text as a string
+        // instead, so the exact digits the user pasted go over the wire unchanged.
+        isJson = !hasUnsafeInteger(req.body);
       } catch {
         isJson = false;
       }

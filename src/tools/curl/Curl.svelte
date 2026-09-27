@@ -52,6 +52,8 @@
         return fill(s.extraArgument, { text: w.text });
       case 'no-scheme':
         return s.noScheme;
+      case 'method-drops-body':
+        return fill(s.methodDropsBody, { method: w.method });
     }
   }
 
