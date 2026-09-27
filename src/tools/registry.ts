@@ -38,7 +38,7 @@ import { meta as chmod } from './chmod/meta';
 
 import { meta as fileSize } from './file-size/meta';
 
-// import { meta as wheel } from './wheel/meta';
+import { meta as wheel } from './wheel/meta';
 
 // import { meta as shuffle } from './shuffle/meta';
 
@@ -95,7 +95,7 @@ export const tools: ToolMeta[] = [
 
   fileSize,
 
-  // wheel,
+  wheel,
 
   // shuffle,
 
