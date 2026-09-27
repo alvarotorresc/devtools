@@ -16,6 +16,10 @@ describe('ruleOfThree', () => {
     expect(ruleOfThree('direct', 1, 0.1, 3)).toBe(0.3);
   });
 
+  it('keeps exact results with 13+ significant digits', () => {
+    expect(ruleOfThree('direct', 1, 1099511627776, 3)).toBe(3298534883328);
+  });
+
   it('refuses to divide by 0', () => {
     expect(ruleOfThree('direct', 0, 10, 5)).toBeNull();
     expect(ruleOfThree('inverse', 4, 6, 0)).toBeNull();

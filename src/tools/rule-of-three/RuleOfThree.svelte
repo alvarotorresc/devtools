@@ -89,13 +89,17 @@
       {@render numberField('rot-c', s.c, C)}
       <span class="arrow" aria-hidden="true">→</span>
       <div class="x">
-        <span class="x-label">{s.x}</span>
-        <output class="control mono" for="rot-a rot-b rot-c">{x === null ? '' : fmt(x)}</output>
+        <span class="x-label" id="rot-x-label">{s.x}</span>
+        <output class="control mono" for="rot-a rot-b rot-c" aria-labelledby="rot-x-label"
+          >{x === null ? '' : fmt(x)}</output
+        >
       </div>
     </div>
 
     <Display live label={s.result}>
-      {#snippet head()}<span>{error ?? formula}</span>{/snippet}
+      {#snippet head()}
+        {#if error}<span class="display-note">{error}</span>{:else}<span>{formula}</span>{/if}
+      {/snippet}
       {#if x !== null}<div class="display-value" id="rot-x">{fmt(x)}</div>{/if}
     </Display>
 

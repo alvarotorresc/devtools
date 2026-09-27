@@ -2,7 +2,7 @@ export type Kind = 'direct' | 'inverse';
 
 /** Removes floating-point noise: 0.1 × 3 / 1 = 0.30000000000000004 → 0.3. */
 function clean(x: number): number {
-  return Number(x.toPrecision(12));
+  return Number(x.toPrecision(15));
 }
 
 /**
