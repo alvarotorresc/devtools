@@ -40,7 +40,7 @@ import FileSize from '../tools/file-size/FileSize.svelte';
 
 import Wheel from '../tools/wheel/Wheel.svelte';
 
-// import Shuffle from '../tools/shuffle/Shuffle.svelte';
+import Shuffle from '../tools/shuffle/Shuffle.svelte';
 
 // import Teams from '../tools/teams/Teams.svelte';
 
@@ -103,7 +103,7 @@ const { id, locale } = Astro.props;
 
 {id === 'wheel' && <Wheel client:load locale={locale} />}
 
-{/* {id === 'shuffle' && <Shuffle client:load locale={locale} />} */}
+{id === 'shuffle' && <Shuffle client:load locale={locale} />}
 
 {/* {id === 'teams' && <Teams client:load locale={locale} />} */}
 

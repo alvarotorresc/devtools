@@ -40,7 +40,7 @@ import { meta as fileSize } from './file-size/meta';
 
 import { meta as wheel } from './wheel/meta';
 
-// import { meta as shuffle } from './shuffle/meta';
+import { meta as shuffle } from './shuffle/meta';
 
 // import { meta as teams } from './teams/meta';
 
@@ -97,7 +97,7 @@ export const tools: ToolMeta[] = [
 
   wheel,
 
-  // shuffle,
+  shuffle,
 
   // teams,
 
