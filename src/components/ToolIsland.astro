@@ -71,7 +71,7 @@ import Mock from '../tools/mock/Mock.svelte';
 
 // import Markdown from '../tools/markdown/Markdown.svelte';
 
-// import Curl from '../tools/curl/Curl.svelte';
+import Curl from '../tools/curl/Curl.svelte';
 
 // import QueryString from '../tools/query-string/QueryString.svelte';
 
@@ -160,7 +160,7 @@ const { id, locale } = Astro.props;
 
 {/* {id === 'markdown' && <Markdown client:load locale={locale} />} */}
 
-{/* {id === 'curl' && <Curl client:load locale={locale} />} */}
+{id === 'curl' && <Curl client:load locale={locale} />}
 
 {/* {id === 'query-string' && <QueryString client:load locale={locale} />} */}
 

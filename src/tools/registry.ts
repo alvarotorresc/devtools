@@ -71,7 +71,7 @@ import { meta as mock } from './mock/meta';
 
 // import { meta as markdown } from './markdown/meta';
 
-// import { meta as curl } from './curl/meta';
+import { meta as curl } from './curl/meta';
 
 // import { meta as queryString } from './query-string/meta';
 
@@ -154,7 +154,7 @@ export const tools: ToolMeta[] = [
 
   // markdown,
 
-  // curl,
+  curl,
 
   // queryString,
 
