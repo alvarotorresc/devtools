@@ -38,13 +38,16 @@ export const strings = {
     rowsOther: '{n} filas',
     colsOne: '{n} columna',
     colsOther: '{n} columnas',
-    more: '… y {n} filas más. Copiar y Descargar llevan todas.',
+    moreOne: '… y {n} fila más. Copiar y Descargar llevan todas.',
+    moreOther: '… y {n} filas más. Copiar y Descargar llevan todas.',
     file: 'datos',
     noFields: 'Elige al menos un campo.',
     emptyName: 'Hay una columna sin nombre: escribe uno.',
     duplicate: 'Hay dos columnas llamadas "{name}": cambia una.',
     minMax: 'En "{name}", el mínimo es mayor que el máximo.',
-    numberStep:
+    numberStepOne:
+      'En "{name}", no hay ningún número con {decimals} decimal entre {min} y {max}: amplía el rango o sube los decimales.',
+    numberStepOther:
       'En "{name}", no hay ningún número con {decimals} decimales entre {min} y {max}: amplía el rango o sube los decimales.',
     dateRange:
       'En "{name}", escribe dos fechas válidas y que la inicial no sea posterior a la final.',
@@ -88,13 +91,16 @@ export const strings = {
     rowsOther: '{n} rows',
     colsOne: '{n} column',
     colsOther: '{n} columns',
-    more: '… and {n} more rows. Copy and Download include all of them.',
+    moreOne: '… and {n} more row. Copy and Download include all of them.',
+    moreOther: '… and {n} more rows. Copy and Download include all of them.',
     file: 'data',
     noFields: 'Choose at least one field.',
     emptyName: 'A column has no name: type one.',
     duplicate: 'Two columns are called "{name}": rename one.',
     minMax: 'In "{name}", the minimum is greater than the maximum.',
-    numberStep:
+    numberStepOne:
+      'In "{name}", there is no number with {decimals} decimal between {min} and {max}: widen the range or add more decimals.',
+    numberStepOther:
       'In "{name}", there is no number with {decimals} decimals between {min} and {max}: widen the range or add more decimals.',
     dateRange: 'In "{name}", type two valid dates and make sure the first is not after the second.',
     emptyList: 'The list for "{name}" is empty: type at least one value.',
