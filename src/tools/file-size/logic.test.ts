@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { humanSize, IEC_UNITS, inUnits, parseSize, SI_UNITS } from './logic';
+import {
+  formatExactBytes,
+  formatExactBytesPlain,
+  humanSize,
+  IEC_UNITS,
+  inUnits,
+  parseSize,
+  SI_UNITS,
+} from './logic';
 
 const bytes = (input: string, locale: 'es' | 'en' = 'es') => {
   const r = parseSize(input, locale);
@@ -35,6 +43,17 @@ describe('parseSize', () => {
     expect(parseSize('1 PB', 'es')).toMatchObject({ ok: true, approximate: false });
   });
 
+  it('flags approximate right at the Number.MAX_SAFE_INTEGER boundary', () => {
+    expect(parseSize(String(Number.MAX_SAFE_INTEGER), 'es')).toMatchObject({
+      ok: true,
+      approximate: false,
+    });
+    expect(parseSize(String(Number.MAX_SAFE_INTEGER + 1), 'es')).toMatchObject({
+      ok: true,
+      approximate: true,
+    });
+  });
+
   it('explains what is wrong', () => {
     expect(parseSize('', 'es')).toEqual({ ok: false, reason: 'empty' });
     expect(parseSize('-1 MB', 'es')).toEqual({ ok: false, reason: 'negative' });
@@ -53,6 +72,12 @@ describe('conversions', () => {
     expect(iec.find((r) => r.unit === 'B')!.value).toBe(1e12);
   });
 
+  it('keeps the B row exact instead of rounded to 12 significant digits', () => {
+    // 1 TiB = 1,099,511,627,776 B: 13 digits, so toPrecision(12) used to corrupt it to …780.
+    const oneTiB = 2 ** 40;
+    expect(inUnits(oneTiB, IEC_UNITS).find((r) => r.unit === 'B')!.value).toBe(1_099_511_627_776);
+  });
+
   it('picks the readable form in each system', () => {
     expect(humanSize(1.5e9, 'si')).toEqual({ value: 1.5, unit: 'GB' });
     expect(humanSize(1.5e9, 'iec')).toEqual({ value: 1.4, unit: 'GiB' });
@@ -60,5 +85,49 @@ describe('conversions', () => {
     expect(humanSize(1023, 'iec')).toEqual({ value: 1023, unit: 'B' });
     expect(humanSize(1024, 'iec')).toEqual({ value: 1, unit: 'KiB' });
     expect(humanSize(0.5, 'si')).toEqual({ value: 0.5, unit: 'B' });
+  });
+
+  it('promotes to the next unit when rounding reaches the unit base', () => {
+    // 1,048,575 B / 1024 rounds to 1024.0 KiB, which must promote to 1 MiB.
+    expect(humanSize(1_048_575, 'iec')).toEqual({ value: 1, unit: 'MiB' });
+  });
+});
+
+describe('formatExactBytes', () => {
+  it('never switches to scientific notation, even above 1e15', () => {
+    const onePiB = 2 ** 50;
+    expect(onePiB).toBe(1_125_899_906_842_624);
+    expect(formatExactBytes(onePiB, 'es')).toBe('1.125.899.906.842.624');
+    expect(formatExactBytes(onePiB, 'en')).toBe('1,125,899,906,842,624');
+  });
+
+  it('keeps up to 3 decimals for fractions of a byte', () => {
+    expect(formatExactBytes(0.5, 'es')).toBe('0,5');
+  });
+
+  it('shows whole byte counts with no decimals', () => {
+    expect(formatExactBytes(1024, 'es')).toBe('1.024');
+  });
+
+  it('rounds away floating-point noise from large divisions instead of showing it as exact', () => {
+    // 1,1 PB = 1.1e15, which as a double is 1100000000000000.1(25): not an integer, but the
+    // ".1" is float noise, not part of the exact byte count typed.
+    expect(formatExactBytes(bytes('1,1 PB', 'es'), 'es')).toBe('1.100.000.000.000.000');
+  });
+
+  it('still shows sub-byte fractions below the noise-rounding threshold', () => {
+    expect(formatExactBytes(0.5, 'es')).toBe('0,5');
+  });
+});
+
+describe('formatExactBytesPlain', () => {
+  it('has no thousands grouping, for copying the literal digits', () => {
+    const onePiB = 2 ** 50;
+    expect(formatExactBytesPlain(onePiB, 'es')).toBe('1125899906842624');
+  });
+
+  it('keeps the locale decimal mark for fractions of a byte', () => {
+    expect(formatExactBytesPlain(0.5, 'es')).toBe('0,5');
+    expect(formatExactBytesPlain(0.5, 'en')).toBe('0.5');
   });
 });

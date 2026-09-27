@@ -8,7 +8,15 @@
   import Toggle from '../../ui/Toggle.svelte';
   import { persistedInput } from '../../ui/persisted.svelte';
   import type { Locale } from '../types';
-  import { humanSize, IEC_UNITS, inUnits, parseSize, SI_UNITS } from './logic';
+  import {
+    formatExactBytes,
+    formatExactBytesPlain,
+    humanSize,
+    IEC_UNITS,
+    inUnits,
+    parseSize,
+    SI_UNITS,
+  } from './logic';
   import { meta } from './meta';
   import { strings } from './strings';
 
@@ -35,7 +43,8 @@
     const h = humanSize(bytes!, system);
     return `${formatNumber(h.value, locale)} ${h.unit}`;
   };
-  const exactBytes = $derived(bytes === null ? '' : formatNumber(bytes, locale, 3));
+  const exactBytes = $derived(bytes === null ? '' : formatExactBytes(bytes, locale));
+  const exactBytesCopy = $derived(bytes === null ? '' : formatExactBytesPlain(bytes, locale));
 </script>
 
 <div class="panel">
@@ -70,7 +79,10 @@
             <h3 class="col-title">{col.title}</h3>
             <div class="display-rows">
               {#each col.rows as r (r.unit)}
-                {@const shown = formatNumber(r.value, locale)}
+                {@const shown =
+                  r.unit === 'B'
+                    ? formatExactBytes(r.value, locale)
+                    : formatNumber(r.value, locale)}
                 <div class="display-row" data-unit={r.unit}>
                   <span>{shown} {r.unit}</span>
                   <CopyButton
@@ -100,7 +112,7 @@
   </Display>
 
   <div class="row">
-    <CopyButton main value={exactBytes} {locale} label={s.exact} />
+    <CopyButton main value={exactBytesCopy} {locale} label={s.exact} />
   </div>
 
   <p class="note">{s.explain}</p>

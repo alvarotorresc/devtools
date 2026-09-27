@@ -24,7 +24,8 @@ export const UNIT_BYTES: Record<string, number> = {
 
 export const SI_UNITS = ['B', 'kB', 'MB', 'GB', 'TB', 'PB'];
 export const IEC_UNITS = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB'];
-const MAX_SAFE_BYTES = 2 ** 53;
+/** Above this many bytes, integers can no longer be represented exactly as doubles. */
+const MAX_SAFE_BYTES = Number.MAX_SAFE_INTEGER;
 
 export type SizeResult =
   | {
@@ -33,7 +34,7 @@ export type SizeResult =
       unit: string;
       /** "KB" was typed: it is read as kB (SI), but Windows means KiB. */
       windowsKb: boolean;
-      /** Above 2^53 bytes the byte count is no longer exact. */
+      /** Above Number.MAX_SAFE_INTEGER (2^53 - 1) bytes the byte count is no longer exact. */
       approximate: boolean;
     }
   | { ok: false; reason: 'empty' | 'number' | 'negative' }
@@ -65,15 +66,54 @@ function clean(x: number): number {
   return Number(x.toPrecision(12));
 }
 
+/** The B row is always the untouched byte count: rounding to 12 significant digits would
+ * corrupt any exact value with 13+ digits (e.g. 1 TiB → …780 instead of …776). */
 export function inUnits(bytes: number, units: string[]): { unit: string; value: number }[] {
-  return units.map((unit) => ({ unit, value: clean(bytes / UNIT_BYTES[unit]) }));
+  return units.map((unit) => ({
+    unit,
+    value: unit === 'B' ? bytes : clean(bytes / UNIT_BYTES[unit]),
+  }));
 }
 
-/** The largest unit that gives at least 1, rounded to one decimal: 1.5 GB → 1.4 GiB. */
+/** Fractions of a byte only matter for tiny sizes. Past this, the division that produced
+ * `bytes` can leave floating-point noise (1.1 PB → …000.125): round it away instead of
+ * showing it as if it were part of the exact count. */
+const MAX_FRACTIONAL_BYTES = 2 ** 32;
+
+function exactDigits(bytes: number, locale: Locale, useGrouping: boolean): string {
+  const hasFraction = bytes < MAX_FRACTIONAL_BYTES && !Number.isInteger(bytes);
+  return new Intl.NumberFormat(locale, {
+    maximumFractionDigits: hasFraction ? 3 : 0,
+    useGrouping,
+  }).format(bytes);
+}
+
+/** The exact byte count as grouped digits, never scientific notation, however large. Sub-byte
+ * values keep up to 3 decimals; larger byte counts show none. */
+export function formatExactBytes(bytes: number, locale: Locale): string {
+  return exactDigits(bytes, locale, true);
+}
+
+/** Same value with no thousands grouping, for copying the literal digits. */
+export function formatExactBytesPlain(bytes: number, locale: Locale): string {
+  return exactDigits(bytes, locale, false);
+}
+
+/** The largest unit that gives at least 1, rounded to one decimal: 1.5 GB → 1.4 GiB. Rounding
+ * can push the value up to the next unit's base (1024 KiB), so it is then promoted (1 MiB). */
 export function humanSize(bytes: number, system: 'si' | 'iec'): { value: number; unit: string } {
   const units = system === 'si' ? SI_UNITS : IEC_UNITS;
-  let unit = units[0];
-  for (const u of units) if (bytes >= UNIT_BYTES[u]) unit = u;
-  const value = bytes / UNIT_BYTES[unit];
-  return { value: unit === 'B' ? clean(value) : Math.round(value * 10) / 10, unit };
+  const base = system === 'si' ? 1000 : 1024;
+  let index = 0;
+  for (let i = 0; i < units.length; i++) if (bytes >= UNIT_BYTES[units[i]]) index = i;
+  let unit = units[index];
+  const round = (u: string) =>
+    u === 'B' ? clean(bytes / UNIT_BYTES[u]) : Math.round((bytes / UNIT_BYTES[u]) * 10) / 10;
+  let value = round(unit);
+  if (value >= base && index < units.length - 1) {
+    index += 1;
+    unit = units[index];
+    value = round(unit);
+  }
+  return { value, unit };
 }
