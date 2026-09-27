@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { renderMarkdown } from './logic';
-import { isExternalSrc, PURIFY_CONFIG, sanitize } from './sanitize';
+import { isExternalSrc, keptClassValue, PURIFY_CONFIG, sanitize } from './sanitize';
 
 const BASE = 'https://devtools.test/es/vista-previa-markdown';
 
@@ -90,13 +90,50 @@ describe('PURIFY_CONFIG closes resource-loading vectors beyond plain <img src>',
     expect(PURIFY_CONFIG.FORBID_TAGS).toContain('track');
   });
 
-  it("strips id and class (UI redress with the site's own classes)", () => {
+  it('strips id (UI redress via a duplicate id)', () => {
     expect(PURIFY_CONFIG.FORBID_ATTR).toContain('id');
-    expect(PURIFY_CONFIG.FORBID_ATTR).toContain('class');
+    // class is not flatly forbidden any more: see keptClassValue below, which keeps
+    // `language-*` on <code>/<pre> and drops it everywhere else.
+    expect(PURIFY_CONFIG.FORBID_ATTR).not.toContain('class');
   });
 
   it('disables data-* attributes (they can carry data-copy-main, data-favorite, data-tabs-main)', () => {
     expect(PURIFY_CONFIG.ALLOW_DATA_ATTR).toBe(false);
+  });
+
+  it("forbids dialog (an open one silently disables the site's single-key shortcuts)", () => {
+    expect(PURIFY_CONFIG.FORBID_TAGS).toContain('dialog');
+  });
+});
+
+describe('keptClassValue (class survives only as language-* on <code>/<pre>)', () => {
+  // Third review round: a flat `class` in FORBID_ATTR (round 2's fix) also erased the
+  // `language-js` class GFM fenced code blocks produce, which downstream syntax highlighters key
+  // off when the sanitised HTML is copied out. This keeps that one case while still dropping any
+  // class value pasted Markdown could use to borrow the site's own CSS (`panel`, `display`, …).
+
+  it('keeps a `language-js` class on <code>', () => {
+    expect(keptClassValue('CODE', 'language-js')).toBe('language-js');
+  });
+
+  it('keeps a `language-*` class on <pre>', () => {
+    expect(keptClassValue('PRE', 'language-python')).toBe('language-python');
+  });
+
+  it('drops non-language tokens but keeps the language one', () => {
+    expect(keptClassValue('CODE', 'hljs language-ts foo')).toBe('language-ts');
+  });
+
+  it('drops the whole attribute when no token matches, even on <code>', () => {
+    expect(keptClassValue('CODE', 'hljs foo')).toBeNull();
+  });
+
+  it('drops class entirely on any other tag, e.g. <div class="panel">', () => {
+    expect(keptClassValue('DIV', 'panel')).toBeNull();
+  });
+
+  it('drops class entirely on <span>, even with a language-* token', () => {
+    expect(keptClassValue('SPAN', 'language-js')).toBeNull();
   });
 });
 

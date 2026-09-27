@@ -24,11 +24,17 @@ export const PURIFY_CONFIG = {
     'source',
     'picture',
     'track',
+    // AppLayout.astro's global keydown handler bails out of every single-key shortcut (c, 1-9,
+    // /, ?) whenever `document.querySelector('dialog[open]')` matches anywhere in the page — a
+    // pasted `<dialog open>` would otherwise silently disable them for the rest of the session.
+    'dialog',
   ],
-  // id/class also go: a duplicate `id="markdown-input"` or a class borrowed from the site's own
-  // stylesheet (`panel`, `display`, …) could redress the preview to look like part of the chrome
-  // around it. GFM output never needs either.
-  FORBID_ATTR: ['style', 'srcset', 'sizes', 'poster', 'background', 'id', 'class'],
+  // `id` goes entirely: a duplicate `id="markdown-input"` could redress the preview. `class`
+  // survives on <code>/<pre> only, filtered down to `language-*` tokens by the
+  // uponSanitizeAttribute hook below, so GFM's fenced-code-block class keeps working; every other
+  // tag/token loses `class` so pasted Markdown can't borrow the site's own CSS (`panel`,
+  // `display`, …) to redress the preview.
+  FORBID_ATTR: ['style', 'srcset', 'sizes', 'poster', 'background', 'id'],
   // Pasted Markdown could otherwise carry a `data-copy-main`, `data-favorite` or `data-tabs-main`
   // attribute and hijack the site's global shortcuts/click handlers, which match on those
   // attributes anywhere in the document (see AppLayout.astro / ToolShell.astro). GFM output never
@@ -65,6 +71,31 @@ export function isExternalSrc(src: string, baseURI: string): boolean {
   }
 }
 
+const LANGUAGE_CLASS = /^language-[\w-]+$/;
+
+/**
+ * What a `class` attribute on `tag` becomes after sanitising. Only `<code>`/`<pre>` keep it, and
+ * only the `language-*` token GFM fenced code blocks produce (see `renderMarkdown`'s output):
+ * every other tag, and every other token, is dropped so pasted Markdown can't borrow the site's
+ * own CSS classes (`panel`, `display`, …) to redress the preview. `null` means "drop the
+ * attribute entirely". Pure so both cases (kept and dropped) can be unit-tested without a DOM.
+ */
+export function keptClassValue(tag: string, value: string): string | null {
+  if (tag !== 'CODE' && tag !== 'PRE') return null;
+  const kept = value.split(/\s+/).filter((token) => LANGUAGE_CLASS.test(token));
+  return kept.length > 0 ? kept.join(' ') : null;
+}
+
+function uponSanitizeAttribute(
+  node: Element,
+  data: { attrName: string; attrValue: string; keepAttr: boolean },
+): void {
+  if (data.attrName !== 'class') return;
+  const kept = keptClassValue(node.nodeName, data.attrValue);
+  if (kept === null) data.keepAttr = false;
+  else data.attrValue = kept;
+}
+
 function afterSanitizeAttributes(node: Element): void {
   const tag = node.nodeName;
   if ((tag === 'A' || tag === 'AREA') && node.hasAttribute('href')) {
@@ -97,6 +128,7 @@ export function sanitize(dirty: string, opts: { externalImages: boolean }): Sani
   if (!DOMPurify.isSupported) return { html: '', blocked: 0 };
   if (!hooked) {
     DOMPurify.addHook('afterSanitizeAttributes', afterSanitizeAttributes);
+    DOMPurify.addHook('uponSanitizeAttribute', uponSanitizeAttribute);
     hooked = true;
   }
   loadExternal = opts.externalImages;
