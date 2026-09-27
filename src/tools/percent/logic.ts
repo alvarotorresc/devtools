@@ -1,6 +1,6 @@
 /** Removes floating-point noise: 0.07 × 100 = 7.000000000000001 → 7. */
 export function clean(x: number): number {
-  return Number(x.toPrecision(12));
+  return Number(x.toPrecision(15));
 }
 
 /** X % of Y, plus Y with that percentage added (surcharge) and taken off (discount). */
