@@ -83,7 +83,7 @@ import { meta as userAgent } from './user-agent/meta';
 
 import { meta as semver } from './semver/meta';
 
-// import { meta as cidr } from './cidr/meta';
+import { meta as cidr } from './cidr/meta';
 
 import type { Category, CategoryId, Locale, ToolMeta } from './types';
 
@@ -166,7 +166,7 @@ export const tools: ToolMeta[] = [
 
   semver,
 
-  // cidr,
+  cidr,
 ];
 
 export function toolById(id: string): ToolMeta | undefined {

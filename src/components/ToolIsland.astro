@@ -83,7 +83,7 @@ import UserAgent from '../tools/user-agent/UserAgent.svelte';
 
 import Semver from '../tools/semver/Semver.svelte';
 
-// import Cidr from '../tools/cidr/Cidr.svelte';
+import Cidr from '../tools/cidr/Cidr.svelte';
 
 import type { Locale } from '../tools/types';
 
@@ -172,4 +172,4 @@ const { id, locale } = Astro.props;
 
 {id === 'semver' && <Semver client:load locale={locale} />}
 
-{/* {id === 'cidr' && <Cidr client:load locale={locale} />} */}
+{id === 'cidr' && <Cidr client:load locale={locale} />}
