@@ -36,6 +36,8 @@ export const PURIFY_CONFIG = {
   // `display`, …) to redress the preview. `popover`/`popovertarget` let a pasted element pop over
   // the rest of the page without needing the already-forbidden `dialog`; `name` lets a pasted `<a>`
   // or `<img>` shadow a global by name (the classic `name="location"` or `name="getElementById"`).
+  // `for` is the other half of the id/name redress class (M17): a pasted `<label for="…">` could
+  // drive any control on the page that has an id, and GFM never emits `for` on its own.
   FORBID_ATTR: [
     'style',
     'srcset',
@@ -46,6 +48,7 @@ export const PURIFY_CONFIG = {
     'popover',
     'popovertarget',
     'name',
+    'for',
   ],
   // Pasted Markdown could otherwise carry a `data-copy-main`, `data-favorite` or `data-tabs-main`
   // attribute and hijack the site's global shortcuts/click handlers, which match on those
