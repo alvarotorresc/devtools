@@ -77,7 +77,7 @@ import { meta as mock } from './mock/meta';
 
 // import { meta as httpStatus } from './http-status/meta';
 
-// import { meta as cron } from './cron/meta';
+import { meta as cron } from './cron/meta';
 
 // import { meta as userAgent } from './user-agent/meta';
 
@@ -160,7 +160,7 @@ export const tools: ToolMeta[] = [
 
   // httpStatus,
 
-  // cron,
+  cron,
 
   // userAgent,
 

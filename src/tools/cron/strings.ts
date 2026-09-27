@@ -1,0 +1,38 @@
+import type { Locale } from '../types';
+
+export const strings = {
+  es: {
+    expression: 'Expresión cron',
+    placeholder: '*/15 9-18 * * 1-5',
+    help: 'minuto · hora · día del mes · mes · día de la semana',
+    zone: 'Zona horaria',
+    count: 'Ejecuciones',
+    explanation: 'Qué significa',
+    empty: 'Escribe una expresión de 5 campos, por ejemplo 30 9 * * 1-5.',
+    next: 'Próximas ejecuciones',
+    never: 'Esta expresión no se ejecuta nunca (por ejemplo, el 30 de febrero).',
+    reboot: 'Se ejecuta una vez al arrancar el sistema, así que no tiene próximas ejecuciones.',
+    adjusted: 'ajustada por el cambio de hora',
+    copyIso: 'Copiar',
+    copyIsoOf: 'Copiar {iso}',
+    copyText: 'Copiar explicación',
+    examples: 'Ejemplos',
+  },
+  en: {
+    expression: 'Cron expression',
+    placeholder: '*/15 9-18 * * 1-5',
+    help: 'minute · hour · day of month · month · day of week',
+    zone: 'Time zone',
+    count: 'Runs',
+    explanation: 'What it means',
+    empty: 'Type a 5-field expression, for example 30 9 * * 1-5.',
+    next: 'Next runs',
+    never: 'This expression never runs (for example, on 30 February).',
+    reboot: 'It runs once when the system starts, so it has no next runs.',
+    adjusted: 'moved by the clock change',
+    copyIso: 'Copy',
+    copyIsoOf: 'Copy {iso}',
+    copyText: 'Copy explanation',
+    examples: 'Examples',
+  },
+} satisfies Record<Locale, Record<string, string>>;
