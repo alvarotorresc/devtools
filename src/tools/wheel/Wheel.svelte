@@ -2,6 +2,7 @@
   import { onDestroy, tick, untrack } from 'svelte';
   import { t } from '../../i18n';
   import { fill } from '../../i18n/fill';
+  import { plural } from '../../lib/plural';
   import { cryptoRng } from '../../lib/random';
   import Button from '../../ui/Button.svelte';
   import Display from '../../ui/Display.svelte';
@@ -281,7 +282,7 @@
         <Button variant="primary" icon="refresh-cw" onclick={spin} disabled={spinning || !!problem}
           >{s.spin}</Button
         >
-        <span class="count">{fill(s.count, { n: options.length })}</span>
+        <span class="count">{plural(locale, options.length, s.countOne, s.countOther)}</span>
       </div>
     </div>
   </div>

@@ -13,7 +13,8 @@ export const strings = {
     history: 'Últimos resultados',
     few: 'Añade al menos dos opciones.',
     many: 'Como mucho 100 opciones: hay {n}.',
-    count: '{n} opciones',
+    countOne: '{n} opción',
+    countOther: '{n} opciones',
   },
   en: {
     options: 'Options',
@@ -27,6 +28,7 @@ export const strings = {
     history: 'Latest results',
     few: 'Add at least two options.',
     many: 'At most 100 options: there are {n}.',
-    count: '{n} options',
+    countOne: '{n} option',
+    countOther: '{n} options',
   },
 } satisfies Record<Locale, Record<string, string>>;
