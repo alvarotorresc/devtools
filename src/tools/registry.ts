@@ -54,7 +54,7 @@ import { meta as percent } from './percent/meta';
 
 import { meta as ruleOfThree } from './rule-of-three/meta';
 
-// import { meta as workdays } from './workdays/meta';
+import { meta as workdays } from './workdays/meta';
 
 import type { Category, CategoryId, Locale, ToolMeta } from './types';
 
@@ -111,7 +111,7 @@ export const tools: ToolMeta[] = [
 
   ruleOfThree,
 
-  // workdays,
+  workdays,
 ];
 
 export function toolById(id: string): ToolMeta | undefined {
