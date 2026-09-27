@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { renderMarkdown } from './logic';
-import { sanitize } from './sanitize';
+import { PURIFY_CONFIG, sanitize } from './sanitize';
 
 describe('renderMarkdown (GFM)', () => {
   it('renders headings and inline marks', () => {
@@ -50,5 +50,41 @@ describe('sanitize without a DOM', () => {
         externalImages: false,
       }),
     ).toEqual({ html: '', blocked: 0 });
+  });
+});
+
+describe('PURIFY_CONFIG closes resource-loading vectors beyond plain <img src>', () => {
+  // Vitest runs in `node` with no DOM (see above), so DOMPurify itself cannot be exercised here:
+  // the actual sanitised output for these vectors is verified live in the Step 11 browser check
+  // and Task 14's e2e. Each vector below was confirmed, with "Load external images" off, to still
+  // fire a request to an external origin before FORBID_TAGS/FORBID_ATTR were extended to cover it;
+  // these tests pin the config that keeps that request from ever happening again.
+
+  it('blocks `<img srcset="...">` (no plain src, so the src-only hook never sees it)', () => {
+    expect(PURIFY_CONFIG.FORBID_ATTR).toContain('srcset');
+  });
+
+  it('blocks `<picture><source srcset="..."></picture>`', () => {
+    expect(PURIFY_CONFIG.FORBID_TAGS).toContain('picture');
+    expect(PURIFY_CONFIG.FORBID_TAGS).toContain('source');
+    expect(PURIFY_CONFIG.FORBID_ATTR).toContain('srcset');
+  });
+
+  it('blocks `<video poster="...">`', () => {
+    expect(PURIFY_CONFIG.FORBID_TAGS).toContain('video');
+    expect(PURIFY_CONFIG.FORBID_ATTR).toContain('poster');
+  });
+
+  it('blocks inline `style="background:url(...)"`', () => {
+    expect(PURIFY_CONFIG.FORBID_ATTR).toContain('style');
+  });
+
+  it('blocks the legacy `<table background="...">`', () => {
+    expect(PURIFY_CONFIG.FORBID_ATTR).toContain('background');
+  });
+
+  it('also forbids audio and track, the remaining media tags with the same attributes', () => {
+    expect(PURIFY_CONFIG.FORBID_TAGS).toContain('audio');
+    expect(PURIFY_CONFIG.FORBID_TAGS).toContain('track');
   });
 });

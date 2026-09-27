@@ -4,7 +4,28 @@ export const BLOCKED_CLASS = 'md-blocked';
 
 export const PURIFY_CONFIG = {
   USE_PROFILES: { html: true },
-  FORBID_TAGS: ['style', 'form', 'button', 'textarea', 'select', 'iframe', 'object', 'embed'],
+  // video/audio/source/picture/track and the style/srcset/sizes/poster/background attributes all
+  // fetch a URL on their own, bypassing the src-only check in afterSanitizeAttributes below: an
+  // <img srcset>, a <picture><source srcset>, a <video poster>, an inline `style="background:
+  // url(...)"` or a legacy `background=` on <table> would otherwise leak a request to whatever
+  // origin is embedded before "Load external images" is ever turned on. img itself stays allowed
+  // so the existing hook can still gate it behind that toggle.
+  FORBID_TAGS: [
+    'style',
+    'form',
+    'button',
+    'textarea',
+    'select',
+    'iframe',
+    'object',
+    'embed',
+    'video',
+    'audio',
+    'source',
+    'picture',
+    'track',
+  ],
+  FORBID_ATTR: ['style', 'srcset', 'sizes', 'poster', 'background'],
 };
 
 export interface Sanitized {
