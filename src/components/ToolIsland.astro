@@ -42,7 +42,7 @@ import Wheel from '../tools/wheel/Wheel.svelte';
 
 import Shuffle from '../tools/shuffle/Shuffle.svelte';
 
-// import Teams from '../tools/teams/Teams.svelte';
+import Teams from '../tools/teams/Teams.svelte';
 
 // import Dice from '../tools/dice/Dice.svelte';
 
@@ -105,7 +105,7 @@ const { id, locale } = Astro.props;
 
 {id === 'shuffle' && <Shuffle client:load locale={locale} />}
 
-{/* {id === 'teams' && <Teams client:load locale={locale} />} */}
+{id === 'teams' && <Teams client:load locale={locale} />}
 
 {/* {id === 'dice' && <Dice client:load locale={locale} />} */}
 
