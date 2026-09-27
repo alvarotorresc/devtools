@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { renderMarkdown } from './logic';
-import { PURIFY_CONFIG, sanitize } from './sanitize';
+import { isExternalSrc, PURIFY_CONFIG, sanitize } from './sanitize';
+
+const BASE = 'https://devtools.test/es/vista-previa-markdown';
 
 describe('renderMarkdown (GFM)', () => {
   it('renders headings and inline marks', () => {
@@ -86,5 +88,69 @@ describe('PURIFY_CONFIG closes resource-loading vectors beyond plain <img src>',
   it('also forbids audio and track, the remaining media tags with the same attributes', () => {
     expect(PURIFY_CONFIG.FORBID_TAGS).toContain('audio');
     expect(PURIFY_CONFIG.FORBID_TAGS).toContain('track');
+  });
+
+  it("strips id and class (UI redress with the site's own classes)", () => {
+    expect(PURIFY_CONFIG.FORBID_ATTR).toContain('id');
+    expect(PURIFY_CONFIG.FORBID_ATTR).toContain('class');
+  });
+
+  it('disables data-* attributes (they can carry data-copy-main, data-favorite, data-tabs-main)', () => {
+    expect(PURIFY_CONFIG.ALLOW_DATA_ATTR).toBe(false);
+  });
+});
+
+describe('isExternalSrc (external-image gate, resolved against a base URL)', () => {
+  // Second review round: a plain scheme/host regex (`/^(?:https?:)?\/\//i`) missed every form
+  // below. Each one was confirmed live, with "Load external images" off, to still fetch
+  // example.com before the gate was rewritten to resolve the URL instead of pattern-matching it.
+
+  it('blocks `https:\\\\example.com/…` (backslashes act as slashes for special schemes)', () => {
+    expect(isExternalSrc('https:\\\\example.com/1.png', BASE)).toBe(true);
+  });
+
+  it('blocks `\\\\example.com/…` (protocol-relative, backslash form)', () => {
+    expect(isExternalSrc('\\\\example.com/2.png', BASE)).toBe(true);
+  });
+
+  it('blocks `/\\example.com/…` (leading slash + backslash)', () => {
+    expect(isExternalSrc('/\\example.com/3.png', BASE)).toBe(true);
+  });
+
+  it('blocks `http:\\\\example.com/…`', () => {
+    expect(isExternalSrc('http:\\\\example.com/4.png', BASE)).toBe(true);
+  });
+
+  it('blocks `http:example.com/x` (scheme-relative, resolves absolute on an https page)', () => {
+    expect(isExternalSrc('http:example.com/x', BASE)).toBe(true);
+  });
+
+  it('blocks a plain `https://example.com/...` URL', () => {
+    expect(isExternalSrc('https://example.com/a.png', BASE)).toBe(true);
+  });
+
+  it('blocks a protocol-relative `//example.com/...` URL', () => {
+    expect(isExternalSrc('//example.com/a.png', BASE)).toBe(true);
+  });
+
+  it('allows a same-origin absolute URL', () => {
+    expect(isExternalSrc('https://devtools.test/self.png', BASE)).toBe(false);
+  });
+
+  it('allows a root-relative path (resolves same-origin)', () => {
+    expect(isExternalSrc('/images/logo.png', BASE)).toBe(false);
+  });
+
+  it('allows a bare relative path (resolves same-origin)', () => {
+    expect(isExternalSrc('logo.png', BASE)).toBe(false);
+  });
+
+  it('allows a data: URI regardless of origin', () => {
+    expect(isExternalSrc('data:image/png;base64,AAAA', BASE)).toBe(false);
+  });
+
+  it('fails closed (treated as external) when the URL cannot be resolved', () => {
+    expect(isExternalSrc('http://', BASE)).toBe(true);
+    expect(isExternalSrc('http://a b.com/x', BASE)).toBe(true);
   });
 });

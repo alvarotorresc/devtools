@@ -120,7 +120,7 @@
     color: var(--disp-text);
     overflow-wrap: anywhere;
   }
-  .md-preview :global(:first-child) {
+  .md-preview > :global(:first-child) {
     margin-top: 0;
   }
   .md-preview :global(h1),

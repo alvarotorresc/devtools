@@ -1,6 +1,6 @@
 import { marked } from 'marked';
 
-/** Above this size the preview waits for a pause in typing. */
+/** How long the preview waits after a keystroke before re-rendering and sanitising. */
 export const DEBOUNCE_MS = 150;
 
 export const SAMPLE = `# Título
