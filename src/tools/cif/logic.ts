@@ -194,7 +194,11 @@ function looksLikeDniOrNie(raw: string): boolean {
  * a K, L or M NIF, or something shaped like a DNI or NIE.
  */
 export function shouldRememberCif(text: string): boolean {
-  return !splitLines(text).lines.some((line) => isPersonalNif(line) || looksLikeDniOrNie(line));
+  // No cap: a line past the validator's 1000-line display limit must still block saving personal
+  // data, since it is well below MAX_REMEMBERED (persisted.svelte's character cap).
+  return !splitLines(text, Infinity).lines.some(
+    (line) => isPersonalNif(line) || looksLikeDniOrNie(line),
+  );
 }
 
 /** Without a type, A and B at 50 %: they are by far the most common. */
