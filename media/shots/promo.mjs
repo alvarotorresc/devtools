@@ -38,12 +38,13 @@ async function renderPromo(page, html, img, lang, n, outName) {
 // El favicon a sangre: sin esquinas redondeadas (la web y las stores ponen las suyas) y con
 // fondo sólido, como pide docs/MEDIA_PROYECTOS.md de alvarotc-web.
 async function renderIcon(page) {
-  const svg = (await readFile(join(REPO_ROOT, 'public', 'favicon.svg'), 'utf8'))
-    .replace(/\s*rx="[^"]*"/, '')
-    .replace('<svg ', '<svg width="1024" height="1024" ');
+  const raw = await readFile(join(REPO_ROOT, 'public', 'favicon.svg'), 'utf8');
+  // El fondo del lienzo es el mismo relleno que el <rect> del favicon.
+  const bg = raw.match(/<rect[^>]*fill="([^"]+)"/)?.[1] ?? '#161719';
+  const svg = raw.replace(/\s*rx="[^"]*"/, '').replace('<svg ', '<svg width="1024" height="1024" ');
   await page.setViewportSize({ width: 1024, height: 1024 });
   await page.setContent(
-    `<!doctype html><html><body style="margin:0;background:#161b22">${svg}</body></html>`,
+    `<!doctype html><html><body style="margin:0;background:${bg}">${svg}</body></html>`,
   );
   const buf = await page.screenshot({ clip: { x: 0, y: 0, width: 1024, height: 1024 } });
   const outPath = join(OUT, 'icon.png');
