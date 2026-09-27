@@ -69,7 +69,7 @@ import { meta as dataConvert } from './data-convert/meta';
 
 import { meta as jsonDiff } from './json-diff/meta';
 
-// import { meta as markdown } from './markdown/meta';
+import { meta as markdown } from './markdown/meta';
 
 // import { meta as curl } from './curl/meta';
 
@@ -152,7 +152,7 @@ export const tools: ToolMeta[] = [
 
   jsonDiff,
 
-  // markdown,
+  markdown,
 
   // curl,
 
