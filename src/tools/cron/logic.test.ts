@@ -175,6 +175,46 @@ describe('resolveWallTime and DST (Europe/Madrid)', () => {
   });
 });
 
+describe('resolveWallTime and DST west of UTC (America/New_York)', () => {
+  it('maps an existing time near the spring gap to its instant', () => {
+    // 01:30 EST exists (the jump is at 02:00 EST / 07:00Z, not before it).
+    expect(resolveWallTime(2026, 3, 8, 1, 30, 'America/New_York')).toEqual({
+      ms: Date.UTC(2026, 2, 8, 6, 30),
+      adjusted: false,
+    });
+  });
+
+  it('runs a time in the spring gap at the first minute after the jump, not before it', () => {
+    // 02:30 does not exist on 2026-03-08: clocks go from 02:00 EST to 03:00 EDT (07:00Z).
+    // A one-sided search that only looks backward from zonedToUtc's guess converges on
+    // 06:30Z (01:30 EST, before the jump); the correct answer is 07:00Z (03:00 EDT, after it).
+    expect(resolveWallTime(2026, 3, 8, 2, 30, 'America/New_York')).toEqual({
+      ms: Date.UTC(2026, 2, 8, 7, 0),
+      adjusted: true,
+    });
+  });
+
+  it('runs a time in the repeated November hour once, at its first occurrence', () => {
+    // 01:30 happens twice on 2026-11-01: 05:30Z (EDT) and 06:30Z (EST).
+    expect(resolveWallTime(2026, 11, 1, 1, 30, 'America/New_York')).toEqual({
+      ms: Date.UTC(2026, 10, 1, 5, 30),
+      adjusted: false,
+    });
+  });
+});
+
+describe('resolveWallTime and DST far east of UTC (Australia/Sydney)', () => {
+  it('runs a time in the spring gap at the first minute after the jump', () => {
+    // Sydney's clocks go forward on the first Sunday of October: 02:00 AEST to 03:00 AEDT.
+    // 02:30 does not exist on 2026-10-04; the first valid minute after is 03:00 AEDT (16:00Z
+    // the previous day in UTC).
+    expect(resolveWallTime(2026, 10, 4, 2, 30, 'Australia/Sydney')).toEqual({
+      ms: Date.UTC(2026, 9, 3, 16, 0),
+      adjusted: true,
+    });
+  });
+});
+
 describe('nextRuns', () => {
   it('starts at the next minute in the chosen zone (e2e vector)', () => {
     const runs = nextRuns(
@@ -219,6 +259,23 @@ describe('nextRuns', () => {
       2,
     );
     expect(iso(runs)).toEqual(['2026-10-25T00:30:00.000Z', '2026-10-26T01:30:00.000Z']);
+  });
+
+  it('keeps both the real run and the moved run across a west-of-UTC spring gap', () => {
+    // In America/New_York, 2026-03-08 is spring-forward day: 01:30 EST is real, and 02:30 does
+    // not exist (it moves to 03:00 EDT). A one-sided gap search resolves both to the same
+    // instant (06:30Z), and the `seen` dedup then silently drops the moved run.
+    const runs = nextRuns(
+      cron('30 1,2 * * *'),
+      Date.parse('2026-03-08T04:00:00Z'),
+      'America/New_York',
+      3,
+    );
+    expect(runs).toEqual([
+      { ms: Date.UTC(2026, 2, 8, 6, 30), adjusted: false },
+      { ms: Date.UTC(2026, 2, 8, 7, 0), adjusted: true },
+      { ms: Date.UTC(2026, 2, 9, 5, 30), adjusted: false },
+    ]);
   });
 
   it('applies the day-of-month OR day-of-week rule', () => {

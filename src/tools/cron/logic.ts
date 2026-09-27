@@ -419,8 +419,11 @@ export function resolveWallTime(
     return { ms: inst, adjusted: false };
   }
   // The time does not exist: find the first minute whose wall clock is past it (the jump).
+  // `inst` (zonedToUtc's fixed point) can land on either side of the jump depending on the
+  // zone's offset sign — after it for zones east of UTC, before it for zones west of UTC — so
+  // the search brackets both directions instead of assuming one.
   let lo = inst - 4 * 60 * MINUTE;
-  let hi = inst;
+  let hi = inst + 4 * 60 * MINUTE;
   while (hi - lo > MINUTE) {
     const mid = lo + Math.floor((hi - lo) / MINUTE / 2) * MINUTE;
     if (wallClock(mid, timeZone) > key) hi = mid;
@@ -428,6 +431,13 @@ export function resolveWallTime(
   }
   return { ms: hi, adjusted: true };
 }
+
+// Every real-world DST shift today moves the clock by at most 60 minutes, so a candidate whose
+// nominal local time is up to an hour before "now" can still resolve (via resolveWallTime's
+// forward jump) to an instant at or after "now". This margin adds slack on top of that so the
+// skip below stays correct even if it is ever reused for a larger shift.
+const SKIP_MARGIN_MINUTES = 180;
+const SKIP_MARGIN_HOURS = SKIP_MARGIN_MINUTES / 60;
 
 function dayMatches(cron: Cron, mo: number, d: number, weekday: number): boolean {
   if (!cron.month.values.includes(mo)) return false;
@@ -452,10 +462,10 @@ export function nextRuns(cron: Cron, nowMs: number, timeZone: string, count: num
     const d = day.getUTCDate();
     if (!dayMatches(cron, mo, d, day.getUTCDay())) continue;
     for (const h of cron.hour.values) {
-      // Today, skip hours well before now (an hour of margin covers DST shifts).
-      if (k === 0 && h < h0 - 1) continue;
+      // Today, skip hours well before now (margin covers DST shifts, see SKIP_MARGIN_MINUTES).
+      if (k === 0 && h < h0 - SKIP_MARGIN_HOURS) continue;
       for (const mi of cron.minute.values) {
-        if (k === 0 && h * 60 + mi < h0 * 60 + mi0 - 60) continue;
+        if (k === 0 && h * 60 + mi < h0 * 60 + mi0 - SKIP_MARGIN_MINUTES) continue;
         const run = resolveWallTime(y, mo, d, h, mi, timeZone);
         if (!run || run.ms < start || seen.has(run.ms)) continue;
         seen.add(run.ms);
