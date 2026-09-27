@@ -14,20 +14,30 @@
 
   const DAY_MS = 86_400_000;
 
+  // Today comes from the browser, never from the build machine: only called from onMount and
+  // from shouldSave below, never at the top level (which SSR would evaluate on the server).
+  const todayIso = () => {
+    const now = new Date();
+    return toIso({ y: now.getFullYear(), m: now.getMonth() + 1, d: now.getDate() });
+  };
+  const defaultEndIso = () => `${new Date().getFullYear()}-12-31`;
+
   let { locale }: { locale: Locale } = $props();
   const s = $derived(strings[locale]);
   const remember = meta.rememberInput ?? true;
-  const start = persistedInput('workdays', '', remember);
-  const end = persistedInput('workdays-end', '', remember);
+  // The auto-filled default drifts with the clock (a new "today" every day), so it must never
+  // be written to storage: shouldSave refuses to persist a value that still equals today's
+  // default, and clears whatever was stored if it drifts back to it. Only a date the person
+  // actually typed gets remembered.
+  const start = persistedInput('workdays', '', remember, (v) => v !== todayIso());
+  const end = persistedInput('workdays-end', '', remember, (v) => v !== defaultEndIso());
   const include = persistedInput('workdays-include', '1', remember);
 
-  // Runs after persistedInput's onMount: only fills the dates when nothing was remembered.
-  // Today comes from the browser, never from the build machine.
+  // Runs after persistedInput's onMount. Each field defaults independently — one may have been
+  // remembered while the other was not, since a value equal to its own default is never saved.
   onMount(() => {
-    if (start.value || end.value) return;
-    const now = new Date();
-    start.value = toIso({ y: now.getFullYear(), m: now.getMonth() + 1, d: now.getDate() });
-    end.value = `${now.getFullYear()}-12-31`;
+    if (!start.value) start.value = todayIso();
+    if (!end.value) end.value = defaultEndIso();
   });
 
   const includeEnd = $derived(include.value !== '0');
