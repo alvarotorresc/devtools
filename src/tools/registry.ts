@@ -36,7 +36,7 @@ import { meta as mock } from './mock/meta';
 
 // import { meta as chmod } from './chmod/meta';
 
-// import { meta as fileSize } from './file-size/meta';
+import { meta as fileSize } from './file-size/meta';
 
 // import { meta as wheel } from './wheel/meta';
 
@@ -93,7 +93,7 @@ export const tools: ToolMeta[] = [
 
   // chmod,
 
-  // fileSize,
+  fileSize,
 
   // wheel,
 
