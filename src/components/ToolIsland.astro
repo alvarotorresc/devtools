@@ -61,7 +61,7 @@ import Mock from '../tools/mock/Mock.svelte';
 
 import Password from '../tools/password/Password.svelte';
 
-// import Qr from '../tools/qr/Qr.svelte';
+import Qr from '../tools/qr/Qr.svelte';
 
 // import Slug from '../tools/slug/Slug.svelte';
 
@@ -150,7 +150,7 @@ const { id, locale } = Astro.props;
 
 {id === 'password' && <Password client:load locale={locale} />}
 
-{/* {id === 'qr' && <Qr client:load locale={locale} />} */}
+{id === 'qr' && <Qr client:load locale={locale} />}
 
 {/* {id === 'slug' && <Slug client:load locale={locale} />} */}
 
