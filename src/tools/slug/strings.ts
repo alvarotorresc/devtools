@@ -1,0 +1,36 @@
+import type { Locale } from '../types';
+
+export const strings = {
+  es: {
+    input: 'Textos (uno por línea)',
+    placeholder: '¡Hola, Mundo! Año 2026\nStraße & Co',
+    separator: 'Separador',
+    lowercase: 'Minúsculas',
+    ampersand: '& como «y»',
+    limit: 'Limitar la longitud',
+    maxLength: 'Longitud máxima',
+    result: 'Slugs',
+    count: '{n} slugs',
+    one: '1 slug',
+    empty: 'Escribe un título por línea y aquí verás su slug.',
+    noLatin: 'No queda ningún carácter latino: el slug estaría vacío',
+    copyAll: 'Copiar slugs',
+    copyOne: 'Copiar {slug}',
+  },
+  en: {
+    input: 'Texts (one per line)',
+    placeholder: 'Hello, World! Year 2026\nStraße & Co',
+    separator: 'Separator',
+    lowercase: 'Lowercase',
+    ampersand: '& as “and”',
+    limit: 'Limit the length',
+    maxLength: 'Maximum length',
+    result: 'Slugs',
+    count: '{n} slugs',
+    one: '1 slug',
+    empty: 'Type one title per line and you will see its slug here.',
+    noLatin: 'No Latin character is left: the slug would be empty',
+    copyAll: 'Copy slugs',
+    copyOne: 'Copy {slug}',
+  },
+} satisfies Record<Locale, Record<string, string>>;
