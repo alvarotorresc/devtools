@@ -44,7 +44,7 @@ import Shuffle from '../tools/shuffle/Shuffle.svelte';
 
 import Teams from '../tools/teams/Teams.svelte';
 
-// import Dice from '../tools/dice/Dice.svelte';
+import Dice from '../tools/dice/Dice.svelte';
 
 // import Iva from '../tools/iva/Iva.svelte';
 
@@ -107,7 +107,7 @@ const { id, locale } = Astro.props;
 
 {id === 'teams' && <Teams client:load locale={locale} />}
 
-{/* {id === 'dice' && <Dice client:load locale={locale} />} */}
+{id === 'dice' && <Dice client:load locale={locale} />}
 
 {/* {id === 'iva' && <Iva client:load locale={locale} />} */}
 

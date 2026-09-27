@@ -44,7 +44,7 @@ import { meta as shuffle } from './shuffle/meta';
 
 import { meta as teams } from './teams/meta';
 
-// import { meta as dice } from './dice/meta';
+import { meta as dice } from './dice/meta';
 
 // import { meta as iva } from './iva/meta';
 
@@ -101,7 +101,7 @@ export const tools: ToolMeta[] = [
 
   teams,
 
-  // dice,
+  dice,
 
   // iva,
 
