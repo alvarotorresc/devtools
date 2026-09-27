@@ -258,12 +258,12 @@ const TEXTS = {
   },
   dni: {
     es: t(
-      'Un DNI ficticio validado, con su número y su letra de control.',
+      'El DNI de ejemplo 12345678Z validado, con su número y su letra.',
       'DNI válido',
       'Comprueba DNI y NIE, calcula la letra y genera documentos ficticios.',
     ),
     en: t(
-      'A fictional DNI validated, with its number and check letter.',
+      'The sample DNI 12345678Z validated, with its number and check letter.',
       'Valid DNI',
       'Checks Spanish DNI and NIE, works out the letter and generates fake ones.',
     ),

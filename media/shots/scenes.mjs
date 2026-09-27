@@ -45,9 +45,9 @@ function scrollTo(selector, offset = 24) {
   };
 }
 
-// DNI ficticio con la letra de control correcta, calculada aquí en vez de copiar uno real.
-const DNI_NUM = 48291037;
-const DNI = `${DNI_NUM}${'TRWAGMYFPDXBNJZSQVHLCKE'[DNI_NUM % 23]}`;
+// El DNI de ejemplo de siempre (el mismo que usa el propio texto de la herramienta): se lee como
+// marcador, no como el documento de alguien.
+const DNI = '12345678Z';
 
 const b64url = (obj) => Buffer.from(JSON.stringify(obj)).toString('base64url');
 // JWT de demo: cabecera y payload reales, firma de relleno (el decodificador no la verifica).
@@ -214,8 +214,8 @@ const PER_TOOL = {
         page,
         '#regex-text',
         T(
-          'Escribe a ana.gil@ejemplo.com o a soporte@tienda.es.\nFacturas: pagos@ejemplo.org · Sin correo: hola arroba nada',
-          'Write to ana.gil@example.com or support@shop.dev.\nInvoices: billing@example.org · No email: hello at nothing',
+          'Escribe a ana.gil@ejemplo.com o a soporte@ejemplo.org.\nFacturas: pagos@ejemplo.org · Sin correo: hola arroba nada',
+          'Write to ana.gil@example.com or support@example.org.\nInvoices: billing@example.org · No email: hello at nothing',
         )[lang],
       );
     },
