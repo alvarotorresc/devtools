@@ -286,6 +286,26 @@ test.describe('lote 1: identifiers and mock data', () => {
     for (const v of await rows.allTextContents()) expect(v).toMatch(/^[A-HJNP-SUVW]\d{7}[0-9A-J]$/);
   });
 
+  // CIF remembers input by default (it is public), so it cannot use nothingStored: a key
+  // containing "cif" legitimately exists. A positive control shows persistence works at all,
+  // which makes the negative check on the DNI-shaped line mean something.
+  test('cif remembers a plain CIF but never a DNI pasted alongside one', async ({ page }) => {
+    await page.goto('/es/validador-cif');
+    await page.locator('#cif-input').fill('B65410011');
+    await expect
+      .poll(async () =>
+        page.evaluate(() => Object.values(localStorage).some((v) => v.includes('B65410011'))),
+      )
+      .toBe(true);
+
+    await page.locator('#cif-input').fill('B65410011\n12345678Z');
+    await page.waitForTimeout(500);
+    const leaked = await page.evaluate(() =>
+      Object.values(localStorage).some((v) => v.includes('12345678Z')),
+    );
+    expect(leaked).toBe(false);
+  });
+
   test('iban breaks down a Spanish IBAN, catches a typo and stores nothing', async ({ page }) => {
     await page.goto('/es/validador-iban');
     await page.locator('#iban-input').fill('ES91 2100 0418 4502 0005 1332');
@@ -305,13 +325,14 @@ test.describe('lote 1: identifiers and mock data', () => {
     await expect(page.locator('.display-kv')).toContainText('Madrid');
   });
 
-  test('nss shows the province and the right control', async ({ page }) => {
+  test('nss shows the province and the right control, and stores nothing', async ({ page }) => {
     await page.goto('/es/validador-numero-seguridad-social');
     await page.locator('#nss-input').fill('28/12345678/40');
     await expect(page.locator('.display-head')).toContainText('Número válido');
     await expect(page.locator('.display-kv')).toContainText('Madrid');
     await page.locator('#nss-input').fill('281234567841');
     await expect(page.getByText('debería ser 40')).toBeVisible();
+    await nothingStored(page, 'nss', '281234567841');
   });
 
   test('card validates with Luhn, generates Amex and stores nothing', async ({ page }) => {
@@ -328,11 +349,12 @@ test.describe('lote 1: identifiers and mock data', () => {
     await nothingStored(page, 'card', '4242 4242');
   });
 
-  test('phone classifies a mobile and prints E.164', async ({ page }) => {
+  test('phone classifies a mobile, prints E.164 and stores nothing', async ({ page }) => {
     await page.goto('/es/validador-telefonos-espana');
     await page.locator('#phone-input').fill('+34 612 34 56 78');
     await expect(page.locator('.display-head')).toContainText('Móvil');
     await expect(page.locator('.display-value')).toHaveText('+34612345678');
+    await nothingStored(page, 'phone', '612 34 56 78');
   });
 
   test('bic reads the head office of a lower-case code', async ({ page }) => {
