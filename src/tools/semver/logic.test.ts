@@ -82,4 +82,14 @@ describe('describeRange', () => {
     expect(describeRange('*', 'en')).toBe('any version');
     expect(describeRange('>1.2.3', 'en')).toBe('after 1.2.3');
   });
+
+  it('keeps the prerelease note on a lower bound, unlike the hidden upper-bound -0', () => {
+    // With includePrerelease, semver also appends -0 to the lower bound: it is now a real
+    // part of the boundary (it lets prereleases of 1.0.0 itself satisfy the range), not the
+    // "exclude prereleases of this version" marker that the upper bound's -0 means.
+    expect(checkRange('1.x', pre)).toMatchObject({ normalized: '>=1.0.0-0 <2.0.0-0' });
+    expect(describeRange('>=1.0.0-0 <2.0.0-0', 'es')).toBe(
+      'desde 1.0.0-0, incluida, hasta antes de 2.0.0',
+    );
+  });
 });

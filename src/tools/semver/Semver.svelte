@@ -84,7 +84,9 @@
           ? t(locale, 'led.idle')
           : !check.ok
             ? t(locale, 'led.bad')
-            : fill(s.matches, { n: matching, total: rows.filter((r) => r.ok).length })}
+            : rows.length === 0
+              ? s.empty
+              : fill(s.matches, { n: matching, total: rows.filter((r) => r.ok).length })}
       />
     {/snippet}
     {#if check?.ok}
@@ -174,9 +176,13 @@
   .cheats summary {
     display: flex;
     align-items: center;
-    min-height: 44px;
     font-weight: 600;
     cursor: pointer;
+  }
+  @media (pointer: coarse) {
+    .cheats summary {
+      min-height: 44px;
+    }
   }
   .cheats dl {
     display: grid;

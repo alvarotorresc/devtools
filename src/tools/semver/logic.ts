@@ -85,7 +85,10 @@ export function describeRange(normalized: string, locale: Locale): string {
       return parts
         .map((p) => {
           const [, op = '=', v] = COMPARATOR.exec(p)!;
-          const version = v.replace(/-0$/, '');
+          // Only the exclusive upper bound (`<`) gets its `-0` hidden: that is the one semver
+          // appends on its own, to also exclude prereleases of that version. A `-0` on `>=`
+          // (from `includePrerelease`) is a real part of the lower bound and must stay visible.
+          const version = op === '<' ? v.replace(/-0$/, '') : v;
           const template = op === '=' ? w.exact : w[op as '>=' | '>' | '<' | '<='];
           return template.replace('{v}', version);
         })
