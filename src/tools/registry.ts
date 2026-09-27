@@ -42,7 +42,7 @@ import { meta as mock } from './mock/meta';
 
 // import { meta as shuffle } from './shuffle/meta';
 
-// import { meta as teams } from './teams/meta';
+import { meta as teams } from './teams/meta';
 
 // import { meta as dice } from './dice/meta';
 
@@ -99,7 +99,7 @@ export const tools: ToolMeta[] = [
 
   // shuffle,
 
-  // teams,
+  teams,
 
   // dice,
 
