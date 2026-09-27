@@ -39,6 +39,20 @@ Todas tienen versión en español (`/es/…`) y en inglés (`/en/…`).
 | Conversores | Timestamp Unix | [/es/conversor-timestamp-unix](https://devtools.alvarotc.com/es/conversor-timestamp-unix) |
 | Conversores | Colores (HEX, RGB, HSL, OKLCH) | [/es/conversor-colores](https://devtools.alvarotc.com/es/conversor-colores) |
 | Conversores | Bases numéricas | [/es/conversor-bases-numericas](https://devtools.alvarotc.com/es/conversor-bases-numericas) |
+| Conversores | Unidades (longitud, masa, temperatura, volumen, área, velocidad y datos) | [/es/conversor-unidades](https://devtools.alvarotc.com/es/conversor-unidades) |
+| Conversores | Divisas (tipos del BCE) | [/es/conversor-divisas](https://devtools.alvarotc.com/es/conversor-divisas) |
+| Conversores | px a rem y em | [/es/conversor-px-rem](https://devtools.alvarotc.com/es/conversor-px-rem) |
+| Conversores | chmod (permisos Unix) | [/es/calculadora-chmod](https://devtools.alvarotc.com/es/calculadora-chmod) |
+| Conversores | Tamaños de archivo (SI y binario) | [/es/conversor-tamano-archivos](https://devtools.alvarotc.com/es/conversor-tamano-archivos) |
+| Calculadoras | IVA | [/es/calculadora-iva](https://devtools.alvarotc.com/es/calculadora-iva) |
+| Calculadoras | Retención de IRPF | [/es/calculadora-retencion-irpf](https://devtools.alvarotc.com/es/calculadora-retencion-irpf) |
+| Calculadoras | Porcentajes | [/es/calculadora-porcentajes](https://devtools.alvarotc.com/es/calculadora-porcentajes) |
+| Calculadoras | Regla de tres | [/es/regla-de-tres](https://devtools.alvarotc.com/es/regla-de-tres) |
+| Calculadoras | Días hábiles | [/es/calculadora-dias-habiles](https://devtools.alvarotc.com/es/calculadora-dias-habiles) |
+| Azar | Ruleta | [/es/ruleta-aleatoria](https://devtools.alvarotc.com/es/ruleta-aleatoria) |
+| Azar | Mezclar lista | [/es/mezclar-lista-aleatoria](https://devtools.alvarotc.com/es/mezclar-lista-aleatoria) |
+| Azar | Equipos aleatorios | [/es/generador-equipos-aleatorios](https://devtools.alvarotc.com/es/generador-equipos-aleatorios) |
+| Azar | Dados y moneda | [/es/lanzar-dados-moneda](https://devtools.alvarotc.com/es/lanzar-dados-moneda) |
 
 ## Desarrollo
 

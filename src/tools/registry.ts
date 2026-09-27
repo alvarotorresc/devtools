@@ -24,6 +24,20 @@ import { meta as bic } from './bic/meta';
 import { meta as eanIsbn } from './ean-isbn/meta';
 import { meta as postalCode } from './postal-code/meta';
 import { meta as mock } from './mock/meta';
+import { meta as units } from './units/meta';
+import { meta as currency } from './currency/meta';
+import { meta as pxRem } from './px-rem/meta';
+import { meta as chmod } from './chmod/meta';
+import { meta as fileSize } from './file-size/meta';
+import { meta as wheel } from './wheel/meta';
+import { meta as shuffle } from './shuffle/meta';
+import { meta as teams } from './teams/meta';
+import { meta as dice } from './dice/meta';
+import { meta as iva } from './iva/meta';
+import { meta as irpf } from './irpf/meta';
+import { meta as percent } from './percent/meta';
+import { meta as ruleOfThree } from './rule-of-three/meta';
+import { meta as workdays } from './workdays/meta';
 import type { Category, CategoryId, Locale, ToolMeta } from './types';
 
 export const tools: ToolMeta[] = [
@@ -52,6 +66,20 @@ export const tools: ToolMeta[] = [
   eanIsbn,
   postalCode,
   mock,
+  units,
+  currency,
+  pxRem,
+  chmod,
+  fileSize,
+  wheel,
+  shuffle,
+  teams,
+  dice,
+  iva,
+  irpf,
+  percent,
+  ruleOfThree,
+  workdays,
 ];
 
 export function toolById(id: string): ToolMeta | undefined {

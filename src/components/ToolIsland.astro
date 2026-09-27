@@ -24,6 +24,20 @@ import Bic from '../tools/bic/Bic.svelte';
 import EanIsbn from '../tools/ean-isbn/EanIsbn.svelte';
 import PostalCode from '../tools/postal-code/PostalCode.svelte';
 import Mock from '../tools/mock/Mock.svelte';
+import Units from '../tools/units/Units.svelte';
+import Currency from '../tools/currency/Currency.svelte';
+import PxRem from '../tools/px-rem/PxRem.svelte';
+import Chmod from '../tools/chmod/Chmod.svelte';
+import FileSize from '../tools/file-size/FileSize.svelte';
+import Wheel from '../tools/wheel/Wheel.svelte';
+import Shuffle from '../tools/shuffle/Shuffle.svelte';
+import Teams from '../tools/teams/Teams.svelte';
+import Dice from '../tools/dice/Dice.svelte';
+import Iva from '../tools/iva/Iva.svelte';
+import Irpf from '../tools/irpf/Irpf.svelte';
+import Percent from '../tools/percent/Percent.svelte';
+import RuleOfThree from '../tools/rule-of-three/RuleOfThree.svelte';
+import Workdays from '../tools/workdays/Workdays.svelte';
 import type { Locale } from '../tools/types';
 
 interface Props {
@@ -58,3 +72,17 @@ const { id, locale } = Astro.props;
 {id === 'ean-isbn' && <EanIsbn client:load locale={locale} />}
 {id === 'postal-code' && <PostalCode client:load locale={locale} />}
 {id === 'mock' && <Mock client:load locale={locale} />}
+{id === 'units' && <Units client:load locale={locale} />}
+{id === 'currency' && <Currency client:load locale={locale} />}
+{id === 'px-rem' && <PxRem client:load locale={locale} />}
+{id === 'chmod' && <Chmod client:load locale={locale} />}
+{id === 'file-size' && <FileSize client:load locale={locale} />}
+{id === 'wheel' && <Wheel client:load locale={locale} />}
+{id === 'shuffle' && <Shuffle client:load locale={locale} />}
+{id === 'teams' && <Teams client:load locale={locale} />}
+{id === 'dice' && <Dice client:load locale={locale} />}
+{id === 'iva' && <Iva client:load locale={locale} />}
+{id === 'irpf' && <Irpf client:load locale={locale} />}
+{id === 'percent' && <Percent client:load locale={locale} />}
+{id === 'rule-of-three' && <RuleOfThree client:load locale={locale} />}
+{id === 'workdays' && <Workdays client:load locale={locale} />}

@@ -1,0 +1,48 @@
+import type { Locale } from '../types';
+
+export const strings = {
+  es: {
+    input: 'Tamaño',
+    placeholder: '1,5 GB, 750 MiB, 1024 o 100 Mb',
+    help: 'B es byte y b es bit. Sin unidad, son bytes.',
+    result: 'Tamaño convertido',
+    si: 'SI (potencias de 1000)',
+    iec: 'Binario (potencias de 1024)',
+    exact: 'Bytes exactos',
+    bits: 'Bits',
+    readable: 'Forma legible',
+    readableLine: '{si} = {iec}',
+    empty: 'Escribe un tamaño, por ejemplo 1,5 GB.',
+    number: 'Escribe un número, por ejemplo 1234,5.',
+    negative: 'Un tamaño no puede ser negativo.',
+    unit: 'No conozco la unidad «{u}». Usa B, kB, MB, GB, TB, PB, KiB, MiB, GiB, TiB, PiB o bits (b, kb, Mb, Gb).',
+    subByte: 'Menos de un byte: son {bits} bits.',
+    windowsKb: 'Windows escribe KB, MB y GB, pero calcula en KiB, MiB y GiB.',
+    approximate: 'Por encima de unos 9 PB (2^53 bytes) el número de bytes es aproximado.',
+    explain:
+      'Un disco de 1 TB tiene 1 000 000 000 000 bytes, que son unos 931 GiB: por eso Windows muestra 931 «GB».',
+    copyUnit: 'Copiar en {u}',
+  },
+  en: {
+    input: 'Size',
+    placeholder: '1.5 GB, 750 MiB, 1024 or 100 Mb',
+    help: 'B is a byte and b is a bit. With no unit, it is bytes.',
+    result: 'Converted size',
+    si: 'SI (powers of 1000)',
+    iec: 'Binary (powers of 1024)',
+    exact: 'Exact bytes',
+    bits: 'Bits',
+    readable: 'Readable form',
+    readableLine: '{si} = {iec}',
+    empty: 'Type a size, for example 1.5 GB.',
+    number: 'Type a number, for example 1234.5.',
+    negative: 'A size cannot be negative.',
+    unit: 'Unknown unit "{u}". Use B, kB, MB, GB, TB, PB, KiB, MiB, GiB, TiB, PiB or bits (b, kb, Mb, Gb).',
+    subByte: 'Less than a byte: that is {bits} bits.',
+    windowsKb: 'Windows writes KB, MB and GB but computes in KiB, MiB and GiB.',
+    approximate: 'Above about 9 PB (2^53 bytes) the byte count is approximate.',
+    explain:
+      'A 1 TB drive holds 1,000,000,000,000 bytes, about 931 GiB: that is why Windows shows 931 "GB".',
+    copyUnit: 'Copy in {u}',
+  },
+} satisfies Record<Locale, Record<string, string>>;

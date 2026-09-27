@@ -77,8 +77,14 @@
         return s.emptyName;
       case 'table':
         return s.tableError;
-      case 'numberStep':
-        return fill(s.numberStep, {
+      case 'numberStep': {
+        // decimals names its own count (not `plural`'s fixed `{n}`), so its one/other template
+        // is picked the same way `plural` does, then filled together with the other placeholders.
+        const template =
+          new Intl.PluralRules(locale).select(e.decimals) === 'one'
+            ? s.numberStepOne
+            : s.numberStepOther;
+        return fill(template, {
           name: e.name,
           // maximumFractionDigits: toLocaleString defaults to 3, which would cut the very
           // decimals (4th, e.g.) that make the range empty in the first place.
@@ -86,6 +92,7 @@
           max: e.max.toLocaleString(locale, { maximumFractionDigits: 20 }),
           decimals: e.decimals,
         });
+      }
       default:
         return fill(s[e.reason], { name: e.name });
     }
@@ -307,7 +314,9 @@
     {:else if result?.ok}
       <pre class="display-code">{result.preview}</pre>
       {#if result.rows > PREVIEW_ROWS}
-        <p class="display-note">{fill(s.more, { n: result.rows - PREVIEW_ROWS })}</p>
+        <p class="display-note">
+          {plural(locale, result.rows - PREVIEW_ROWS, s.moreOne, s.moreOther)}
+        </p>
       {/if}
     {/if}
   </Display>

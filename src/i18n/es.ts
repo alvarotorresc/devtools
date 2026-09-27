@@ -53,6 +53,8 @@ export const es = {
   'ui.seedHelp': 'Con la misma semilla obtienes siempre el mismo resultado.',
   'ui.quantity': 'Cantidad',
   'ui.testOnly': 'Datos ficticios, solo para pruebas.',
+  'ui.swap': 'Intercambiar',
+  'ui.fixField': 'Corrige el campo marcado.',
   'dir.label': 'Dirección',
   'dir.auto': 'Automática',
   'dir.encode': 'Codificar',

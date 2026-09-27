@@ -1,0 +1,36 @@
+import type { Locale } from '../types';
+
+export const strings = {
+  es: {
+    tabs: 'Tipo',
+    if: 'Si',
+    then: 'entonces',
+    a: 'A',
+    b: 'B',
+    c: 'C',
+    x: 'X',
+    result: 'Resultado',
+    directHelp: 'Directa: si A aumenta, B aumenta en la misma proporción.',
+    inverseHelp: 'Inversa: si A aumenta, B disminuye en la misma proporción.',
+    formulaDirect: 'X = B × C / A = {b} × {c} / {a} = {x}',
+    formulaInverse: 'X = A × B / C = {a} × {b} / {c} = {x}',
+    zero: '{v} no puede ser 0: no se puede dividir entre 0.',
+    invalid: 'Escribe un número, por ejemplo 1234,5.',
+  },
+  en: {
+    tabs: 'Kind',
+    if: 'If',
+    then: 'then',
+    a: 'A',
+    b: 'B',
+    c: 'C',
+    x: 'X',
+    result: 'Result',
+    directHelp: 'Direct: when A grows, B grows in the same proportion.',
+    inverseHelp: 'Inverse: when A grows, B shrinks in the same proportion.',
+    formulaDirect: 'X = B × C / A = {b} × {c} / {a} = {x}',
+    formulaInverse: 'X = A × B / C = {a} × {b} / {c} = {x}',
+    zero: '{v} cannot be 0: you cannot divide by 0.',
+    invalid: 'Type a number, for example 1234.5.',
+  },
+} satisfies Record<Locale, Record<string, string>>;

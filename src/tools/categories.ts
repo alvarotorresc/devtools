@@ -47,6 +47,15 @@ export const categories: Category[] = [
     },
   },
   {
+    id: 'calc',
+    icon: 'calculator',
+    name: { es: 'Calculadoras', en: 'Calculators' },
+    description: {
+      es: 'IVA, IRPF, porcentajes, reglas de tres y días hábiles.',
+      en: 'VAT, withholding, percentages, rule of three and business days.',
+    },
+  },
+  {
     id: 'rand',
     icon: 'dices',
     name: { es: 'Azar', en: 'Random' },

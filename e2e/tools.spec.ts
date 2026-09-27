@@ -14,6 +14,8 @@ const test = base.extend<{ errors: string[] }>({
   ],
   page: async ({ page }, use) => {
     await page.route('**/analytics.alvarotc.com/**', (r) => r.abort());
+    // No test ever downloads the real ECB rates (lote 2, currency).
+    await page.route('**/api.frankfurter.dev/**', (r) => r.abort());
     await page.addInitScript(() => sessionStorage.setItem('devtools:booted', '1'));
     await use(page);
   },
@@ -43,6 +45,20 @@ const PAGES: [string, string][] = [
   ['/es/validador-ean-isbn', 'EAN e ISBN'],
   ['/es/codigo-postal-provincia', 'Código postal'],
   ['/es/generador-datos-de-prueba', 'Datos de prueba'],
+  ['/es/conversor-unidades', 'Unidades'],
+  ['/es/conversor-divisas', 'Divisas'],
+  ['/es/conversor-px-rem', 'px a rem'],
+  ['/es/calculadora-chmod', 'chmod'],
+  ['/es/conversor-tamano-archivos', 'Tamaños de archivo'],
+  ['/es/ruleta-aleatoria', 'Ruleta'],
+  ['/es/mezclar-lista-aleatoria', 'Mezclar lista'],
+  ['/es/generador-equipos-aleatorios', 'Equipos'],
+  ['/es/lanzar-dados-moneda', 'Dados y moneda'],
+  ['/es/calculadora-iva', 'IVA'],
+  ['/es/calculadora-retencion-irpf', 'Retención IRPF'],
+  ['/es/calculadora-porcentajes', 'Porcentajes'],
+  ['/es/regla-de-tres', 'Regla de tres'],
+  ['/es/calculadora-dias-habiles', 'Días hábiles'],
 ];
 
 test.describe('every migrated tool page loads', () => {
@@ -400,5 +416,230 @@ test.describe('lote 1: identifiers and mock data', () => {
     const download = page.waitForEvent('download');
     await page.getByRole('button', { name: 'Descargar' }).click();
     expect((await download).suggestedFilename()).toBe('datos.sql');
+  });
+});
+
+// Lote 2: conversores, azar y calculadoras. The `page` fixture already aborts every request to
+// api.frankfurter.dev; the currency tests that need rates register their own route on top.
+const ECB_RATES = { amount: 1, base: 'EUR', date: '2026-09-25', rates: { USD: 1.1, GBP: 0.85 } };
+
+test.describe('lote 2: one real interaction per tool', () => {
+  test('the home page lists the new Calculators category', async ({ page }) => {
+    await page.goto('/es');
+    await expect(page.locator('.sidebar').getByText('Calculadoras').first()).toBeVisible();
+  });
+
+  test('units shows a value in every unit of the tab', async ({ page }) => {
+    await page.goto('/es/conversor-unidades');
+    await page.locator('#units-value').fill('1');
+    await page.locator('#units-from').selectOption('mi');
+    await expect(page.locator('[data-unit="km"]')).toContainText('1,609344');
+  });
+
+  test('currency converts with the ECB table and never calls the real API', async ({ page }) => {
+    await page.route('**/api.frankfurter.dev/**', (r) => r.fulfill({ json: ECB_RATES }));
+    await page.goto('/es/conversor-divisas');
+    await expect(page.getByText('Tipos del BCE del 25/09/2026')).toBeVisible();
+    await page.locator('#currency-amount').fill('10');
+    await page.locator('#currency-from').selectOption('EUR');
+    await page.locator('#currency-to').selectOption('USD');
+    await expect(page.locator('#currency-result')).toContainText('11,00');
+  });
+
+  test('currency falls back to the saved rates when the download fails', async ({ page }) => {
+    await page.addInitScript(() =>
+      localStorage.setItem(
+        'devtools:currency.rates',
+        JSON.stringify({ date: '2026-09-25', rates: { EUR: 1, USD: 1.1 }, fetchedAt: 0 }),
+      ),
+    );
+    await page.goto('/es/conversor-divisas');
+    await expect(
+      page.getByText('Sin conexión: se usan los tipos guardados del 25/09/2026'),
+    ).toBeVisible();
+  });
+
+  test('currency explains the error and offers a retry with no saved rates', async ({ page }) => {
+    await page.goto('/es/conversor-divisas');
+    await expect(page.getByText('No se han podido descargar los tipos de cambio')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Reintentar' })).toBeVisible();
+  });
+
+  test('px-rem keeps CSS decimals with a dot, also in Spanish', async ({ page }) => {
+    await page.goto('/es/conversor-px-rem');
+    await page.locator('#px-rem-px').fill('24');
+    await expect(page.locator('#px-rem-rem')).toHaveValue('1.5');
+    await expect(page.locator('.display-code')).toHaveText('font-size: 1.5rem; /* 24px */');
+    await page.locator('#px-rem-base').fill('10');
+    await expect(page.locator('#px-rem-rem')).toHaveValue('2.4');
+  });
+
+  test('chmod keeps octal, symbolic and checkboxes in sync', async ({ page }) => {
+    await page.goto('/es/calculadora-chmod');
+    await page.locator('#chmod-octal').fill('755');
+    await expect(page.locator('#chmod-symbolic')).toHaveValue('rwxr-xr-x');
+    await page.getByRole('checkbox', { name: 'Grupo: escritura' }).check();
+    await expect(page.locator('#chmod-octal')).toHaveValue('775');
+  });
+
+  test('file-size shows a 1 TB drive in GiB', async ({ page }) => {
+    await page.goto('/es/conversor-tamano-archivos');
+    await page.locator('#file-size-input').fill('1 TB');
+    await expect(page.locator('.display-head').first()).toContainText('931,3');
+    await expect(page.locator('.display-head').first()).toContainText('GiB');
+  });
+
+  test('wheel picks a winner at once with reduced motion and can remove it', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/es/ruleta-aleatoria');
+    await page.locator('#wheel-options').fill('Ana\nLuis\nEva');
+    await page.getByRole('button', { name: 'Girar' }).click();
+    await expect(page.getByText(/Ha salido: (Ana|Luis|Eva)/)).toBeVisible();
+    await page.getByRole('switch', { name: 'Quitar la opción ganadora' }).click();
+    await page.getByRole('button', { name: 'Girar' }).click();
+    await expect(page.locator('#wheel-options')).toHaveValue(/^[^\n]+\n[^\n]+$/);
+  });
+
+  test('shuffle with a seed gives the same order after a reload', async ({ page }) => {
+    await page.goto('/es/mezclar-lista-aleatoria');
+    await page.locator('#shuffle-list').fill('a\nb\nc\nd\ne');
+    await page.locator('#shuffle-seed').fill('demo');
+    await expect(page.getByText('Con semilla: el orden es siempre el mismo.')).toBeVisible();
+    const items = page.locator('.display-row .item');
+    await expect(items).toHaveCount(5);
+    const order = await items.allTextContents();
+    expect([...order].sort()).toEqual(['a', 'b', 'c', 'd', 'e']);
+    // The list and the seed are remembered after a 300 ms debounce.
+    await page.waitForTimeout(500);
+    await page.reload();
+    await expect(page.getByText('Con semilla: el orden es siempre el mismo.')).toBeVisible();
+    await expect(items).toHaveCount(5);
+    expect(await items.allTextContents()).toEqual(order);
+  });
+
+  test('teams splits 10 people, 3 per team, into 3, 3, 2 and 2', async ({ page }) => {
+    await page.goto('/es/generador-equipos-aleatorios');
+    const people = ['Ana', 'Luis', 'Eva', 'Marta', 'Pablo', 'Sara', 'Hugo', 'Lucía', 'Iván', 'Noa'];
+    await page.locator('#teams-people').fill(people.join('\n'));
+    await page.getByRole('radio', { name: 'Personas por equipo' }).click();
+    await page.locator('#teams-n').fill('3');
+    await expect(page.locator('.team')).toHaveCount(4);
+    const sizes = await page
+      .locator('.team')
+      .evaluateAll((els) => els.map((el) => el.querySelectorAll('li').length));
+    expect(sizes).toEqual([3, 3, 2, 2]);
+    // C1 regression: the headline used to ship raw `{p}`/`{k}` placeholders instead of the count.
+    await expect(page.locator('.display-head')).toHaveText('10 personas en 4 equipos');
+  });
+
+  test('dice rolls 3d6+2 with a seed and explains a bad range', async ({ page }) => {
+    await page.goto('/es/lanzar-dados-moneda');
+    await page.locator('#dice-notation').fill('3d6+2');
+    await page.locator('#dice-seed').fill('demo');
+    await page.getByRole('button', { name: 'Lanzar' }).click();
+    await expect(page.locator('.die')).toHaveCount(3);
+    const total = Number(await page.locator('#dice-total').textContent());
+    expect(total).toBeGreaterThanOrEqual(5);
+    expect(total).toBeLessThanOrEqual(20);
+    await page.locator('#dice-notation').fill('0d6');
+    await expect(page.getByText('Entre 1 y 100 dados: has puesto 0.')).toBeVisible();
+  });
+
+  test('dice with a seed repeats the whole series of rolls, not just the first', async ({
+    page,
+  }) => {
+    await page.goto('/es/lanzar-dados-moneda');
+    await page.locator('#dice-notation').fill('1d1000');
+    const series = async () => {
+      const totals: string[] = [];
+      for (let i = 0; i < 5; i++) {
+        await page.getByRole('button', { name: 'Lanzar' }).click();
+        totals.push((await page.locator('#dice-total').textContent()) ?? '');
+      }
+      return totals;
+    };
+    await page.locator('#dice-seed').fill('demo');
+    const first = await series();
+    expect(new Set(first).size).toBeGreaterThan(1);
+    await page.locator('#dice-seed').fill('otra');
+    await page.locator('#dice-seed').fill('demo');
+    expect(await series()).toEqual(first);
+  });
+
+  test('iva adds VAT to a base and takes it out of a total', async ({ page }) => {
+    await page.goto('/es/calculadora-iva');
+    await page.locator('#iva-amount').fill('100');
+    await expect(page.locator('#iva-total')).toContainText('121,00');
+    await page.getByRole('radio', { name: 'Total con IVA' }).click();
+    await page.locator('#iva-amount').fill('121');
+    await expect(page.locator('#iva-base')).toContainText('100,00');
+  });
+
+  test('iva points a bad custom rate at the rate field, not the amount', async ({ page }) => {
+    await page.goto('/es/calculadora-iva');
+    await page.locator('#iva-amount').fill('100');
+    await radio(page, 'Otro').click();
+    await page.locator('#iva-rate-other').fill('abc');
+    // I1: the rate error shows under the rate field, and the amount (which is fine) shows none.
+    await expect(page.locator('#iva-rate-other-error')).toHaveText(
+      'Escribe un porcentaje de 0 a 100, por ejemplo 7.',
+    );
+    await expect(page.locator('#iva-amount-error')).toHaveCount(0);
+    await expect(page.locator('.display-head')).toHaveText('Corrige el campo marcado.');
+  });
+
+  test('irpf builds a 1000 € invoice with 21 % VAT and 15 % withholding', async ({ page }) => {
+    await page.goto('/es/calculadora-retencion-irpf');
+    await page.locator('#irpf-amount').fill('1000');
+    await page.locator('#irpf-vat').selectOption('21');
+    await page.locator('#irpf-rate').selectOption('15');
+    await expect(page.locator('#irpf-net')).toHaveText(/1\.?060,00/);
+  });
+
+  test('percent computes X % of Y and refuses a change from 0', async ({ page }) => {
+    await page.goto('/es/calculadora-porcentajes');
+    await page.locator('#percent-x').fill('21');
+    await page.locator('#percent-y').fill('200');
+    await expect(page.locator('#percent-result')).toHaveText('42');
+    await radio(page, 'Variación').click();
+    await page.locator('#percent-a').fill('0');
+    // I1: the error shows once, under the field. The headline goes neutral instead of repeating
+    // it (it used to show the same sentence twice).
+    await expect(page.getByText('No hay variación porcentual desde 0')).toHaveCount(1);
+    await expect(page.locator('.display-head')).toHaveText('Corrige el campo marcado.');
+  });
+
+  test('rule-of-three solves the direct and the inverse rule', async ({ page }) => {
+    await page.goto('/es/regla-de-tres');
+    await page.locator('#rot-a').fill('2');
+    await page.locator('#rot-b').fill('10');
+    await page.locator('#rot-c').fill('5');
+    await expect(page.locator('#rot-x')).toHaveText('25');
+    await radio(page, 'Inversa').click();
+    await page.locator('#rot-a').fill('4');
+    await page.locator('#rot-b').fill('6');
+    await page.locator('#rot-c').fill('8');
+    await expect(page.locator('#rot-x')).toHaveText('3');
+  });
+
+  test('rule-of-three flags a 0 divisor as an error in the headline (Minor 8)', async ({
+    page,
+  }) => {
+    await page.goto('/es/regla-de-tres');
+    await page.locator('#rot-a').fill('0');
+    await page.locator('#rot-b').fill('10');
+    await page.locator('#rot-c').fill('5');
+    const head = page.locator('.display-head');
+    await expect(head).toContainText('A no puede ser 0: no se puede dividir entre 0.');
+    await expect(head.locator('.zero-error')).toBeVisible();
+  });
+
+  test('workdays counts January 2026 and lists Epiphany', async ({ page }) => {
+    await page.goto('/es/calculadora-dias-habiles');
+    await page.locator('#workdays-start').fill('2026-01-01');
+    await page.locator('#workdays-end').fill('2026-01-31');
+    await expect(page.locator('#workdays-natural')).toHaveText('31');
+    await expect(page.locator('#workdays-business')).toHaveText('20');
+    await expect(page.getByText('Epifanía del Señor')).toBeVisible();
   });
 });
