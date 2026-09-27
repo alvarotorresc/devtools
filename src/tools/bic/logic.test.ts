@@ -40,6 +40,10 @@ describe('validateBic', () => {
     expect(validateBic('NEDSZAJ0')).toMatchObject({ ok: true, test: true });
   });
 
+  it('accepts dots as separators, like spaces and dashes', () => {
+    expect(validateBic('DEUT.DE.FF.500')).toMatchObject({ ok: true, bic11: 'DEUTDEFF500' });
+  });
+
   it('explains what is wrong', () => {
     expect(validateBic('CAIXESBBX')).toEqual({ ok: false, reason: 'length', length: 9 });
     expect(validateBic('CAIXESBBXX')).toEqual({ ok: false, reason: 'length', length: 10 });
