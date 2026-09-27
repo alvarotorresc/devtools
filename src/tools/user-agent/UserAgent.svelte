@@ -50,11 +50,14 @@
     if (!info) return [];
     const device = [info.vendor, info.model].filter(Boolean).join(' ');
     const kind = s[info.deviceType];
+    // Nothing recognised (not even a browser, engine or OS): the device guess is not
+    // meaningful either, so it shows "—" like every other field instead of a default kind.
+    const deviceValue = info.recognised ? (device ? `${device} · ${kind}` : kind) : '—';
     return [
       { label: s.browser, value: info.browser ?? '—' },
       { label: s.engine, value: info.engine ?? '—' },
       { label: s.os, value: info.os ?? '—' },
-      { label: s.device, value: device ? `${device} · ${kind}` : kind },
+      { label: s.device, value: deviceValue },
       { label: s.cpu, value: info.cpu ?? '—' },
     ];
   });
