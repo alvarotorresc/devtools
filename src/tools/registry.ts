@@ -48,7 +48,7 @@ import { meta as dice } from './dice/meta';
 
 import { meta as iva } from './iva/meta';
 
-// import { meta as irpf } from './irpf/meta';
+import { meta as irpf } from './irpf/meta';
 
 // import { meta as percent } from './percent/meta';
 
@@ -105,7 +105,7 @@ export const tools: ToolMeta[] = [
 
   iva,
 
-  // irpf,
+  irpf,
 
   // percent,
 
