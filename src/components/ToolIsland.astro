@@ -73,7 +73,7 @@ import Markdown from '../tools/markdown/Markdown.svelte';
 
 import Curl from '../tools/curl/Curl.svelte';
 
-// import QueryString from '../tools/query-string/QueryString.svelte';
+import QueryString from '../tools/query-string/QueryString.svelte';
 
 // import HttpStatus from '../tools/http-status/HttpStatus.svelte';
 
@@ -162,7 +162,7 @@ const { id, locale } = Astro.props;
 
 {id === 'curl' && <Curl client:load locale={locale} />}
 
-{/* {id === 'query-string' && <QueryString client:load locale={locale} />} */}
+{id === 'query-string' && <QueryString client:load locale={locale} />}
 
 {/* {id === 'http-status' && <HttpStatus client:load locale={locale} />} */}
 
