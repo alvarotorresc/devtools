@@ -38,7 +38,7 @@ import Mock from '../tools/mock/Mock.svelte';
 
 // import FileSize from '../tools/file-size/FileSize.svelte';
 
-// import Wheel from '../tools/wheel/Wheel.svelte';
+import Wheel from '../tools/wheel/Wheel.svelte';
 
 // import Shuffle from '../tools/shuffle/Shuffle.svelte';
 
@@ -101,7 +101,7 @@ const { id, locale } = Astro.props;
 
 {/* {id === 'file-size' && <FileSize client:load locale={locale} />} */}
 
-{/* {id === 'wheel' && <Wheel client:load locale={locale} />} */}
+{id === 'wheel' && <Wheel client:load locale={locale} />}
 
 {/* {id === 'shuffle' && <Shuffle client:load locale={locale} />} */}
 
