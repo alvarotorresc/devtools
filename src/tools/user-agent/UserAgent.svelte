@@ -22,11 +22,19 @@
 
   let { locale }: { locale: Locale } = $props();
   const s = $derived(strings[locale]);
-  const input = persistedInput('user-agent', '', meta.rememberInput ?? true);
 
   // Browser-only values: empty during SSR.
   let ownUa = $state('');
   let uaData = $state<UaData | null>(null);
+
+  // Never persist the auto-filled own-browser UA — only a value the user typed or pasted.
+  // Otherwise a visit with nothing saved would store this browser's UA on the first render
+  // and keep replaying that stale copy after a browser update instead of the current one.
+  function shouldSaveUa(v: string): boolean {
+    return v.trim() !== ownUa;
+  }
+
+  const input = persistedInput('user-agent', '', meta.rememberInput ?? true, shouldSaveUa);
 
   onMount(() => {
     ownUa = navigator.userAgent;
