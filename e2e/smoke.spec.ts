@@ -57,7 +57,7 @@ test.describe('home and search', () => {
   test('lists every tool in the catalog', async ({ page }) => {
     await page.goto('/es');
     const catalog = page.locator('.catalog');
-    await expect(catalog.getByRole('link', { name: 'JSON' })).toBeVisible();
+    await expect(catalog.getByRole('link', { name: 'JSON', exact: true })).toBeVisible();
     await expect(catalog.getByRole('link', { name: 'UUID, ULID y NanoID' })).toBeVisible();
   });
 
@@ -102,7 +102,7 @@ test.describe('preferences', () => {
     expect(
       await page.evaluate(() => (window as unknown as { themeAtDcl: string }).themeAtDcl),
     ).toBe('dark');
-    await page.locator('.catalog').getByRole('link', { name: 'JSON' }).click();
+    await page.locator('.catalog').getByRole('link', { name: 'JSON', exact: true }).click();
     await expect(page).toHaveURL(/formateador-json$/);
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   });

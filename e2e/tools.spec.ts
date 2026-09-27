@@ -59,6 +59,19 @@ const PAGES: [string, string][] = [
   ['/es/calculadora-porcentajes', 'Porcentajes'],
   ['/es/regla-de-tres', 'Regla de tres'],
   ['/es/calculadora-dias-habiles', 'Días hábiles'],
+  ['/es/generador-contrasenas', 'Contraseñas'],
+  ['/es/generador-codigo-qr', 'Código QR'],
+  ['/es/generador-slug', 'Slug'],
+  ['/es/conversor-json-yaml-csv', 'JSON, YAML y CSV'],
+  ['/es/comparar-json', 'Comparar JSON'],
+  ['/es/vista-previa-markdown', 'Markdown'],
+  ['/es/convertir-curl-a-fetch', 'cURL a fetch'],
+  ['/es/conversor-query-string-json', 'Query string'],
+  ['/es/codigos-estado-http', 'Códigos HTTP'],
+  ['/es/explicar-expresion-cron', 'Cron'],
+  ['/es/analizar-user-agent', 'User-Agent'],
+  ['/es/comprobar-rango-semver', 'Semver'],
+  ['/es/calculadora-subredes-cidr', 'Subredes CIDR'],
 ];
 
 test.describe('every migrated tool page loads', () => {
@@ -615,5 +628,205 @@ test.describe('lote 2: one real interaction per tool', () => {
     await expect(page.locator('#workdays-natural')).toHaveText('31');
     await expect(page.locator('#workdays-business')).toHaveText('20');
     await expect(page.getByText('Epifanía del Señor')).toBeVisible();
+  });
+});
+
+// Lote 3: generadores, texto y datos, y referencia.
+test.describe('lote 3: one real interaction per tool', () => {
+  const storedValues = (page: Page) => page.evaluate(() => Object.values(localStorage));
+  const storedKeys = (page: Page) => page.evaluate(() => Object.keys(localStorage));
+
+  test('password generates the requested length and never stores it', async ({ page }) => {
+    await page.goto('/es/generador-contrasenas');
+    await page.locator('#password-length').fill('32');
+    const pw = page.locator('.panel .pw').first();
+    await expect(pw).toHaveText(/^.{32}$/);
+    await expect(page.locator('.display-head')).toContainText('Fuerte');
+    const value = await pw.textContent();
+    await page.waitForTimeout(500);
+    expect((await storedValues(page)).some((v) => v.includes(value!))).toBe(false);
+  });
+
+  test('qr draws the code, downloads PNG and SVG and never stores the WiFi password', async ({
+    page,
+  }) => {
+    await page.goto('/es/generador-codigo-qr');
+    await page.locator('#qr-text').fill('hola');
+    await expect(page.locator('.display img')).toBeVisible();
+    let download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Descargar PNG' }).click();
+    expect((await download).suggestedFilename()).toBe('qr.png');
+    download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Descargar SVG' }).click();
+    expect((await download).suggestedFilename()).toBe('qr.svg');
+    await radio(page, 'WiFi').click();
+    await page.locator('#qr-ssid').fill('Casa');
+    await page.locator('#qr-password').fill('s3cret');
+    await expect(page.locator('.display img')).toBeVisible();
+    await page.waitForTimeout(500);
+    expect((await storedValues(page)).some((v) => v.includes('s3cret'))).toBe(false);
+  });
+
+  test('slug removes accents and punctuation', async ({ page }) => {
+    await page.goto('/es/generador-slug');
+    await page.locator('#slug-input').fill('¡Hola, Mundo! Año 2026');
+    await expect(page.locator('.panel .slug')).toHaveText('hola-mundo-ano-2026');
+  });
+
+  test('data-convert detects CSV with ; and writes JSON and YAML', async ({ page }) => {
+    await page.goto('/es/conversor-json-yaml-csv');
+    await page.locator('#data-convert-input').fill('nombre;edad\nAna;34');
+    await expect(page.getByText('Detectado: CSV (separador ;)')).toBeVisible();
+    await expect(page.locator('.display-code')).toContainText('"nombre": "Ana"');
+    await radio(page, 'YAML').click();
+    await expect(page.locator('.display-code')).toContainText('nombre: Ana');
+  });
+
+  test('json-diff ignores key order and lists what changed', async ({ page }) => {
+    await page.goto('/es/comparar-json');
+    await page.locator('#json-diff-a').fill('{"a":1,"b":2}');
+    await page.locator('#json-diff-b').fill('{"b":3,"a":1,"c":4}');
+    await expect(page.getByText('1 añadida · 0 eliminadas · 1 cambiada')).toBeVisible();
+    await expect(page.locator('.panel .changes .path')).toHaveText(['$.b', '$.c']);
+  });
+
+  // The brief's version of this test assumed every external image is blocked by default; Task 6's
+  // review round only blocks images that resolve (against document.baseURI) to a different
+  // origin, so a same-origin `src=x` still loads (and 404s, harmlessly: this fixture only fails on
+  // an uncaught page error, not on a failed request). It also assumed `http:example.com` would be
+  // external, but on this http e2e server that string parses as same-origin (see sanitize.ts's
+  // isExternalSrc doc comment): `https:example.com/x` is the form that actually crosses origins
+  // here, so that is what exercises the block. This also covers the review round's later
+  // additions: popover/popovertarget/name in FORBID_ATTR and data-*/id/dialog stripped.
+  test('markdown renders GFM, strips every script vector and blocks a cross-origin image', async ({
+    page,
+  }) => {
+    const toExampleCom: string[] = [];
+    await page.route('**/example.com/**', (r) => r.abort());
+    page.on('request', (r) => {
+      if (r.url().includes('example.com')) toExampleCom.push(r.url());
+    });
+    await page.goto('/es/vista-previa-markdown');
+    await page
+      .locator('#markdown-input')
+      .fill(
+        [
+          '# Hola',
+          '',
+          '<img src=x onerror="window.__xss=1">',
+          '',
+          '<script>window.__xss2=1</script>',
+          '',
+          '[x](javascript:alert(1)) <iframe src="https://example.com"></iframe>',
+          '',
+          '<img src="https:example.com/x">',
+          '',
+          '<div data-copy-main id="fake">redress</div>',
+          '',
+          '<a href="#" name="shadow">named</a>',
+          '',
+          '<dialog open>hi</dialog>',
+        ].join('\n'),
+      );
+    await expect(page.locator('.md-preview h1')).toHaveText('Hola');
+    await expect(page.locator('.md-preview img.md-blocked')).toHaveCount(1);
+    expect(await page.evaluate(() => '__xss' in window || '__xss2' in window)).toBe(false);
+    await expect(page.locator('.md-preview script')).toHaveCount(0);
+    await expect(page.locator('.md-preview [onerror]')).toHaveCount(0);
+    await expect(page.locator('.md-preview a[href^="javascript"]')).toHaveCount(0);
+    await expect(page.locator('.md-preview iframe')).toHaveCount(0);
+    await expect(page.locator('.md-preview [data-copy-main]')).toHaveCount(0);
+    await expect(page.locator('.md-preview [id]')).toHaveCount(0);
+    await expect(page.locator('.md-preview [name]')).toHaveCount(0);
+    await expect(page.locator('.md-preview [popover]')).toHaveCount(0);
+    await expect(page.locator('.md-preview dialog')).toHaveCount(0);
+    await expect(page.locator('.md-preview img.md-blocked')).not.toHaveAttribute('src');
+    await expect(page.getByText('Imagen externa sin cargar: 1.')).toBeVisible();
+    expect(toExampleCom).toEqual([]);
+    await radio(page, 'HTML').click();
+    await expect(page.locator('.display-code')).toContainText('<h1');
+    await expect(page.locator('.display-code')).not.toContainText('onerror');
+    await expect(page.locator('.display-code')).not.toContainText('<script');
+  });
+
+  test('curl turns a POST with JSON into fetch and stores nothing', async ({ page }) => {
+    await page.goto('/es/convertir-curl-a-fetch');
+    await page
+      .locator('#curl-input')
+      .fill(
+        `curl -X POST https://api.example.com/u -H 'Content-Type: application/json' -d '{"a":1}'`,
+      );
+    await expect(page.locator('.display-code')).toContainText("method: 'POST'");
+    await expect(page.locator('.display-code')).toContainText('body: JSON.stringify(');
+    await page.waitForTimeout(500);
+    expect((await storedKeys(page)).filter((k) => k.includes('curl'))).toEqual([]);
+  });
+
+  test('query-string builds nested JSON and never saves credentials', async ({ page }) => {
+    await page.goto('/es/conversor-query-string-json');
+    await page.locator('#query-string-input').fill('?a=1&b=2&b=3&c[d]=x');
+    await expect(page.locator('.display-code')).toContainText('"d": "x"');
+    expect(JSON.parse(await page.locator('.display-code').innerText())).toEqual({
+      a: '1',
+      b: ['2', '3'],
+      c: { d: 'x' },
+    });
+    await page.locator('#query-string-input').fill('?token=abc');
+    await page.waitForTimeout(500);
+    expect((await storedValues(page)).some((v) => v.includes('token=abc'))).toBe(false);
+  });
+
+  test('http-status finds codes by number and by word', async ({ page }) => {
+    await page.goto('/es/codigos-estado-http');
+    await page.locator('#http-status-search').fill('404');
+    await expect(page.locator('.panel .code-row')).toHaveCount(1);
+    await expect(page.locator('.panel .code-row')).toContainText('Not Found');
+    await page.locator('#http-status-search').fill('teapot');
+    await expect(page.locator('.panel .code-row .num')).toHaveText(['418']);
+  });
+
+  test('cron explains the expression and lists the next run in Madrid', async ({ page }) => {
+    await page.clock.setFixedTime(new Date('2026-09-28T06:00:00Z'));
+    await page.goto('/es/explicar-expresion-cron');
+    await page.locator('#cron-zone').selectOption('Europe/Madrid');
+    await page.locator('#cron-expr').fill('30 9 * * 1-5');
+    await expect(page.locator('.panel .explain')).toHaveText('A las 09:30, de lunes a viernes.');
+    await expect(page.locator('.panel .runs .iso').first()).toHaveText('2026-09-28T07:30:00.000Z');
+  });
+
+  test('user-agent reads Firefox on Windows', async ({ page }) => {
+    await page.goto('/es/analizar-user-agent');
+    await page
+      .locator('#user-agent-input')
+      .fill('Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0');
+    const kv = page.locator('.panel .display-kv').first();
+    await expect(kv).toContainText('Firefox 128.0');
+    await expect(kv).toContainText('Windows 10');
+    await expect(kv).toContainText('Gecko 128.0');
+  });
+
+  // The review round hides "La más alta que cumple" when no entered version is valid (it used to
+  // key that off whether the versions list was non-empty, so two invalid entries still showed it
+  // next to "Ninguna", which reads as if there were a candidate).
+  test('semver checks versions against a caret range and hides the best match once all are invalid', async ({
+    page,
+  }) => {
+    await page.goto('/es/comprobar-rango-semver');
+    await page.locator('#semver-range').fill('^1.2.3');
+    await page.locator('#semver-versions').fill('1.2.3\n1.9.0\n2.0.0');
+    await expect(page.getByText('2 de 3 cumplen')).toBeVisible();
+    await expect(page.locator('.panel .display-kv')).toContainText('>=1.2.3 <2.0.0-0');
+    await page.locator('#semver-versions').fill('foo\nbar');
+    await expect(page.getByText('La más alta que cumple')).toHaveCount(0);
+  });
+
+  test('cidr works out /24 and point-to-point /31 networks', async ({ page }) => {
+    await page.goto('/es/calculadora-subredes-cidr');
+    await page.locator('#cidr-input').fill('192.168.1.10/24');
+    const kv = page.locator('.panel .display-kv');
+    await expect(kv).toContainText('192.168.1.255');
+    await expect(kv).toContainText('254');
+    await page.locator('#cidr-input').fill('10.0.0.7/31');
+    await expect(kv.locator('dt:has-text("Hosts útiles") + dd')).toHaveText('2');
   });
 });
