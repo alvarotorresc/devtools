@@ -2,7 +2,6 @@
   import { onMount } from 'svelte';
   import { t } from '../../i18n';
   import { fill } from '../../i18n/fill';
-  import { plural } from '../../lib/plural';
   import CopyButton from '../../ui/CopyButton.svelte';
   import Display from '../../ui/Display.svelte';
   import Field from '../../ui/Field.svelte';
@@ -61,10 +60,14 @@
     new Intl.DateTimeFormat(locale, { weekday: 'long', timeZone: 'UTC' }),
   );
   const fmt = (n: number) => new Intl.NumberFormat(locale).format(n);
+  // Like `plural`, but keeps `fmt`'s thousands grouping in the filled `{n}` instead of the raw
+  // number: the count picks the template, the display shows the grouped figure.
+  const count = (n: number, one: string, other: string) =>
+    fill(new Intl.PluralRules(locale).select(n) === 'one' ? one : other, { n: fmt(n) });
   const weeksText = (weeks: number, days: number) =>
     fill(s.weeks, {
-      weeks: plural(locale, weeks, s.weeksOne, s.weeksOther),
-      days: plural(locale, days, s.daysOne, s.daysOther),
+      weeks: count(weeks, s.weeksOne, s.weeksOther),
+      days: count(days, s.daysOne, s.daysOther),
     });
 </script>
 
@@ -106,7 +109,7 @@
     {#snippet head()}
       <span
         >{result?.ok
-          ? plural(locale, result.business, s.summaryOne, s.summaryOther)
+          ? count(result.business, s.summaryOne, s.summaryOther)
           : (error ?? s.empty)}</span
       >
     {/snippet}
