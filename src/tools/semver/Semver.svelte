@@ -25,6 +25,7 @@
   const opts = $derived({ includePrerelease });
   const check = $derived(range.value.trim() ? checkRange(range.value, opts) : null);
   const rows = $derived(check?.ok ? checkVersions(range.value, versions.value, opts) : []);
+  const validCount = $derived(rows.filter((r) => r.ok).length);
   const matching = $derived(rows.filter((r) => r.ok && r.satisfies).length);
   const best = $derived(check?.ok ? highest(rows, range.value, opts) : null);
 
@@ -75,7 +76,7 @@
           ? 'idle'
           : !check.ok
             ? 'bad'
-            : rows.length === 0
+            : validCount === 0
               ? 'idle'
               : matching > 0
                 ? 'ok'
@@ -84,9 +85,9 @@
           ? t(locale, 'led.idle')
           : !check.ok
             ? t(locale, 'led.bad')
-            : rows.length === 0
-              ? s.empty
-              : fill(s.matches, { n: matching, total: rows.filter((r) => r.ok).length })}
+            : validCount === 0
+              ? s.noVersions
+              : fill(s.matches, { n: matching, total: validCount })}
       />
     {/snippet}
     {#if check?.ok}
