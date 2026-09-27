@@ -1,6 +1,7 @@
 <script lang="ts">
   import { t } from '../../i18n';
   import { fill } from '../../i18n/fill';
+  import { plural } from '../../lib/plural';
   import Button from '../../ui/Button.svelte';
   import CopyButton from '../../ui/CopyButton.svelte';
   import Display from '../../ui/Display.svelte';
@@ -87,7 +88,9 @@
             ? t(locale, 'led.bad')
             : validCount === 0
               ? s.noVersions
-              : fill(s.matches, { n: matching, total: validCount })}
+              : fill(plural(locale, matching, s.matchesOne, s.matchesOther), {
+                  total: validCount,
+                })}
       />
     {/snippet}
     {#if check?.ok}
@@ -98,7 +101,7 @@
         <dd class="words">{describeRange(check.normalized, locale)}</dd>
         <dt>{s.min}</dt>
         <dd>{check.min ?? s.none}</dd>
-        {#if rows.length}
+        {#if validCount > 0}
           <dt>{s.max}</dt>
           <dd>{best ?? s.none}</dd>
         {/if}
