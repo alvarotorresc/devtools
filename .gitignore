@@ -8,3 +8,6 @@ playwright-report
 test-results
 .claude/worktrees/
 .playwright-mcp/
+
+# Salida de media/shots (capturas generadas)
+media/out/

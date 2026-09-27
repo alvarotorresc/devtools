@@ -5,7 +5,7 @@ import astro from 'eslint-plugin-astro';
 import globals from 'globals';
 
 export default tseslint.config(
-  { ignores: ['dist/**', '.astro/**', '.claude/**', 'playwright-report/**', 'test-results/**'] },
+  { ignores: ['dist/**', '.astro/**', '.claude/**', 'playwright-report/**', 'test-results/**', 'media/out/**'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   ...svelte.configs.recommended,

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Promo desktop</title>
+    <link rel="stylesheet" href="../../node_modules/@fontsource-variable/unbounded/index.css" />
+    <link
+      rel="stylesheet"
+      href="../../node_modules/@fontsource-variable/instrument-sans/index.css"
+    />
+    <link rel="stylesheet" href="../../node_modules/@fontsource/ibm-plex-mono/500.css" />
+    <link rel="stylesheet" href="promo.css" />
+    <style>
+      .head {
+        position: absolute;
+        top: 72px;
+        left: 120px;
+        right: 120px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+      }
+      .browser {
+        position: absolute;
+        top: 330px;
+        left: 50%;
+        width: 1500px;
+        transform: translateX(-50%);
+        border-radius: 18px 18px 0 0;
+        background: #1e1f22;
+        border: 1px solid #393a3f;
+        border-bottom: 0;
+        box-shadow: 0 40px 120px rgb(0 0 0 / 0.55);
+        overflow: hidden;
+      }
+      .bar {
+        height: 48px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 22px;
+        background: #28292d;
+        border-bottom: 1px solid #393a3f;
+      }
+      .dot {
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+        background: #4a4b51;
+      }
+      .addr {
+        margin-left: 24px;
+        padding: 6px 18px;
+        border-radius: 999px;
+        background: #161719;
+        font:
+          500 17px 'IBM Plex Mono',
+          monospace;
+        color: #a09f9b;
+      }
+      .browser img {
+        display: block;
+        width: 1500px;
+        height: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="head">
+      <div>
+        <div class="accent"></div>
+        <h1 class="wordmark">devtools</h1>
+        <p class="tagline" data-t="taglineShort"></p>
+      </div>
+      <div class="screen">
+        <span class="led"></span><span data-t="count"></span>
+        <span class="sep"></span>
+        <span class="led"></span><span data-t="sent"></span>
+      </div>
+    </div>
+    <div class="browser">
+      <div class="bar">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="addr" data-t="url"></span>
+      </div>
+      <img id="shot" alt="" />
+    </div>
+    <script src="promo.js"></script>
+  </body>
+</html>
