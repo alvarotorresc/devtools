@@ -59,6 +59,19 @@ const PAGES: [string, string][] = [
   ['/es/calculadora-porcentajes', 'Porcentajes'],
   ['/es/regla-de-tres', 'Regla de tres'],
   ['/es/calculadora-dias-habiles', 'Días hábiles'],
+  ['/es/generador-contrasenas', 'Contraseñas'],
+  ['/es/generador-codigo-qr', 'Código QR'],
+  ['/es/generador-slug', 'Slug'],
+  ['/es/conversor-json-yaml-csv', 'JSON, YAML y CSV'],
+  ['/es/comparar-json', 'Comparar JSON'],
+  ['/es/vista-previa-markdown', 'Markdown'],
+  ['/es/convertir-curl-a-fetch', 'cURL a fetch'],
+  ['/es/conversor-query-string-json', 'Query string'],
+  ['/es/codigos-estado-http', 'Códigos HTTP'],
+  ['/es/explicar-expresion-cron', 'Cron'],
+  ['/es/analizar-user-agent', 'User-Agent'],
+  ['/es/comprobar-rango-semver', 'Semver'],
+  ['/es/calculadora-subredes-cidr', 'Subredes CIDR'],
 ];
 
 test.describe('every migrated tool page loads', () => {
@@ -641,5 +654,303 @@ test.describe('lote 2: one real interaction per tool', () => {
     await expect(page.locator('#workdays-natural')).toHaveText('31');
     await expect(page.locator('#workdays-business')).toHaveText('20');
     await expect(page.getByText('Epifanía del Señor')).toBeVisible();
+  });
+});
+
+// Lote 3: generadores, texto y datos, y referencia.
+test.describe('lote 3: one real interaction per tool', () => {
+  const storedValues = (page: Page) => page.evaluate(() => Object.values(localStorage));
+  const storedKeys = (page: Page) => page.evaluate(() => Object.keys(localStorage));
+
+  test('password generates the requested length and never stores it', async ({ page }) => {
+    await page.goto('/es/generador-contrasenas');
+    await page.locator('#password-length').fill('32');
+    const pw = page.locator('.panel .pw').first();
+    await expect(pw).toHaveText(/^.{32}$/);
+    await expect(page.locator('.display-head')).toContainText('Fuerte');
+    const value = await pw.textContent();
+    await page.waitForTimeout(500);
+    expect((await storedValues(page)).some((v) => v.includes(value!))).toBe(false);
+  });
+
+  test('password does not persist its options while they stay at the defaults (M5)', async ({
+    page,
+  }) => {
+    await page.goto('/es/generador-contrasenas');
+    const stored = () => page.evaluate(() => localStorage.getItem('devtools:password.options'));
+    await page.waitForTimeout(500);
+    expect(await stored()).toBeNull();
+    await page.locator('#password-length').fill('32');
+    await expect.poll(stored).not.toBeNull();
+    await page.locator('#password-length').fill('20');
+    await expect.poll(stored).toBeNull();
+  });
+
+  test('qr draws the code, downloads PNG and SVG and never stores the WiFi password', async ({
+    page,
+  }) => {
+    await page.goto('/es/generador-codigo-qr');
+    await page.locator('#qr-text').fill('hola');
+    await expect(page.locator('.display img')).toBeVisible();
+    let download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Descargar PNG' }).click();
+    expect((await download).suggestedFilename()).toBe('qr.png');
+    download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Descargar SVG' }).click();
+    expect((await download).suggestedFilename()).toBe('qr.svg');
+    await radio(page, 'WiFi').click();
+    await page.locator('#qr-ssid').fill('Casa');
+    await page.locator('#qr-password').fill('s3cret');
+    await expect(page.locator('.display img')).toBeVisible();
+    await page.waitForTimeout(500);
+    expect((await storedValues(page)).some((v) => v.includes('s3cret'))).toBe(false);
+  });
+
+  test('slug removes accents and punctuation', async ({ page }) => {
+    await page.goto('/es/generador-slug');
+    await page.locator('#slug-input').fill('¡Hola, Mundo! Año 2026');
+    await expect(page.locator('.panel .slug')).toHaveText('hola-mundo-ano-2026');
+  });
+
+  test('data-convert detects CSV with ; and writes JSON and YAML', async ({ page }) => {
+    await page.goto('/es/conversor-json-yaml-csv');
+    await page.locator('#data-convert-input').fill('nombre;edad\nAna;34');
+    await expect(page.getByText('Detectado: CSV (separador ;)')).toBeVisible();
+    await expect(page.locator('.display-code')).toContainText('"nombre": "Ana"');
+    await radio(page, 'YAML').click();
+    await expect(page.locator('.display-code')).toContainText('nombre: Ana');
+  });
+
+  // I3: the parse error shows once, under the field; the headline goes neutral.
+  test('data-convert shows a parse error once, under the field', async ({ page }) => {
+    await page.goto('/es/conversor-json-yaml-csv');
+    await page.locator('#data-convert-from').selectOption('json');
+    await page.locator('#data-convert-input').fill('{bad');
+    const fieldError = page.locator('#data-convert-input-error');
+    await expect(fieldError).toBeVisible();
+    const errorText = await fieldError.innerText();
+    expect(errorText.length).toBeGreaterThan(0);
+    await expect(page.locator('.display-note')).toHaveCount(0);
+    await expect(page.locator('.display-head')).toHaveText('Corrige el campo marcado.');
+  });
+
+  test('json-diff ignores key order and lists what changed', async ({ page }) => {
+    await page.goto('/es/comparar-json');
+    await page.locator('#json-diff-a').fill('{"a":1,"b":2}');
+    await page.locator('#json-diff-b').fill('{"b":3,"a":1,"c":4}');
+    await expect(page.getByText('1 añadida · 0 eliminadas · 1 cambiada')).toBeVisible();
+    await expect(page.locator('.panel .changes .path')).toHaveText(['$.b', '$.c']);
+  });
+
+  // The brief's version of this test assumed every external image is blocked by default; Task 6's
+  // review round only blocks images that resolve (against document.baseURI) to a different
+  // origin, so a same-origin `src=x` still loads (and 404s, harmlessly: this fixture only fails on
+  // an uncaught page error, not on a failed request). It also assumed `http:example.com` would be
+  // external, but on this http e2e server that string parses as same-origin (see sanitize.ts's
+  // isExternalSrc doc comment): `https:example.com/x` is the form that actually crosses origins
+  // here, so that is what exercises the block. This also covers the review round's later
+  // additions: popover/popovertarget/name in FORBID_ATTR and data-*/id/dialog stripped, plus the
+  // fix-wave additions of `for` (M17) and the HTML tab/copy keeping the export src (I4).
+  test('markdown renders GFM, strips every script vector and blocks a cross-origin image', async ({
+    page,
+  }) => {
+    const toExampleCom: string[] = [];
+    await page.route('**/example.com/**', (r) => r.abort());
+    page.on('request', (r) => {
+      if (r.url().includes('example.com')) toExampleCom.push(r.url());
+    });
+    await page.goto('/es/vista-previa-markdown');
+    await page
+      .locator('#markdown-input')
+      .fill(
+        [
+          '# Hola',
+          '',
+          '<img src=x onerror="window.__xss=1">',
+          '',
+          '<script>window.__xss2=1</script>',
+          '',
+          '[x](javascript:alert(1)) <iframe src="https://example.com"></iframe>',
+          '',
+          '<img src="https:example.com/x">',
+          '',
+          '<div data-copy-main id="fake">redress</div>',
+          '',
+          '<a href="#" name="shadow">named</a>',
+          '',
+          '<dialog open>hi</dialog>',
+          '',
+          '<label for="markdown-input">click me</label>',
+        ].join('\n'),
+      );
+    await expect(page.locator('.md-preview h1')).toHaveText('Hola');
+    await expect(page.locator('.md-preview img.md-blocked')).toHaveCount(1);
+    expect(await page.evaluate(() => '__xss' in window || '__xss2' in window)).toBe(false);
+    await expect(page.locator('.md-preview script')).toHaveCount(0);
+    await expect(page.locator('.md-preview [onerror]')).toHaveCount(0);
+    await expect(page.locator('.md-preview a[href^="javascript"]')).toHaveCount(0);
+    await expect(page.locator('.md-preview iframe')).toHaveCount(0);
+    await expect(page.locator('.md-preview [data-copy-main]')).toHaveCount(0);
+    await expect(page.locator('.md-preview [id]')).toHaveCount(0);
+    await expect(page.locator('.md-preview [name]')).toHaveCount(0);
+    await expect(page.locator('.md-preview [popover]')).toHaveCount(0);
+    await expect(page.locator('.md-preview dialog')).toHaveCount(0);
+    await expect(page.locator('.md-preview img.md-blocked')).not.toHaveAttribute('src');
+    // M17: the <label> element itself survives (GFM output can carry one), only its `for` goes.
+    await expect(page.locator('.md-preview label')).toHaveCount(1);
+    await expect(page.locator('.md-preview [for]')).toHaveCount(0);
+    await expect(page.getByText('Imagen externa sin cargar: 1.')).toBeVisible();
+    await radio(page, 'HTML').click();
+    await expect(page.locator('.display-code')).toContainText('<h1');
+    await expect(page.locator('.display-code')).not.toContainText('onerror');
+    await expect(page.locator('.display-code')).not.toContainText('<script');
+    // I4: the HTML tab (and "Copiar HTML", which shares the same string) keeps the original
+    // external image src even though the preview blocked it; it also gets no-referrer, and it
+    // never actually fetches example.com.
+    await expect(page.locator('.display-code')).toContainText('src="https:example.com/x"');
+    await expect(page.locator('.display-code')).not.toContainText('md-blocked');
+    expect(toExampleCom).toEqual([]);
+  });
+
+  test('curl turns a POST with JSON into fetch and stores nothing', async ({ page }) => {
+    await page.goto('/es/convertir-curl-a-fetch');
+    await page
+      .locator('#curl-input')
+      .fill(
+        `curl -X POST https://api.example.com/u -H 'Content-Type: application/json' -d '{"a":1}'`,
+      );
+    await expect(page.locator('.display-code')).toContainText("method: 'POST'");
+    await expect(page.locator('.display-code')).toContainText('body: JSON.stringify(');
+    await page.waitForTimeout(500);
+    expect((await storedKeys(page)).filter((k) => k.includes('curl'))).toEqual([]);
+  });
+
+  test('query-string builds nested JSON and never saves credentials', async ({ page }) => {
+    await page.goto('/es/conversor-query-string-json');
+    const stored = () => page.evaluate(() => localStorage.getItem('devtools:input.query-string'));
+    await page.locator('#query-string-input').fill('?a=1&b=2&b=3&c[d]=x');
+    await expect(page.locator('.display-code')).toContainText('"d": "x"');
+    expect(JSON.parse(await page.locator('.display-code').innerText())).toEqual({
+      a: '1',
+      b: ['2', '3'],
+      c: { d: 'x' },
+    });
+    await expect.poll(stored).toBe('?a=1&b=2&b=3&c[d]=x');
+    await page.locator('#query-string-input').fill('?token=abc');
+    await expect.poll(stored).toBeNull();
+    // Back to a safe value first, so the next assertion proves the credentialed URL below is
+    // actually refused (not just vacuously null already) (I1).
+    await page.locator('#query-string-input').fill('?page=1');
+    await expect.poll(stored).toBe('?page=1');
+    await page
+      .locator('#query-string-input')
+      .fill('https://admin:hunter2@api.example.com/v1?page=1');
+    await expect.poll(stored).toBeNull();
+  });
+
+  // I3: the error shows once, under the field; the headline goes neutral instead of repeating it.
+  test('query-string shows an invalid-JSON error once, under the field', async ({ page }) => {
+    await page.goto('/es/conversor-query-string-json');
+    await radio(page, 'JSON → query').click();
+    await page.locator('#query-string-input').fill('[1,2]');
+    await expect(page.locator('#query-string-input-error')).toHaveText(
+      'El JSON debe ser un objeto, por ejemplo {"q": "gato", "page": 2}',
+    );
+    await expect(page.getByText('El JSON debe ser un objeto', { exact: false })).toHaveCount(1);
+    await expect(page.locator('.display-head')).toHaveText('Corrige el campo marcado.');
+  });
+
+  test('http-status finds codes by number and by word', async ({ page }) => {
+    await page.goto('/es/codigos-estado-http');
+    await page.locator('#http-status-search').fill('404');
+    await expect(page.locator('.panel .code-row')).toHaveCount(1);
+    await expect(page.locator('.panel .code-row')).toContainText('Not Found');
+    await page.locator('#http-status-search').fill('teapot');
+    await expect(page.locator('.panel .code-row .num')).toHaveText(['418']);
+  });
+
+  test('cron explains the expression and lists the next run in Madrid', async ({ page }) => {
+    await page.clock.setFixedTime(new Date('2026-09-28T06:00:00Z'));
+    await page.goto('/es/explicar-expresion-cron');
+    await page.locator('#cron-zone').selectOption('Europe/Madrid');
+    await page.locator('#cron-expr').fill('30 9 * * 1-5');
+    await expect(page.locator('.panel .explain')).toHaveText('A las 09:30, de lunes a viernes.');
+    await expect(page.locator('.panel .runs .iso').first()).toHaveText('2026-09-28T07:30:00.000Z');
+  });
+
+  // I2: only a zone the user actively picks is ever persisted, never the browser's own zone.
+  test('cron never persists the auto-detected time zone, only a chosen one', async ({ page }) => {
+    await page.goto('/es/explicar-expresion-cron');
+    const storedExpr = () => page.evaluate(() => localStorage.getItem('devtools:input.cron'));
+    const storedZone = () => page.evaluate(() => localStorage.getItem('devtools:input.cron-zone'));
+    const browserZone = await page.evaluate(() => Intl.DateTimeFormat().resolvedOptions().timeZone);
+    await page.locator('#cron-expr').fill('*/5 * * * *');
+    // Proves `ready` is true and the 300 ms persistedInput timer has fired.
+    await expect.poll(storedExpr).toBe('*/5 * * * *');
+    // persistedInput's own 300 ms timer writes an empty string for any untouched field regardless
+    // of tool (a pre-existing, unrelated quirk); what I2 forbids is the *real* detected zone
+    // landing there. Falsy covers both null and that empty-string write.
+    expect(await storedZone()).toBeFalsy();
+    expect(await storedZone()).not.toBe(browserZone);
+    await page.locator('#cron-zone').selectOption('Europe/Madrid');
+    await expect.poll(storedZone).toBe('Europe/Madrid');
+  });
+
+  test('user-agent reads Firefox on Windows', async ({ page }) => {
+    await page.goto('/es/analizar-user-agent');
+    await page
+      .locator('#user-agent-input')
+      .fill('Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0');
+    const kv = page.locator('.panel .display-kv').first();
+    await expect(kv).toContainText('Firefox 128.0');
+    await expect(kv).toContainText('Windows 10');
+    await expect(kv).toContainText('Gecko 128.0');
+  });
+
+  // The review round hides "La más alta que cumple" when no entered version is valid (it used to
+  // key that off whether the versions list was non-empty, so two invalid entries still showed it
+  // next to "Ninguna", which reads as if there were a candidate).
+  test('semver checks versions against a caret range and hides the best match once all are invalid', async ({
+    page,
+  }) => {
+    await page.goto('/es/comprobar-rango-semver');
+    await page.locator('#semver-range').fill('^1.2.3');
+    await page.locator('#semver-versions').fill('1.2.3\n1.9.0\n2.0.0');
+    await expect(page.getByText('2 de 3 cumplen')).toBeVisible();
+    await expect(page.locator('.panel .display-kv')).toContainText('>=1.2.3 <2.0.0-0');
+    await page.locator('#semver-versions').fill('foo\nbar');
+    await expect(page.getByText('La más alta que cumple')).toHaveCount(0);
+  });
+
+  // I3: the bad-range error shows once, under the field; the headline goes neutral.
+  test('semver shows a bad-range error once, under the field', async ({ page }) => {
+    await page.goto('/es/comprobar-rango-semver');
+    await page.locator('#semver-range').fill('not-a-range');
+    await expect(page.locator('#semver-range-error')).toHaveText(
+      'El rango no es válido. Ejemplos: ^1.2.3, ~1.2, >=1.0.0 <2.0.0, 1.x || 2.x',
+    );
+    await expect(page.locator('.display-note')).toHaveCount(0);
+    await expect(page.locator('.display-head')).toHaveText('Corrige el campo marcado.');
+  });
+
+  test('cidr works out /24 and point-to-point /31 networks', async ({ page }) => {
+    await page.goto('/es/calculadora-subredes-cidr');
+    await page.locator('#cidr-input').fill('192.168.1.10/24');
+    const kv = page.locator('.panel .display-kv');
+    await expect(kv).toContainText('192.168.1.255');
+    await expect(kv).toContainText('254');
+    await page.locator('#cidr-input').fill('10.0.0.7/31');
+    await expect(kv.locator('dt:has-text("Hosts útiles") + dd')).toHaveText('2');
+  });
+
+  // I3: the out-of-range prefix error shows once, under the field; the headline goes neutral.
+  test('cidr shows an out-of-range prefix error once, under the field', async ({ page }) => {
+    await page.goto('/es/calculadora-subredes-cidr');
+    await page.locator('#cidr-input').fill('10.0.0.0/33');
+    await expect(page.locator('#cidr-input-error')).toHaveText(
+      'El prefijo /33 no existe: va de 0 a 32',
+    );
+    await expect(page.locator('.display-note')).toHaveCount(0);
+    await expect(page.locator('.display-head')).toHaveText('Corrige el campo marcado.');
   });
 });

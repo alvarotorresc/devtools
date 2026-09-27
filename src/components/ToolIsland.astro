@@ -38,6 +38,19 @@ import Irpf from '../tools/irpf/Irpf.svelte';
 import Percent from '../tools/percent/Percent.svelte';
 import RuleOfThree from '../tools/rule-of-three/RuleOfThree.svelte';
 import Workdays from '../tools/workdays/Workdays.svelte';
+import Password from '../tools/password/Password.svelte';
+import Qr from '../tools/qr/Qr.svelte';
+import Slug from '../tools/slug/Slug.svelte';
+import DataConvert from '../tools/data-convert/DataConvert.svelte';
+import JsonDiff from '../tools/json-diff/JsonDiff.svelte';
+import Markdown from '../tools/markdown/Markdown.svelte';
+import Curl from '../tools/curl/Curl.svelte';
+import QueryString from '../tools/query-string/QueryString.svelte';
+import HttpStatus from '../tools/http-status/HttpStatus.svelte';
+import Cron from '../tools/cron/Cron.svelte';
+import UserAgent from '../tools/user-agent/UserAgent.svelte';
+import Semver from '../tools/semver/Semver.svelte';
+import Cidr from '../tools/cidr/Cidr.svelte';
 import type { Locale } from '../tools/types';
 
 interface Props {
@@ -86,3 +99,16 @@ const { id, locale } = Astro.props;
 {id === 'percent' && <Percent client:load locale={locale} />}
 {id === 'rule-of-three' && <RuleOfThree client:load locale={locale} />}
 {id === 'workdays' && <Workdays client:load locale={locale} />}
+{id === 'password' && <Password client:load locale={locale} />}
+{id === 'qr' && <Qr client:load locale={locale} />}
+{id === 'slug' && <Slug client:load locale={locale} />}
+{id === 'data-convert' && <DataConvert client:load locale={locale} />}
+{id === 'json-diff' && <JsonDiff client:load locale={locale} />}
+{id === 'markdown' && <Markdown client:load locale={locale} />}
+{id === 'curl' && <Curl client:load locale={locale} />}
+{id === 'query-string' && <QueryString client:load locale={locale} />}
+{id === 'http-status' && <HttpStatus client:load locale={locale} />}
+{id === 'cron' && <Cron client:load locale={locale} />}
+{id === 'user-agent' && <UserAgent client:load locale={locale} />}
+{id === 'semver' && <Semver client:load locale={locale} />}
+{id === 'cidr' && <Cidr client:load locale={locale} />}
