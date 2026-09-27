@@ -88,7 +88,7 @@
 </script>
 
 <div class="panel">
-  <Field id="data-convert-input" label={s.input}>
+  <Field id="data-convert-input" label={s.input} error={read && !read.ok ? status : undefined}>
     {#snippet children({ describedby })}
       <TextArea
         id="data-convert-input"
@@ -155,28 +155,29 @@
     {#snippet head()}
       <Led
         state={!read ? 'idle' : read.ok && written?.ok ? 'ok' : 'bad'}
-        label={!read ? t(locale, 'led.idle') : status}
+        label={!read ? t(locale, 'led.idle') : !read.ok ? t(locale, 'ui.fixField') : status}
       />
     {/snippet}
     {#if !read}
       <p class="display-note">{s.empty}</p>
-    {:else if !read.ok}
-      <p class="display-note">{status}</p>
-    {:else if written && !written.ok}
-      <p class="display-note">{s.notTable}</p>
-    {:else}
-      <pre class="display-code">{output}</pre>
-      {#if read.documents}
-        <p class="display-note">{fill(s.documents, { n: read.documents })}</p>
-      {/if}
-      {#each read.csvWarnings ?? [] as w (w.row)}
-        <p class="display-note">
-          {fill(s.columns, { row: w.row, columns: w.columns, expected: w.expected })}
-        </p>
-      {/each}
-      {#if to === 'csv'}
-        <p class="display-note">{s.csvTypes}</p>
-        {#if written?.dottedKeys}<p class="display-note">{s.dotted}</p>{/if}
+    {:else if read.ok}
+      <!-- read.ok === false already shows `status` under the field (I3); nothing to repeat here. -->
+      {#if written && !written.ok}
+        <p class="display-note">{s.notTable}</p>
+      {:else}
+        <pre class="display-code">{output}</pre>
+        {#if read.documents}
+          <p class="display-note">{fill(s.documents, { n: read.documents })}</p>
+        {/if}
+        {#each read.csvWarnings ?? [] as w (w.row)}
+          <p class="display-note">
+            {fill(s.columns, { row: w.row, columns: w.columns, expected: w.expected })}
+          </p>
+        {/each}
+        {#if to === 'csv'}
+          <p class="display-note">{s.csvTypes}</p>
+          {#if written?.dottedKeys}<p class="display-note">{s.dotted}</p>{/if}
+        {/if}
       {/if}
     {/if}
   </Display>
