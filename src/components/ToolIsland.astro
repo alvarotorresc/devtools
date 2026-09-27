@@ -32,7 +32,7 @@ import Mock from '../tools/mock/Mock.svelte';
 
 // import Currency from '../tools/currency/Currency.svelte';
 
-// import PxRem from '../tools/px-rem/PxRem.svelte';
+import PxRem from '../tools/px-rem/PxRem.svelte';
 
 // import Chmod from '../tools/chmod/Chmod.svelte';
 
@@ -95,7 +95,7 @@ const { id, locale } = Astro.props;
 
 {/* {id === 'currency' && <Currency client:load locale={locale} />} */}
 
-{/* {id === 'px-rem' && <PxRem client:load locale={locale} />} */}
+{id === 'px-rem' && <PxRem client:load locale={locale} />}
 
 {/* {id === 'chmod' && <Chmod client:load locale={locale} />} */}
 
