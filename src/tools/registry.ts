@@ -63,7 +63,7 @@ import { meta as password } from './password/meta';
 
 import { meta as qr } from './qr/meta';
 
-// import { meta as slug } from './slug/meta';
+import { meta as slug } from './slug/meta';
 
 // import { meta as dataConvert } from './data-convert/meta';
 
@@ -146,7 +146,7 @@ export const tools: ToolMeta[] = [
 
   qr,
 
-  // slug,
+  slug,
 
   // dataConvert,
 

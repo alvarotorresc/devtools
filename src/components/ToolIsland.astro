@@ -63,7 +63,7 @@ import Password from '../tools/password/Password.svelte';
 
 import Qr from '../tools/qr/Qr.svelte';
 
-// import Slug from '../tools/slug/Slug.svelte';
+import Slug from '../tools/slug/Slug.svelte';
 
 // import DataConvert from '../tools/data-convert/DataConvert.svelte';
 
@@ -152,7 +152,7 @@ const { id, locale } = Astro.props;
 
 {id === 'qr' && <Qr client:load locale={locale} />}
 
-{/* {id === 'slug' && <Slug client:load locale={locale} />} */}
+{id === 'slug' && <Slug client:load locale={locale} />}
 
 {/* {id === 'data-convert' && <DataConvert client:load locale={locale} />} */}
 
