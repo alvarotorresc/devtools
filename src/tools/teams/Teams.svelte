@@ -41,17 +41,22 @@
     void nonce;
     return makeTeams(rngFromSeed(seed), list, mode, n);
   });
-  // Without a seed the order is random, so it is only drawn in the browser.
+  // Without a seed the order is random, so the per-person membership is only drawn in the
+  // browser. The team count itself does not depend on the shuffle, so it stays pure and is
+  // correct in the server-rendered HTML too.
   const teams = $derived(mounted && result.ok ? result.teams : []);
+  const teamCount = $derived(result.ok ? result.teams.length : 0);
   const name = $derived(prefix.trim() || s.prefixDefault);
   const error = $derived.by(() => {
     if (result.ok) return undefined;
     if (result.reason === 'few') return s.few;
-    if (result.reason === 'n') return s.nInvalid;
+    if (result.reason === 'n')
+      return fill(s.nInvalid, { label: mode === 'count' ? s.count : s.size });
     return fill(s.tooMany, { p: result.people, k: result.teams });
   });
   const balanced = $derived.by(() => {
-    if (!result.ok || mode !== 'size' || list.length % n === 0) return '';
+    if (!result.ok || mode !== 'size' || result.teams.length < 2 || list.length % n === 0)
+      return '';
     const sizes = new Intl.ListFormat(locale, { type: 'conjunction' }).format(
       result.teams.map((team) => String(team.length)),
     );
@@ -136,7 +141,7 @@
 
   <Display live label={s.result}>
     {#snippet head()}
-      <span>{error ?? fill(s.summary, { n: list.length, k: teams.length })}</span>
+      <span>{error ?? fill(s.summary, { n: list.length, k: teamCount })}</span>
     {/snippet}
     {#if teams.length}
       <div class="teams">

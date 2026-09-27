@@ -34,6 +34,11 @@ describe('makeTeams', () => {
     expect(sizes(makeTeams(seededRng('demo'), TEN, 'size', 20))).toEqual([10]);
   });
 
+  it('shuffles the people instead of keeping the input order', () => {
+    const r = makeTeams(seededRng('demo'), TEN, 'count', 1);
+    expect(r.ok && r.teams[0]).not.toEqual(TEN);
+  });
+
   it('explains impossible splits', () => {
     const five = TEN.slice(0, 5);
     expect(makeTeams(seededRng('demo'), five, 'count', 6)).toEqual({
