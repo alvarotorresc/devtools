@@ -82,6 +82,7 @@ export type MockError =
   | { reason: 'emptyName' }
   | { reason: 'duplicate'; name: string }
   | { reason: 'minMax'; name: string }
+  | { reason: 'numberStep'; name: string; min: number; max: number; decimals: number }
   | { reason: 'dateRange'; name: string }
   | { reason: 'emptyList'; name: string }
   | { reason: 'table' };
@@ -328,12 +329,32 @@ export function dedupeEmails(emails: string[]): string[] {
   });
 }
 
+/**
+ * The clamped decimal count (0–4) and the integer bounds of the values representable at that
+ * precision inside [min, max]. `hi < lo` means no such value exists (e.g. 0 decimals, 0.5–0.9).
+ * Scaled bounds are snapped to 15 significant digits before rounding: `0.29 * 100` is
+ * `28.999999999999996` in floating point, which would otherwise floor to 28 and make a valid
+ * single-point range (0.29–0.29) look empty.
+ */
+function numberGrid(
+  min: number,
+  max: number,
+  decimals: number,
+): { decimals: number; f: number; lo: number; hi: number } {
+  const d = Math.min(4, Math.max(0, Math.floor(decimals)));
+  const f = 10 ** d;
+  return {
+    decimals: d,
+    f,
+    lo: Math.ceil(+(min * f).toPrecision(15)),
+    hi: Math.floor(+(max * f).toPrecision(15)),
+  };
+}
+
 function customValue(field: MockField, rng: Rng): CsvCell {
   switch (field.kind) {
     case 'number': {
-      const f = 10 ** Math.min(4, Math.max(0, Math.floor(field.decimals)));
-      const lo = Math.ceil(field.min * f);
-      const hi = Math.floor(field.max * f);
+      const { f, lo, hi } = numberGrid(field.min, field.max, field.decimals);
       if (hi - lo + 1 <= 2 ** 32 && hi >= lo) return randInt(rng, lo, hi) / f;
       return Math.round((field.min + (rng() / 2 ** 32) * (field.max - field.min)) * f) / f;
     }
@@ -370,7 +391,11 @@ export function validateConfig(config: MockConfig): MockError | null {
     if (!name) return { reason: 'emptyName' };
     if (names.has(name)) return { reason: 'duplicate', name };
     names.add(name);
-    if (f.kind === 'number' && !(f.min <= f.max)) return { reason: 'minMax', name };
+    if (f.kind === 'number') {
+      if (!(f.min <= f.max)) return { reason: 'minMax', name };
+      const { lo, hi, decimals } = numberGrid(f.min, f.max, f.decimals);
+      if (hi < lo) return { reason: 'numberStep', name, min: f.min, max: f.max, decimals };
+    }
     if (f.kind === 'date') {
       const from = parseDay(f.from);
       const to = parseDay(f.to);

@@ -1,3 +1,4 @@
+import { compactId } from '../../lib/ids';
 import { provinceByCode, type Province } from '../../lib/provinces';
 import { randInt, type Rng } from '../../lib/random';
 
@@ -15,7 +16,9 @@ export type PostalResult =
   | { ok: false; reason: PostalReason; length?: number; prefix?: string };
 
 export function lookupPostalCode(raw: string): PostalResult {
-  const s = raw.replace(/\s/g, '');
+  // compactId also accepts dots and dashes: the exact thousands-formatted spreadsheet column
+  // ("28.013") or hyphenated form ("08-001") the tool advertises taking.
+  const s = compactId(raw);
   if (!s) return { ok: false, reason: 'empty' };
   if (!/^\d+$/.test(s)) return { ok: false, reason: 'chars' };
   if (s.length !== 4 && s.length !== 5) return { ok: false, reason: 'length', length: s.length };

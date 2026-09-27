@@ -3,6 +3,7 @@
   import { t } from '../../i18n';
   import { fill } from '../../i18n/fill';
   import { downloadBlob } from '../../lib/download';
+  import { plural } from '../../lib/plural';
   import { randomSeed } from '../../lib/random';
   import Button from '../../ui/Button.svelte';
   import CopyButton from '../../ui/CopyButton.svelte';
@@ -54,10 +55,19 @@
 
   $effect(() => {
     const json = JSON.stringify(config);
-    if (loaded) stored.value = json;
+    if (!loaded) return;
+    // Nothing changed from the locale's defaults: keep storage empty rather than saving a
+    // config that names its columns in this locale, which would leak onto the other locale
+    // (the storage key carries no locale) the next time this tool loads with nothing typed.
+    stored.value = json === JSON.stringify(defaultConfig(locale)) ? '' : json;
   });
 
   const result = $derived(session ? renderMock(config, now, session) : null);
+  const summaryText = $derived(
+    result?.ok
+      ? `${plural(locale, result.rows, s.rowsOne, s.rowsOther)} · ${plural(locale, result.columns.length, s.colsOne, s.colsOther)}`
+      : '',
+  );
 
   function errorText(e: MockError): string {
     switch (e.reason) {
@@ -67,6 +77,22 @@
         return s.emptyName;
       case 'table':
         return s.tableError;
+      case 'numberStep': {
+        // decimals names its own count (not `plural`'s fixed `{n}`), so its one/other template
+        // is picked the same way `plural` does, then filled together with the other placeholders.
+        const template =
+          new Intl.PluralRules(locale).select(e.decimals) === 'one'
+            ? s.numberStepOne
+            : s.numberStepOther;
+        return fill(template, {
+          name: e.name,
+          // maximumFractionDigits: toLocaleString defaults to 3, which would cut the very
+          // decimals (4th, e.g.) that make the range empty in the first place.
+          min: e.min.toLocaleString(locale, { maximumFractionDigits: 20 }),
+          max: e.max.toLocaleString(locale, { maximumFractionDigits: 20 }),
+          decimals: e.decimals,
+        });
+      }
       default:
         return fill(s[e.reason], { name: e.name });
     }
@@ -93,13 +119,14 @@
     <ul class="fields">
       {#each config.fields as f, i (f.uid)}
         {@const available = isAvailable(f, config.international)}
+        {@const label = f.name || names[f.kind]}
         <li class="field" class:off={!available}>
           <label class="check">
             <input
               type="checkbox"
               bind:checked={f.enabled}
               disabled={!available}
-              aria-label={fill(s.include, { field: names[f.kind] })}
+              aria-label={fill(s.include, { field: label })}
             />
             <span>{names[f.kind]}</span>
           </label>
@@ -108,7 +135,7 @@
             type="text"
             autocomplete="off"
             spellcheck="false"
-            aria-label={fill(s.column, { field: names[f.kind] })}
+            aria-label={fill(s.column, { field: label })}
             disabled={!available}
             bind:value={f.name}
           />
@@ -117,7 +144,7 @@
               class="control mono num"
               type="number"
               step="any"
-              aria-label={s.min}
+              aria-label={fill(s.minOf, { field: label })}
               placeholder={s.min}
               bind:value={f.min}
             />
@@ -125,13 +152,19 @@
               class="control mono num"
               type="number"
               step="any"
-              aria-label={s.max}
+              aria-label={fill(s.maxOf, { field: label })}
               placeholder={s.max}
               bind:value={f.max}
             />
             <label class="param">
               <span>{s.decimals}</span>
-              <NumberInput id="mock-{f.uid}-decimals" bind:value={f.decimals} min={0} max={4} />
+              <NumberInput
+                id="mock-{f.uid}-decimals"
+                bind:value={f.decimals}
+                min={0}
+                max={4}
+                ariaLabel={fill(s.decimalsOf, { field: label })}
+              />
             </label>
           {:else if f.kind === 'boolean'}
             <label class="param">
@@ -141,16 +174,27 @@
                 bind:value={f.probability}
                 min={0}
                 max={100}
+                ariaLabel={fill(s.probabilityOf, { field: label })}
               />
             </label>
           {:else if f.kind === 'date'}
-            <input class="control mono date" type="date" aria-label={s.from} bind:value={f.from} />
-            <input class="control mono date" type="date" aria-label={s.to} bind:value={f.to} />
+            <input
+              class="control mono date"
+              type="date"
+              aria-label={fill(s.fromOf, { field: label })}
+              bind:value={f.from}
+            />
+            <input
+              class="control mono date"
+              type="date"
+              aria-label={fill(s.toOf, { field: label })}
+              bind:value={f.to}
+            />
           {:else if f.kind === 'list'}
             <textarea
               class="control mono values"
               rows="2"
-              aria-label={s.values}
+              aria-label={fill(s.valuesOf, { field: label })}
               placeholder={s.values}
               bind:value={f.values}></textarea>
           {/if}
@@ -160,7 +204,7 @@
               <Button
                 variant="icon"
                 icon="chevron-down"
-                label={fill(s.up, { field: f.name || names[f.kind] })}
+                label={fill(s.up, { field: label })}
                 disabled={i === 0}
                 onclick={() => (config.fields = moveField(config.fields, i, -1))}
               />
@@ -168,7 +212,7 @@
             <Button
               variant="icon"
               icon="chevron-down"
-              label={fill(s.down, { field: f.name || names[f.kind] })}
+              label={fill(s.down, { field: label })}
               disabled={i === config.fields.length - 1}
               onclick={() => (config.fields = moveField(config.fields, i, 1))}
             />
@@ -176,7 +220,7 @@
               <Button
                 variant="icon"
                 icon="x"
-                label={fill(s.remove, { field: f.name || names[f.kind] })}
+                label={fill(s.remove, { field: label })}
                 onclick={() => (config.fields = config.fields.filter((x) => x.uid !== f.uid))}
               />
             {/if}
@@ -208,7 +252,7 @@
       <Field id="mock-rows" label={s.rows}>
         <NumberInput id="mock-rows" bind:value={config.rows} min={1} max={MAX_ROWS} />
       </Field>
-      <Field id="mock-seed" label={t(locale, 'ui.seed')} help={t(locale, 'ui.seedHelp')}>
+      <Field id="mock-seed" label={t(locale, 'ui.seed')} help={s.seedHelp}>
         {#snippet children({ describedby })}
           <input
             id="mock-seed"
@@ -262,7 +306,7 @@
   <Display live label={s.result}>
     {#snippet head()}
       {#if result?.ok}
-        <span>{fill(s.summary, { rows: result.rows, cols: result.columns.length })}</span>
+        <span>{summaryText}</span>
       {/if}
     {/snippet}
     {#if result && !result.ok}
@@ -270,7 +314,9 @@
     {:else if result?.ok}
       <pre class="display-code">{result.preview}</pre>
       {#if result.rows > PREVIEW_ROWS}
-        <p class="display-note">{fill(s.more, { n: result.rows - PREVIEW_ROWS })}</p>
+        <p class="display-note">
+          {plural(locale, result.rows - PREVIEW_ROWS, s.moreOne, s.moreOther)}
+        </p>
       {/if}
     {/if}
   </Display>

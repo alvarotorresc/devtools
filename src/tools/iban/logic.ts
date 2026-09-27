@@ -1,3 +1,4 @@
+import { compactId } from '../../lib/ids';
 import { digits, pick, type Rng } from '../../lib/random';
 
 /**
@@ -57,9 +58,9 @@ export type IbanResult =
       expected?: string;
     };
 
-/** Removes spaces, dashes and a leading "IBAN", and upper-cases. */
+/** Removes spaces, dots, dashes and a leading "IBAN", and upper-cases. */
 export function normalizeIban(raw: string): string {
-  return raw.toUpperCase().replace(/[\s-]/g, '').replace(/^IBAN/, '');
+  return compactId(raw).replace(/^IBAN/, '');
 }
 
 /** mod 97 of an alphanumeric string (A=10 … Z=35), digit by digit so it never overflows. */

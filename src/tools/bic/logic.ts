@@ -1,3 +1,5 @@
+import { compactId } from '../../lib/ids';
+
 /**
  * ISO 3166-1 alpha-2 plus XK (Kosovo): 250 codes. A fixed list, because Intl.DisplayNames
  * also accepts withdrawn codes (AN, YU…). Intl is only used to show the name.
@@ -34,7 +36,7 @@ export type BicResult =
   | { ok: false; reason: BicReason; length?: number; country?: string };
 
 export function validateBic(raw: string): BicResult {
-  const s = raw.toUpperCase().replace(/[\s-]/g, '');
+  const s = compactId(raw);
   if (!s) return { ok: false, reason: 'empty' };
   if (s.length !== 8 && s.length !== 11) return { ok: false, reason: 'length', length: s.length };
   if (!/^[A-Z]{4}/.test(s)) return { ok: false, reason: 'bank' };

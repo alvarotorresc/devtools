@@ -46,6 +46,10 @@ describe('validateCode', () => {
     });
   });
 
+  it('accepts dots as separators too', () => {
+    expect(validateCode('978.0306406157')).toMatchObject({ ok: true, code: '9780306406157' });
+  });
+
   it('has no 10-digit form for 979', () => {
     const code = '979123456789' + eanCheckDigit('979123456789');
     expect(validateCode(code)).toMatchObject({ ok: true, isbn: true, isbn10: null });

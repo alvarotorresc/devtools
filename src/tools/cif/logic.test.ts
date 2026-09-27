@@ -146,6 +146,12 @@ describe('shouldRememberCif: a pasted DNI or NIE is not remembered either', () =
     expect(shouldRememberCif('X12345678L')).toBe(false); // NIE with one digit too many
     expect(shouldRememberCif('X12')).toBe(false); // still being typed
   });
+
+  it('checks past the validator’s 1000-line display cap: a DNI on line 1001 still blocks saving', () => {
+    const lines = Array.from({ length: 1000 }, () => 'B65410011');
+    expect(shouldRememberCif(lines.join('\n'))).toBe(true);
+    expect(shouldRememberCif([...lines, '12345678Z'].join('\n'))).toBe(false);
+  });
 });
 
 describe('generateCif', () => {

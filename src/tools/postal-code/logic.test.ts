@@ -26,8 +26,14 @@ describe('lookupPostalCode', () => {
   it('rejects other lengths and characters', () => {
     expect(lookupPostalCode('123')).toEqual({ ok: false, reason: 'length', length: 3 });
     expect(lookupPostalCode('280130')).toEqual({ ok: false, reason: 'length', length: 6 });
-    expect(lookupPostalCode('28-013')).toEqual({ ok: false, reason: 'chars' });
+    expect(lookupPostalCode('28A13')).toEqual({ ok: false, reason: 'chars' });
     expect(lookupPostalCode(' ')).toEqual({ ok: false, reason: 'empty' });
+  });
+
+  it('accepts dots and dashes as separators, like a spreadsheet column or 08-001', () => {
+    expect(lookupPostalCode('28.013')).toMatchObject({ ok: true, code: '28013' });
+    expect(lookupPostalCode('08-001')).toMatchObject({ ok: true, code: '08001' });
+    expect(lookupPostalCode('8.001')).toMatchObject({ ok: true, code: '08001', padded: true });
   });
 });
 

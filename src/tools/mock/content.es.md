@@ -6,6 +6,6 @@ Elige las columnas, cámbiales el nombre y ordénalas; añade campos de número,
 
 ## JSON, CSV o SQL, siempre iguales con semilla
 
-La salida puede ser un array JSON (con números y booleanos de su tipo), un CSV con cabecera o una sentencia `INSERT` por fila con los textos bien escapados. La vista previa muestra 20 filas; copiar y descargar llevan todas. Con una semilla, la misma configuración da los mismos datos en cualquier navegador. Sin ella, los datos cambian al pulsar Generar.
+La salida puede ser un array JSON (con números y booleanos de su tipo), un CSV con cabecera o una sentencia `INSERT` por fila con los textos bien escapados. La vista previa muestra 20 filas; copiar y descargar llevan todas. Con una semilla, la misma configuración da los mismos datos en cualquier navegador, salvo las fechas relativas a hoy (como la fecha de nacimiento), que dependen del día en que se generan. Sin semilla, los datos cambian al pulsar Generar.
 
 El modo «Datos internacionales» usa nombres, calles y ciudades genéricas en inglés y el rango de teléfonos 555-01XX, reservado para la ficción. En ese modo se desactivan los campos que solo tienen sentido en España, como el DNI o el IBAN.
