@@ -24,6 +24,7 @@ export const strings = {
     jsonError: 'JSON no válido en la línea {line}, columna {column}',
     jsonErrorNoLine: 'El JSON no es válido',
     notSaved: 'Hay claves que parecen credenciales: esta entrada no se guarda.',
+    notSavedCredentials: 'La URL lleva credenciales: esta entrada no se guarda.',
     copyResult: 'Copiar resultado',
   },
   en: {
@@ -49,6 +50,7 @@ export const strings = {
     jsonError: 'Invalid JSON at line {line}, column {column}',
     jsonErrorNoLine: 'The JSON is not valid',
     notSaved: 'Some keys look like credentials: this input is not saved.',
+    notSavedCredentials: 'The URL carries credentials: this input is not saved.',
     copyResult: 'Copy result',
   },
 } satisfies Record<Locale, Record<string, string>>;

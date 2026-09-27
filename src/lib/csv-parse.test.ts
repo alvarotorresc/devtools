@@ -29,7 +29,7 @@ describe('parseCsv', () => {
   });
 
   it('drops the BOM and keeps empty fields', () => {
-    expect(parseCsv('﻿a,,c')).toMatchObject({ ok: true, rows: [['a', '', 'c']] });
+    expect(parseCsv('\uFEFFa,,c')).toMatchObject({ ok: true, rows: [['a', '', 'c']] });
   });
 
   it('detects the separator from the first row, outside quotes', () => {

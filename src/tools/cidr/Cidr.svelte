@@ -89,7 +89,7 @@
     {#snippet head()}
       <Led
         state={result.ok ? 'ok' : error ? 'bad' : 'idle'}
-        label={result.ok ? networkText : t(locale, error ? 'led.bad' : 'led.idle')}
+        label={result.ok ? networkText : t(locale, error ? 'ui.fixField' : 'led.idle')}
       />
     {/snippet}
     {#if rows.length}
@@ -99,8 +99,9 @@
           <dd>{r.value}</dd>
         {/each}
       </dl>
-    {:else}
-      <p class="display-note">{error || s.empty}</p>
+    {:else if !error}
+      <!-- A real error already shows under the field (I3); nothing to repeat here. -->
+      <p class="display-note">{s.empty}</p>
     {/if}
   </Display>
 

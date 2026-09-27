@@ -1,3 +1,4 @@
+import { plural } from '../../lib/plural';
 import { wallClock, zonedToUtc } from '../timestamp/logic';
 import type { Locale } from '../types';
 
@@ -184,8 +185,18 @@ export function errorMessage(error: CronError, locale: Locale): string {
         : 'Type a cron expression, for example */5 * * * *';
     case 'fields':
       return es
-        ? `Tiene ${error.count} campos y hacen falta 5: minuto, hora, día del mes, mes y día de la semana`
-        : `It has ${error.count} fields and needs 5: minute, hour, day of month, month and day of week`;
+        ? plural(
+            locale,
+            error.count,
+            'Tiene {n} campo y hacen falta 5: minuto, hora, día del mes, mes y día de la semana',
+            'Tiene {n} campos y hacen falta 5: minuto, hora, día del mes, mes y día de la semana',
+          )
+        : plural(
+            locale,
+            error.count,
+            'It has {n} field and needs 5: minute, hour, day of month, month and day of week',
+            'It has {n} fields and needs 5: minute, hour, day of month, month and day of week',
+          );
     case 'quartz-fields':
       return es
         ? 'Parece una expresión con segundos o años (Quartz, Spring). Aquí se usa el cron clásico de 5 campos'

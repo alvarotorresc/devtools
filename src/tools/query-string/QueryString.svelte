@@ -12,11 +12,13 @@
   import { persistedInput } from '../../ui/persisted.svelte';
   import { parseJson } from '../json/logic';
   import type { Locale } from '../types';
+  import { hasCredentials } from '../url/logic';
   import {
     detectDirection,
     hasSensitiveKey,
     jsonToQuery,
     queryToJson,
+    shouldSave,
     type Direction,
   } from './logic';
   import { meta } from './meta';
@@ -24,12 +26,7 @@
 
   let { locale }: { locale: Locale } = $props();
   const s = $derived(strings[locale]);
-  const input = persistedInput(
-    'query-string',
-    '',
-    meta.rememberInput ?? true,
-    (v) => !hasSensitiveKey(v),
-  );
+  const input = persistedInput('query-string', '', meta.rememberInput ?? true, shouldSave);
 
   let direction = $state<Direction>('auto');
   let brackets = $state(true);
@@ -38,7 +35,10 @@
 
   const text = $derived(input.value.trim());
   const dir = $derived(direction === 'auto' ? detectDirection(text) : direction);
-  const sensitive = $derived(!!text && hasSensitiveKey(text));
+  // I1: a URL with userinfo credentials gets its own warning text, distinct from the
+  // key-name-based one (a password in the URL is not "a key that looks like a credential").
+  const credentialed = $derived(!!text && hasCredentials(text));
+  const sensitive = $derived(!!text && (credentialed || hasSensitiveKey(text)));
 
   const out = $derived.by(() => {
     if (!text) return null;
@@ -84,7 +84,12 @@
   <Field
     id="query-string-input"
     label={s.input}
-    help={sensitive && input.remember ? s.notSaved : undefined}
+    help={sensitive && input.remember
+      ? credentialed
+        ? s.notSavedCredentials
+        : s.notSaved
+      : undefined}
+    error={out && !out.ok ? out.error : undefined}
   >
     {#snippet children({ describedby })}
       <TextArea
@@ -114,7 +119,7 @@
         label={!out
           ? t(locale, 'led.idle')
           : !out.ok
-            ? out.error
+            ? t(locale, 'ui.fixField')
             : dir === 'toJson'
               ? s.detectedJson
               : s.detectedQuery}
@@ -142,8 +147,9 @@
       {:else}
         <p class="display-note">{s.noPairs}</p>
       {/if}
-    {:else}
-      <p class="display-note">{out ? out.error : s.empty}</p>
+    {:else if !out}
+      <!-- out.ok === false already shows its error under the field (I3); nothing to repeat here. -->
+      <p class="display-note">{s.empty}</p>
     {/if}
   </Display>
 

@@ -166,9 +166,9 @@
     {#if result !== null}
       <div class="display-value" id="currency-result">{shown}</div>
       <p class="display-note">{unitLine}</p>
-    {:else if parsed === null}
-      <p class="display-note">{s.invalid}</p>
     {/if}
+    <!-- parsed === null repeats the Field's own error nowhere else: the amount input already
+         carries it (I1), and the Led headline keeps reporting the unrelated rates status. -->
   </Display>
 
   <div class="row">

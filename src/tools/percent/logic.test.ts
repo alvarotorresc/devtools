@@ -15,12 +15,18 @@ describe('percentOf', () => {
     // Y − X% = Y + |X|%, which is what the UI relies on to show a single sign.
     expect(percentOf(-10, 50)).toEqual({ value: -5, plus: 45, minus: 55 });
   });
+
+  it('keeps exact results with 13+ significant digits', () => {
+    // 1 234 567 890 123 + 10 % must land on 1 358 024 679 135,3, not round off to
+    // 1 358 024 679 140 the way a 12-digit toPrecision does (I2).
+    expect(percentOf(10, 1234567890123).plus).toBe(1358024679135.3);
+  });
 });
 
 describe('whatPercent', () => {
   it('computes X / Y × 100', () => {
     expect(whatPercent(42, 200)).toBe(21);
-    expect(whatPercent(1, 3)).toBe(33.3333333333);
+    expect(whatPercent(1, 3)).toBe(33.3333333333333);
     expect(whatPercent(300, 200)).toBe(150);
   });
 

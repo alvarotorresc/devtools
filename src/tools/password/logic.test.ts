@@ -7,6 +7,7 @@ import {
   activeSets,
   entropyBits,
   generatePassword,
+  isDefaultOptions,
   sanitizeOptions,
   strength,
   validate,
@@ -103,5 +104,14 @@ describe('sanitizeOptions', () => {
     });
     expect(sanitizeOptions({ length: 9999, count: 'x', lower: 'yes' })).toEqual(DEFAULT_OPTIONS);
     expect(sanitizeOptions(null)).toEqual(DEFAULT_OPTIONS);
+  });
+});
+
+describe('isDefaultOptions (M5: never persist options that still equal the defaults)', () => {
+  it('is true for the defaults themselves and false for any single change', () => {
+    expect(isDefaultOptions(DEFAULT_OPTIONS)).toBe(true);
+    expect(isDefaultOptions({ ...DEFAULT_OPTIONS })).toBe(true);
+    expect(isDefaultOptions({ ...DEFAULT_OPTIONS, length: 32 })).toBe(false);
+    expect(isDefaultOptions({ ...DEFAULT_OPTIONS, symbols: false })).toBe(false);
   });
 });

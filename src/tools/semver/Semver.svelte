@@ -85,7 +85,7 @@
         label={!check
           ? t(locale, 'led.idle')
           : !check.ok
-            ? t(locale, 'led.bad')
+            ? t(locale, 'ui.fixField')
             : validCount === 0
               ? s.noVersions
               : fill(plural(locale, matching, s.matchesOne, s.matchesOther), {
@@ -120,8 +120,9 @@
           {/each}
         </ul>
       {/if}
-    {:else}
-      <p class="display-note">{check ? s.badRange : s.empty}</p>
+    {:else if !check}
+      <!-- A bad range already shows under the field (I3); nothing to repeat here. -->
+      <p class="display-note">{s.empty}</p>
     {/if}
   </Display>
 

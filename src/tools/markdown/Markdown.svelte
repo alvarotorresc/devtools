@@ -23,18 +23,24 @@
   let externalImages = $state(false);
   // Stays null during SSR: DOMPurify only runs in the browser, inside this effect.
   let safe = $state<Sanitized | null>(null);
+  // The HTML tab and "Copiar HTML" must not lose external image srcs just because the preview
+  // has them gated off (I4): sanitize a second time with externalImages always on for export.
+  // `blocked` (the "N images not loaded" note) still comes from the gated `safe` above.
+  let exportHtml = $state('');
 
   $effect(() => {
     const md = input.value;
     const external = externalImages;
     if (!md.trim()) {
       safe = null;
+      exportHtml = '';
       return;
     }
-    const timer = setTimeout(
-      () => (safe = sanitize(renderMarkdown(md), { externalImages: external })),
-      DEBOUNCE_MS,
-    );
+    const timer = setTimeout(() => {
+      const rendered = renderMarkdown(md);
+      safe = sanitize(rendered, { externalImages: external });
+      exportHtml = sanitize(rendered, { externalImages: true }).html;
+    }, DEBOUNCE_MS);
     return () => clearTimeout(timer);
   });
 
@@ -90,10 +96,10 @@
       <Display live label={s.html}>
         {#snippet head()}
           <span>{s.html}</span>
-          {#if html}<span>{s.sanitized}</span>{/if}
+          {#if exportHtml}<span>{s.sanitized}</span>{/if}
         {/snippet}
-        {#if html}
-          <pre class="display-code">{html}</pre>
+        {#if exportHtml}
+          <pre class="display-code">{exportHtml}</pre>
         {:else}
           <p class="display-note">{s.empty}</p>
         {/if}
@@ -101,7 +107,7 @@
     {/if}
 
     <div class="row">
-      <CopyButton main value={html} {locale} label={s.copyHtml} />
+      <CopyButton main value={exportHtml} {locale} label={s.copyHtml} />
       <Button variant="ghost" onclick={() => (input.value = SAMPLE)}>{s.sample}</Button>
       <Button variant="ghost" disabled={!input.value} onclick={() => (input.value = '')}
         >{t(locale, 'ui.clear')}</Button

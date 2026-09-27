@@ -37,6 +37,13 @@ export const DEFAULT_OPTIONS: PasswordOptions = {
   excludeAmbiguous: false,
 };
 
+/** True when `opts` is exactly the shipped defaults (M5: not worth persisting on its own). */
+export function isDefaultOptions(opts: PasswordOptions): boolean {
+  return (Object.keys(DEFAULT_OPTIONS) as (keyof PasswordOptions)[]).every(
+    (k) => opts[k] === DEFAULT_OPTIONS[k],
+  );
+}
+
 export type PasswordError = { kind: 'no-sets' } | { kind: 'too-short'; sets: number };
 
 export type Strength = 'weak' | 'fair' | 'strong';

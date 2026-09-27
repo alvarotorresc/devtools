@@ -541,7 +541,8 @@ test.describe('lote 2: one real interaction per tool', () => {
       .locator('.team')
       .evaluateAll((els) => els.map((el) => el.querySelectorAll('li').length));
     expect(sizes).toEqual([3, 3, 2, 2]);
-    await expect(page.getByText('10 personas en 4 equipos')).toBeVisible();
+    // C1 regression: the headline used to ship raw `{p}`/`{k}` placeholders instead of the count.
+    await expect(page.locator('.display-head')).toHaveText('10 personas en 4 equipos');
   });
 
   test('dice rolls 3d6+2 with a seed and explains a bad range', async ({ page }) => {
@@ -587,6 +588,19 @@ test.describe('lote 2: one real interaction per tool', () => {
     await expect(page.locator('#iva-base')).toContainText('100,00');
   });
 
+  test('iva points a bad custom rate at the rate field, not the amount', async ({ page }) => {
+    await page.goto('/es/calculadora-iva');
+    await page.locator('#iva-amount').fill('100');
+    await radio(page, 'Otro').click();
+    await page.locator('#iva-rate-other').fill('abc');
+    // I1: the rate error shows under the rate field, and the amount (which is fine) shows none.
+    await expect(page.locator('#iva-rate-other-error')).toHaveText(
+      'Escribe un porcentaje de 0 a 100, por ejemplo 7.',
+    );
+    await expect(page.locator('#iva-amount-error')).toHaveCount(0);
+    await expect(page.locator('.display-head')).toHaveText('Corrige el campo marcado.');
+  });
+
   test('irpf builds a 1000 € invoice with 21 % VAT and 15 % withholding', async ({ page }) => {
     await page.goto('/es/calculadora-retencion-irpf');
     await page.locator('#irpf-amount').fill('1000');
@@ -602,11 +616,10 @@ test.describe('lote 2: one real interaction per tool', () => {
     await expect(page.locator('#percent-result')).toHaveText('42');
     await radio(page, 'Variación').click();
     await page.locator('#percent-a').fill('0');
-    // The real string explains how to fix it (global constraint), unlike the brief's assumed
-    // text. It renders twice: once as the field error, once as the headline (see progress.md's
-    // T1 ruling, "show error once" — percent still shows it twice; not this task's call to
-    // change). `.first()` avoids a strict-mode violation on the duplicate match.
-    await expect(page.getByText('No hay variación porcentual desde 0').first()).toBeVisible();
+    // I1: the error shows once, under the field. The headline goes neutral instead of repeating
+    // it (it used to show the same sentence twice).
+    await expect(page.getByText('No hay variación porcentual desde 0')).toHaveCount(1);
+    await expect(page.locator('.display-head')).toHaveText('Corrige el campo marcado.');
   });
 
   test('rule-of-three solves the direct and the inverse rule', async ({ page }) => {
@@ -620,6 +633,18 @@ test.describe('lote 2: one real interaction per tool', () => {
     await page.locator('#rot-b').fill('6');
     await page.locator('#rot-c').fill('8');
     await expect(page.locator('#rot-x')).toHaveText('3');
+  });
+
+  test('rule-of-three flags a 0 divisor as an error in the headline (Minor 8)', async ({
+    page,
+  }) => {
+    await page.goto('/es/regla-de-tres');
+    await page.locator('#rot-a').fill('0');
+    await page.locator('#rot-b').fill('10');
+    await page.locator('#rot-c').fill('5');
+    const head = page.locator('.display-head');
+    await expect(head).toContainText('A no puede ser 0: no se puede dividir entre 0.');
+    await expect(head.locator('.zero-error')).toBeVisible();
   });
 
   test('workdays counts January 2026 and lists Epiphany', async ({ page }) => {
@@ -646,6 +671,19 @@ test.describe('lote 3: one real interaction per tool', () => {
     const value = await pw.textContent();
     await page.waitForTimeout(500);
     expect((await storedValues(page)).some((v) => v.includes(value!))).toBe(false);
+  });
+
+  test('password does not persist its options while they stay at the defaults (M5)', async ({
+    page,
+  }) => {
+    await page.goto('/es/generador-contrasenas');
+    const stored = () => page.evaluate(() => localStorage.getItem('devtools:password.options'));
+    await page.waitForTimeout(500);
+    expect(await stored()).toBeNull();
+    await page.locator('#password-length').fill('32');
+    await expect.poll(stored).not.toBeNull();
+    await page.locator('#password-length').fill('20');
+    await expect.poll(stored).toBeNull();
   });
 
   test('qr draws the code, downloads PNG and SVG and never stores the WiFi password', async ({
@@ -683,6 +721,19 @@ test.describe('lote 3: one real interaction per tool', () => {
     await expect(page.locator('.display-code')).toContainText('nombre: Ana');
   });
 
+  // I3: the parse error shows once, under the field; the headline goes neutral.
+  test('data-convert shows a parse error once, under the field', async ({ page }) => {
+    await page.goto('/es/conversor-json-yaml-csv');
+    await page.locator('#data-convert-from').selectOption('json');
+    await page.locator('#data-convert-input').fill('{bad');
+    const fieldError = page.locator('#data-convert-input-error');
+    await expect(fieldError).toBeVisible();
+    const errorText = await fieldError.innerText();
+    expect(errorText.length).toBeGreaterThan(0);
+    await expect(page.locator('.display-note')).toHaveCount(0);
+    await expect(page.locator('.display-head')).toHaveText('Corrige el campo marcado.');
+  });
+
   test('json-diff ignores key order and lists what changed', async ({ page }) => {
     await page.goto('/es/comparar-json');
     await page.locator('#json-diff-a').fill('{"a":1,"b":2}');
@@ -698,7 +749,8 @@ test.describe('lote 3: one real interaction per tool', () => {
   // external, but on this http e2e server that string parses as same-origin (see sanitize.ts's
   // isExternalSrc doc comment): `https:example.com/x` is the form that actually crosses origins
   // here, so that is what exercises the block. This also covers the review round's later
-  // additions: popover/popovertarget/name in FORBID_ATTR and data-*/id/dialog stripped.
+  // additions: popover/popovertarget/name in FORBID_ATTR and data-*/id/dialog stripped, plus the
+  // fix-wave additions of `for` (M17) and the HTML tab/copy keeping the export src (I4).
   test('markdown renders GFM, strips every script vector and blocks a cross-origin image', async ({
     page,
   }) => {
@@ -727,6 +779,8 @@ test.describe('lote 3: one real interaction per tool', () => {
           '<a href="#" name="shadow">named</a>',
           '',
           '<dialog open>hi</dialog>',
+          '',
+          '<label for="markdown-input">click me</label>',
         ].join('\n'),
       );
     await expect(page.locator('.md-preview h1')).toHaveText('Hola');
@@ -742,12 +796,20 @@ test.describe('lote 3: one real interaction per tool', () => {
     await expect(page.locator('.md-preview [popover]')).toHaveCount(0);
     await expect(page.locator('.md-preview dialog')).toHaveCount(0);
     await expect(page.locator('.md-preview img.md-blocked')).not.toHaveAttribute('src');
+    // M17: the <label> element itself survives (GFM output can carry one), only its `for` goes.
+    await expect(page.locator('.md-preview label')).toHaveCount(1);
+    await expect(page.locator('.md-preview [for]')).toHaveCount(0);
     await expect(page.getByText('Imagen externa sin cargar: 1.')).toBeVisible();
-    expect(toExampleCom).toEqual([]);
     await radio(page, 'HTML').click();
     await expect(page.locator('.display-code')).toContainText('<h1');
     await expect(page.locator('.display-code')).not.toContainText('onerror');
     await expect(page.locator('.display-code')).not.toContainText('<script');
+    // I4: the HTML tab (and "Copiar HTML", which shares the same string) keeps the original
+    // external image src even though the preview blocked it; it also gets no-referrer, and it
+    // never actually fetches example.com.
+    await expect(page.locator('.display-code')).toContainText('src="https:example.com/x"');
+    await expect(page.locator('.display-code')).not.toContainText('md-blocked');
+    expect(toExampleCom).toEqual([]);
   });
 
   test('curl turns a POST with JSON into fetch and stores nothing', async ({ page }) => {
@@ -765,6 +827,7 @@ test.describe('lote 3: one real interaction per tool', () => {
 
   test('query-string builds nested JSON and never saves credentials', async ({ page }) => {
     await page.goto('/es/conversor-query-string-json');
+    const stored = () => page.evaluate(() => localStorage.getItem('devtools:input.query-string'));
     await page.locator('#query-string-input').fill('?a=1&b=2&b=3&c[d]=x');
     await expect(page.locator('.display-code')).toContainText('"d": "x"');
     expect(JSON.parse(await page.locator('.display-code').innerText())).toEqual({
@@ -772,9 +835,29 @@ test.describe('lote 3: one real interaction per tool', () => {
       b: ['2', '3'],
       c: { d: 'x' },
     });
+    await expect.poll(stored).toBe('?a=1&b=2&b=3&c[d]=x');
     await page.locator('#query-string-input').fill('?token=abc');
-    await page.waitForTimeout(500);
-    expect((await storedValues(page)).some((v) => v.includes('token=abc'))).toBe(false);
+    await expect.poll(stored).toBeNull();
+    // Back to a safe value first, so the next assertion proves the credentialed URL below is
+    // actually refused (not just vacuously null already) (I1).
+    await page.locator('#query-string-input').fill('?page=1');
+    await expect.poll(stored).toBe('?page=1');
+    await page
+      .locator('#query-string-input')
+      .fill('https://admin:hunter2@api.example.com/v1?page=1');
+    await expect.poll(stored).toBeNull();
+  });
+
+  // I3: the error shows once, under the field; the headline goes neutral instead of repeating it.
+  test('query-string shows an invalid-JSON error once, under the field', async ({ page }) => {
+    await page.goto('/es/conversor-query-string-json');
+    await radio(page, 'JSON → query').click();
+    await page.locator('#query-string-input').fill('[1,2]');
+    await expect(page.locator('#query-string-input-error')).toHaveText(
+      'El JSON debe ser un objeto, por ejemplo {"q": "gato", "page": 2}',
+    );
+    await expect(page.getByText('El JSON debe ser un objeto', { exact: false })).toHaveCount(1);
+    await expect(page.locator('.display-head')).toHaveText('Corrige el campo marcado.');
   });
 
   test('http-status finds codes by number and by word', async ({ page }) => {
@@ -793,6 +876,24 @@ test.describe('lote 3: one real interaction per tool', () => {
     await page.locator('#cron-expr').fill('30 9 * * 1-5');
     await expect(page.locator('.panel .explain')).toHaveText('A las 09:30, de lunes a viernes.');
     await expect(page.locator('.panel .runs .iso').first()).toHaveText('2026-09-28T07:30:00.000Z');
+  });
+
+  // I2: only a zone the user actively picks is ever persisted, never the browser's own zone.
+  test('cron never persists the auto-detected time zone, only a chosen one', async ({ page }) => {
+    await page.goto('/es/explicar-expresion-cron');
+    const storedExpr = () => page.evaluate(() => localStorage.getItem('devtools:input.cron'));
+    const storedZone = () => page.evaluate(() => localStorage.getItem('devtools:input.cron-zone'));
+    const browserZone = await page.evaluate(() => Intl.DateTimeFormat().resolvedOptions().timeZone);
+    await page.locator('#cron-expr').fill('*/5 * * * *');
+    // Proves `ready` is true and the 300 ms persistedInput timer has fired.
+    await expect.poll(storedExpr).toBe('*/5 * * * *');
+    // persistedInput's own 300 ms timer writes an empty string for any untouched field regardless
+    // of tool (a pre-existing, unrelated quirk); what I2 forbids is the *real* detected zone
+    // landing there. Falsy covers both null and that empty-string write.
+    expect(await storedZone()).toBeFalsy();
+    expect(await storedZone()).not.toBe(browserZone);
+    await page.locator('#cron-zone').selectOption('Europe/Madrid');
+    await expect.poll(storedZone).toBe('Europe/Madrid');
   });
 
   test('user-agent reads Firefox on Windows', async ({ page }) => {
@@ -821,6 +922,17 @@ test.describe('lote 3: one real interaction per tool', () => {
     await expect(page.getByText('La más alta que cumple')).toHaveCount(0);
   });
 
+  // I3: the bad-range error shows once, under the field; the headline goes neutral.
+  test('semver shows a bad-range error once, under the field', async ({ page }) => {
+    await page.goto('/es/comprobar-rango-semver');
+    await page.locator('#semver-range').fill('not-a-range');
+    await expect(page.locator('#semver-range-error')).toHaveText(
+      'El rango no es válido. Ejemplos: ^1.2.3, ~1.2, >=1.0.0 <2.0.0, 1.x || 2.x',
+    );
+    await expect(page.locator('.display-note')).toHaveCount(0);
+    await expect(page.locator('.display-head')).toHaveText('Corrige el campo marcado.');
+  });
+
   test('cidr works out /24 and point-to-point /31 networks', async ({ page }) => {
     await page.goto('/es/calculadora-subredes-cidr');
     await page.locator('#cidr-input').fill('192.168.1.10/24');
@@ -829,5 +941,16 @@ test.describe('lote 3: one real interaction per tool', () => {
     await expect(kv).toContainText('254');
     await page.locator('#cidr-input').fill('10.0.0.7/31');
     await expect(kv.locator('dt:has-text("Hosts útiles") + dd')).toHaveText('2');
+  });
+
+  // I3: the out-of-range prefix error shows once, under the field; the headline goes neutral.
+  test('cidr shows an out-of-range prefix error once, under the field', async ({ page }) => {
+    await page.goto('/es/calculadora-subredes-cidr');
+    await page.locator('#cidr-input').fill('10.0.0.0/33');
+    await expect(page.locator('#cidr-input-error')).toHaveText(
+      'El prefijo /33 no existe: va de 0 a 32',
+    );
+    await expect(page.locator('.display-note')).toHaveCount(0);
+    await expect(page.locator('.display-head')).toHaveText('Corrige el campo marcado.');
   });
 });

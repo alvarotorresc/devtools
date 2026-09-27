@@ -63,8 +63,10 @@
       : '',
   );
   const headline = $derived.by(() => {
-    if (value === null) return s.invalid;
-    if (!irpfOk) return s.rateInvalid;
+    // value and irpfOk are each tied to their own field, which already shows the actionable
+    // error (I1); calc.error (net below the minimum withholding) has no field of its own, so it
+    // stays in the headline.
+    if (value === null || !irpfOk) return t(locale, 'ui.fixField');
     if (calc && 'error' in calc) return calc.error;
     return invoice ? `${s.total}: ${money(invoice.net)}` : '';
   });

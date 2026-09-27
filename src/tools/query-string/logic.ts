@@ -1,3 +1,5 @@
+import { hasCredentials } from '../url/logic';
+
 export type Direction = 'auto' | 'toJson' | 'toQuery';
 
 export interface ParseOptions {
@@ -170,6 +172,15 @@ function jsonKeys(v: unknown, keys: string[], depth = 0): void {
     keys.push(k);
     jsonKeys(sub, keys, depth + 1);
   }
+}
+
+/**
+ * True when the raw input must not be persisted: either a URL with userinfo credentials (same
+ * rule as the `url` tool's `hasCredentials`, since this tool accepts full URLs too, I1) or a key
+ * that looks like a credential.
+ */
+export function shouldSave(input: string): boolean {
+  return !hasSensitiveKey(input) && !hasCredentials(input);
 }
 
 /** True when some key looks like a credential: then the input is not saved. */

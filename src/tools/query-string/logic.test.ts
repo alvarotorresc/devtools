@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { detectDirection, extractQuery, hasSensitiveKey, jsonToQuery, queryToJson } from './logic';
+import {
+  detectDirection,
+  extractQuery,
+  hasSensitiveKey,
+  jsonToQuery,
+  queryToJson,
+  shouldSave,
+} from './logic';
 
 const on = { brackets: true, detectTypes: false };
 const off = { brackets: false, detectTypes: false };
@@ -129,5 +136,11 @@ describe('direction and saving', () => {
     expect(hasSensitiveKey('{"auth": {"x": 1}}')).toBe(true);
     expect(hasSensitiveKey('{"session":')).toBe(true);
     expect(hasSensitiveKey('?page=2&sort=name')).toBe(false);
+  });
+
+  it('refuses to save a URL that carries userinfo credentials, same rule as the url tool (I1)', () => {
+    expect(shouldSave('https://admin:hunter2@api.example.com/v1?page=1')).toBe(false);
+    expect(shouldSave('https://api.example.com/v1?page=1')).toBe(true);
+    expect(shouldSave('?page=2&sort=name')).toBe(true);
   });
 });

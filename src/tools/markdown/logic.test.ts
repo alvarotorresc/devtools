@@ -113,6 +113,10 @@ describe('PURIFY_CONFIG closes resource-loading vectors beyond plain <img src>',
   it('strips name (could shadow a global, e.g. name="location")', () => {
     expect(PURIFY_CONFIG.FORBID_ATTR).toContain('name');
   });
+
+  it('strips for (M17: the other half of the id/name redress class; a pasted <label for> could drive a real control)', () => {
+    expect(PURIFY_CONFIG.FORBID_ATTR).toContain('for');
+  });
 });
 
 describe('keptClassValue (class survives only as language-* on <code>/<pre>)', () => {
