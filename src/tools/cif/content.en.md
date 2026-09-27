@@ -6,6 +6,6 @@ Some entities always take a digit (A, B, E and H), others always a letter (N, P,
 
 ## Tax IDs of people and test data
 
-Tax IDs starting with K, L or M do not belong to companies but to people without a DNI (children under 14, Spaniards living abroad and foreigners without an NIE). They are checked with the DNI letter table and, being personal data, they are never stored in the browser even with “Remember what I type” on.
+Tax IDs starting with K, L or M do not belong to companies but to people without a DNI (children under 14, Spaniards living abroad and foreigners without an NIE). They are checked with the DNI letter table and, being personal data, they are never stored in the browser even with “Remember what I type” on. The same happens if you paste a DNI or an NIE by mistake: as soon as one line looks like one, nothing you type is stored.
 
 The Generate tab creates CIF numbers with the right check for the type you choose, handy for test invoices and forms. They are random: a valid CIF does not mean the company exists.

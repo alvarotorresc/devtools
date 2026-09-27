@@ -6,6 +6,6 @@ Unas entidades llevan siempre cifra (A, B, E y H), otras siempre letra (N, P, Q,
 
 ## NIF de personas y datos de prueba
 
-Los NIF que empiezan por K, L o M no son de empresas: son de personas sin DNI (menores de 14 años, españoles que viven fuera y extranjeros sin NIE). Se validan con la tabla de letras del DNI y, al ser datos personales, nunca se guardan en el navegador aunque tengas activado «Recordar lo que escribo».
+Los NIF que empiezan por K, L o M no son de empresas: son de personas sin DNI (menores de 14 años, españoles que viven fuera y extranjeros sin NIE). Se validan con la tabla de letras del DNI y, al ser datos personales, nunca se guardan en el navegador aunque tengas activado «Recordar lo que escribo». Lo mismo pasa si pegas por error un DNI o un NIE: en cuanto una línea lo parece, no se guarda nada de lo que escribes.
 
 La pestaña Generar crea CIF con el control correcto del tipo que elijas, útiles para facturas y formularios de prueba. Son números al azar: que un CIF sea válido no significa que la empresa exista.

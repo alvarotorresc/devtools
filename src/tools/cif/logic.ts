@@ -116,7 +116,8 @@ export function validateCif(raw: string): CifResult {
   }
 
   const type = s[0];
-  if (/^\d/.test(s)) return { ok: false, reason: 'digitFirst' };
+  // A DNI starts with a digit and an NIE with X, Y or Z: neither is a CIF.
+  if (/^[\dXYZ]/.test(s)) return { ok: false, reason: 'digitFirst' };
   if (!isCifType(type)) {
     // K, L or M with the wrong shape (a K, L or M NIF is letter + 7 digits + letter).
     if (/^[KLM]$/.test(type)) return { ok: false, reason: 'format', type };
@@ -183,9 +184,17 @@ export function isPersonalNif(raw: string): boolean {
   return /^[KLM]\d/.test(compactId(raw));
 }
 
-/** `shouldSave` for persistedInput: never store the input if any line is a K, L or M NIF. */
+/** A DNI starts with a digit and an NIE with X, Y or Z: caught while typing, like K, L and M. */
+function looksLikeDniOrNie(raw: string): boolean {
+  return /^(\d|[XYZ]\d)/.test(compactId(raw));
+}
+
+/**
+ * `shouldSave` for persistedInput: never store the input if any line is personal data —
+ * a K, L or M NIF, or something shaped like a DNI or NIE.
+ */
 export function shouldRememberCif(text: string): boolean {
-  return !splitLines(text).lines.some(isPersonalNif);
+  return !splitLines(text).lines.some((line) => isPersonalNif(line) || looksLikeDniOrNie(line));
 }
 
 /** Without a type, A and B at 50 %: they are by far the most common. */

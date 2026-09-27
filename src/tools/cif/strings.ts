@@ -6,7 +6,7 @@ export const strings = {
     mode: 'Modo',
     input: 'CIF',
     placeholder: 'B65410011\nQ2826000H',
-    help: 'Uno por línea, hasta 1000. Los NIF de personas (K, L y M) nunca se guardan.',
+    help: 'Uno por línea, hasta 1000. Los DNI, NIE y NIF de personas (K, L y M) nunca se guardan.',
     result: 'Resultado',
     empty: 'Escribe un CIF (B65410011) y se comprueba al momento.',
     valid: 'CIF válido',
@@ -27,7 +27,7 @@ export const strings = {
     missingControl: 'Falta el carácter de control: para {body} sería {e}.',
     type: 'La letra {t} no corresponde a ningún tipo de entidad.',
     digitFirst:
-      'Un CIF empieza por la letra del tipo de entidad. Si es un DNI, compruébalo en el validador de DNI.',
+      'Un CIF empieza por la letra del tipo de entidad. Si es un DNI o un NIE, compruébalo en el validador de DNI.',
     format:
       'Formato no reconocido: un CIF es una letra, 7 cifras y un carácter de control (B65410011).',
     typeLabel: 'Tipo de entidad',
@@ -39,7 +39,7 @@ export const strings = {
     mode: 'Mode',
     input: 'CIF',
     placeholder: 'B65410011\nQ2826000H',
-    help: 'One per line, up to 1000. Tax IDs of people (K, L and M) are never stored.',
+    help: 'One per line, up to 1000. A DNI, an NIE and tax IDs of people (K, L and M) are never stored.',
     result: 'Result',
     empty: 'Type a CIF (B65410011) and it is checked right away.',
     valid: 'Valid CIF',
@@ -60,7 +60,7 @@ export const strings = {
     missingControl: 'The check character is missing: for {body} it would be {e}.',
     type: 'The letter {t} is not an entity type.',
     digitFirst:
-      'A CIF starts with the letter of its entity type. If this is a DNI, check it in the DNI validator.',
+      'A CIF starts with the letter of its entity type. If this is a DNI or an NIE, check it in the DNI validator.',
     format: 'Unrecognised format: a CIF is a letter, 7 digits and a check character (B65410011).',
     typeLabel: 'Entity type',
     any: 'Any (A or B)',

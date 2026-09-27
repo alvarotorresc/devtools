@@ -84,6 +84,12 @@ describe('validateCif: errors', () => {
     expect(validateCif('12345678Z')).toEqual({ ok: false, reason: 'digitFirst' });
   });
 
+  it('gives an NIE the same redirect hint as a DNI', () => {
+    expect(validateCif('X1234567L')).toEqual({ ok: false, reason: 'digitFirst' });
+    expect(validateCif('Y1234567X')).toEqual({ ok: false, reason: 'digitFirst' });
+    expect(validateCif('Z1234567R')).toEqual({ ok: false, reason: 'digitFirst' });
+  });
+
   it('says the control is missing on 8 characters', () => {
     expect(validateCif('B6541001')).toMatchObject({ reason: 'missingControl', expected: '1' });
     expect(validateCif('Q2826000')).toMatchObject({ reason: 'missingControl', expected: 'H' });
@@ -115,6 +121,30 @@ describe('K, L and M: tax IDs of people', () => {
     expect(shouldRememberCif('B65410011\nA58818501')).toBe(true);
     expect(shouldRememberCif('B65410011\n k-1234567-l')).toBe(false);
     expect(shouldRememberCif('M12')).toBe(false);
+  });
+});
+
+describe('shouldRememberCif: a pasted DNI or NIE is not remembered either', () => {
+  it('refuses a line that looks like a DNI', () => {
+    expect(shouldRememberCif('12345678Z')).toBe(false);
+  });
+
+  it('refuses a line that looks like an NIE', () => {
+    expect(shouldRememberCif('X1234567L')).toBe(false);
+  });
+
+  it('refuses the whole input when one line is a valid CIF and another a DNI', () => {
+    expect(shouldRememberCif('B65410011\n12.345.678-Z')).toBe(false);
+  });
+
+  it('still remembers input made only of CIFs', () => {
+    expect(shouldRememberCif('B65410011\nA58818501')).toBe(true);
+  });
+
+  it('refuses a malformed or partial DNI/NIE too: it matches on the prefix, like K, L and M', () => {
+    expect(shouldRememberCif('1234567Z')).toBe(false); // DNI missing its leading zero
+    expect(shouldRememberCif('X12345678L')).toBe(false); // NIE with one digit too many
+    expect(shouldRememberCif('X12')).toBe(false); // still being typed
   });
 });
 
