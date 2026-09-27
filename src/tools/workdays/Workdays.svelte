@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { t } from '../../i18n';
   import { fill } from '../../i18n/fill';
+  import { plural } from '../../lib/plural';
   import CopyButton from '../../ui/CopyButton.svelte';
   import Display from '../../ui/Display.svelte';
   import Field from '../../ui/Field.svelte';
@@ -60,6 +61,11 @@
     new Intl.DateTimeFormat(locale, { weekday: 'long', timeZone: 'UTC' }),
   );
   const fmt = (n: number) => new Intl.NumberFormat(locale).format(n);
+  const weeksText = (weeks: number, days: number) =>
+    fill(s.weeks, {
+      weeks: plural(locale, weeks, s.weeksOne, s.weeksOther),
+      days: plural(locale, days, s.daysOne, s.daysOther),
+    });
 </script>
 
 <div class="panel">
@@ -98,7 +104,11 @@
 
   <Display live label={s.result}>
     {#snippet head()}
-      <span>{result?.ok ? fill(s.summary, { n: fmt(result.business) }) : (error ?? s.empty)}</span>
+      <span
+        >{result?.ok
+          ? plural(locale, result.business, s.summaryOne, s.summaryOther)
+          : (error ?? s.empty)}</span
+      >
     {/snippet}
     {#if result?.ok}
       {#if result.swapped}<p class="display-note">{s.swapped}</p>{/if}
@@ -106,7 +116,7 @@
         <dt>{s.natural}</dt>
         <dd>
           <span id="workdays-natural">{fmt(result.natural)}</span>
-          <span class="dim">({fill(s.weeks, { w: fmt(result.weeks), d: result.extraDays })})</span>
+          <span class="dim">({weeksText(result.weeks, result.extraDays)})</span>
         </dd>
         <dt>{s.weekdays}</dt>
         <dd>{fmt(result.weekdays)}</dd>
