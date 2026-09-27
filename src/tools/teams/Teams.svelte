@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { t } from '../../i18n';
   import { fill } from '../../i18n/fill';
+  import { plural } from '../../lib/plural';
   import { rngFromSeed } from '../../lib/random';
   import Button from '../../ui/Button.svelte';
   import CopyButton from '../../ui/CopyButton.svelte';
@@ -47,12 +48,14 @@
   const teams = $derived(mounted && result.ok ? result.teams : []);
   const teamCount = $derived(result.ok ? result.teams.length : 0);
   const name = $derived(prefix.trim() || s.prefixDefault);
+  const peopleText = (p: number) => plural(locale, p, s.peopleCountOne, s.peopleCountOther);
+  const teamsText = (k: number) => plural(locale, k, s.teamsCountOne, s.teamsCountOther);
   const error = $derived.by(() => {
     if (result.ok) return undefined;
     if (result.reason === 'few') return s.few;
     if (result.reason === 'n')
       return fill(s.nInvalid, { label: mode === 'count' ? s.count : s.size });
-    return fill(s.tooMany, { p: result.people, k: result.teams });
+    return fill(s.tooMany, { people: peopleText(result.people), teams: teamsText(result.teams) });
   });
   const balanced = $derived.by(() => {
     if (!result.ok || mode !== 'size' || result.teams.length < 2 || list.length % n === 0)
@@ -60,7 +63,12 @@
     const sizes = new Intl.ListFormat(locale, { type: 'conjunction' }).format(
       result.teams.map((team) => String(team.length)),
     );
-    return fill(s.balanced, { p: list.length, n, k: result.teams.length, sizes });
+    return fill(s.balanced, {
+      people: peopleText(list.length),
+      n,
+      teams: teamsText(result.teams.length),
+      sizes,
+    });
   });
 </script>
 
@@ -141,7 +149,10 @@
 
   <Display live label={s.result}>
     {#snippet head()}
-      <span>{error ?? fill(s.summary, { n: list.length, k: teamCount })}</span>
+      <span
+        >{error ??
+          fill(s.summary, { people: peopleText(list.length), teams: teamsText(teamCount) })}</span
+      >
     {/snippet}
     {#if teams.length}
       <div class="teams">
