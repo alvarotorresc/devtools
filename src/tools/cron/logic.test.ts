@@ -106,6 +106,16 @@ describe('errors say what is wrong and how to fix it', () => {
     );
     expect(parseCron('   ')).toEqual({ ok: false, error: { kind: 'empty' } });
   });
+
+  // I5: this is the state while typing the first token, so most users hit it.
+  it('uses the singular for exactly 1 field, in both locales', () => {
+    expect(error('5')).toBe(
+      'Tiene 1 campo y hacen falta 5: minuto, hora, día del mes, mes y día de la semana',
+    );
+    expect(error('5', 'en')).toBe(
+      'It has 1 field and needs 5: minute, hour, day of month, month and day of week',
+    );
+  });
 });
 
 describe('describeCron', () => {
