@@ -81,7 +81,7 @@ import { meta as cron } from './cron/meta';
 
 import { meta as userAgent } from './user-agent/meta';
 
-// import { meta as semver } from './semver/meta';
+import { meta as semver } from './semver/meta';
 
 // import { meta as cidr } from './cidr/meta';
 
@@ -164,7 +164,7 @@ export const tools: ToolMeta[] = [
 
   userAgent,
 
-  // semver,
+  semver,
 
   // cidr,
 ];
