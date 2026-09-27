@@ -79,7 +79,7 @@ import Mock from '../tools/mock/Mock.svelte';
 
 // import Cron from '../tools/cron/Cron.svelte';
 
-// import UserAgent from '../tools/user-agent/UserAgent.svelte';
+import UserAgent from '../tools/user-agent/UserAgent.svelte';
 
 // import Semver from '../tools/semver/Semver.svelte';
 
@@ -168,7 +168,7 @@ const { id, locale } = Astro.props;
 
 {/* {id === 'cron' && <Cron client:load locale={locale} />} */}
 
-{/* {id === 'user-agent' && <UserAgent client:load locale={locale} />} */}
+{id === 'user-agent' && <UserAgent client:load locale={locale} />}
 
 {/* {id === 'semver' && <Semver client:load locale={locale} />} */}
 

@@ -79,7 +79,7 @@ import { meta as mock } from './mock/meta';
 
 // import { meta as cron } from './cron/meta';
 
-// import { meta as userAgent } from './user-agent/meta';
+import { meta as userAgent } from './user-agent/meta';
 
 // import { meta as semver } from './semver/meta';
 
@@ -162,7 +162,7 @@ export const tools: ToolMeta[] = [
 
   // cron,
 
-  // userAgent,
+  userAgent,
 
   // semver,
 
