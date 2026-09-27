@@ -89,6 +89,24 @@ describe('readInput', () => {
       line: 3,
     });
   });
+
+  it('keeps a __proto__ CSV header as a real column instead of setting the prototype (M4)', () => {
+    const r = readInput('__proto__,b\n1,2', 'csv', csvOpts);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    const [row] = r.value as Record<string, unknown>[];
+    expect(Object.getPrototypeOf(row)).toBeNull();
+    expect(Object.hasOwn(row, '__proto__')).toBe(true);
+    expect(JSON.stringify(row)).toBe('{"__proto__":"1","b":"2"}');
+
+    // The same null-prototype rows must also round-trip through YAML and back to CSV (M4): the
+    // `yaml` library and toCsvText/flatten() only ever read own enumerable properties, so neither
+    // silently drops the column.
+    const yaml = writeOutput(r.value, 'yaml', ',');
+    expect(yaml.ok && yaml.text).toContain('__proto__:');
+    const csv = toCsvText(r.value, ',');
+    expect(lines(csv)).toEqual(['__proto__,b', '1,2']);
+  });
 });
 
 describe('writeOutput', () => {
@@ -143,6 +161,17 @@ describe('writeOutput', () => {
 
   it('flags keys that already contain dots', () => {
     expect(toCsvText([{ 'a.b': 1 }], ',')).toMatchObject({ ok: true, dottedKeys: true });
+  });
+
+  it('keeps a __proto__ key as a CSV column instead of silently dropping it (M4)', () => {
+    // JSON.parse never triggers the __proto__ setter (it assigns own properties directly), so
+    // this is a normal object with a "__proto__" own key: the risk is entirely in flatten()'s
+    // `out[key] = v` bracket assignment when it copies that key into the row being built for CSV.
+    const value = JSON.parse('{"__proto__":"mal","b":2}') as Record<string, unknown>;
+    const r = toCsvText([value], ',');
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(lines(r)).toEqual(['__proto__,b', 'mal,2']);
   });
 
   it('round-trips CSV with quotes, line breaks and ; inside fields', () => {

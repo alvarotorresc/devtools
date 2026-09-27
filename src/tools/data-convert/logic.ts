@@ -102,7 +102,9 @@ export function readInput(text: string, format: InputFormat, csv: CsvReadOptions
   if (csv.header && r.rows.length) {
     const [head, ...body] = r.rows;
     value = body.map((row) => {
-      const obj: Record<string, unknown> = {};
+      // Object.create(null): a "__proto__" header must become a real key, not set the
+      // prototype (M4). A plain `{}` would otherwise silently drop that column.
+      const obj: Record<string, unknown> = Object.create(null);
       head.forEach((k, i) => (obj[k] = cell(row[i] ?? '', csv.detectTypes)));
       return obj;
     });
@@ -125,7 +127,14 @@ function toCell(v: unknown): Cell {
 }
 
 /** Nested objects become dotted keys; arrays stay whole (they go into the cell as JSON). */
-function flatten(obj: Record<string, unknown>, prefix = '', out: Record<string, unknown> = {}) {
+function flatten(
+  obj: Record<string, unknown>,
+  prefix = '',
+  // Object.create(null): a "__proto__" key (e.g. from JSON input) must land as a real column,
+  // not set the prototype (M4). `out[key] = v` below is a plain bracket assignment, which is
+  // unsafe on a `{}` literal even though `JSON.parse` itself never triggers the setter.
+  out: Record<string, unknown> = Object.create(null),
+) {
   for (const [k, v] of Object.entries(obj)) {
     const key = prefix ? `${prefix}.${k}` : k;
     if (isObj(v) && Object.keys(v).length) flatten(v, key, out);
