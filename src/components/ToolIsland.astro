@@ -77,7 +77,7 @@ import QueryString from '../tools/query-string/QueryString.svelte';
 
 import HttpStatus from '../tools/http-status/HttpStatus.svelte';
 
-// import Cron from '../tools/cron/Cron.svelte';
+import Cron from '../tools/cron/Cron.svelte';
 
 // import UserAgent from '../tools/user-agent/UserAgent.svelte';
 
@@ -166,7 +166,7 @@ const { id, locale } = Astro.props;
 
 {id === 'http-status' && <HttpStatus client:load locale={locale} />}
 
-{/* {id === 'cron' && <Cron client:load locale={locale} />} */}
+{id === 'cron' && <Cron client:load locale={locale} />}
 
 {/* {id === 'user-agent' && <UserAgent client:load locale={locale} />} */}
 
