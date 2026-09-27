@@ -65,7 +65,7 @@ import Mock from '../tools/mock/Mock.svelte';
 
 // import Slug from '../tools/slug/Slug.svelte';
 
-// import DataConvert from '../tools/data-convert/DataConvert.svelte';
+import DataConvert from '../tools/data-convert/DataConvert.svelte';
 
 // import JsonDiff from '../tools/json-diff/JsonDiff.svelte';
 
@@ -154,7 +154,7 @@ const { id, locale } = Astro.props;
 
 {/* {id === 'slug' && <Slug client:load locale={locale} />} */}
 
-{/* {id === 'data-convert' && <DataConvert client:load locale={locale} />} */}
+{id === 'data-convert' && <DataConvert client:load locale={locale} />}
 
 {/* {id === 'json-diff' && <JsonDiff client:load locale={locale} />} */}
 
