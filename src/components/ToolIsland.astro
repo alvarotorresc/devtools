@@ -37,7 +37,7 @@ import EanIsbn from '../tools/ean-isbn/EanIsbn.svelte';
 
 import PostalCode from '../tools/postal-code/PostalCode.svelte';
 
-// import Mock from '../tools/mock/Mock.svelte';
+import Mock from '../tools/mock/Mock.svelte';
 
 import type { Locale } from '../tools/types';
 
@@ -83,4 +83,4 @@ const { id, locale } = Astro.props;
 
 {id === 'postal-code' && <PostalCode client:load locale={locale} />}
 
-{/* {id === 'mock' && <Mock client:load locale={locale} />} */}
+{id === 'mock' && <Mock client:load locale={locale} />}

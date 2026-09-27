@@ -37,7 +37,7 @@ import { meta as eanIsbn } from './ean-isbn/meta';
 
 import { meta as postalCode } from './postal-code/meta';
 
-// import { meta as mock } from './mock/meta';
+import { meta as mock } from './mock/meta';
 
 import type { Category, CategoryId, Locale, ToolMeta } from './types';
 
@@ -77,7 +77,7 @@ export const tools: ToolMeta[] = [
 
   postalCode,
 
-  // mock,
+  mock,
 ];
 
 export function toolById(id: string): ToolMeta | undefined {
