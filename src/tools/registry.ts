@@ -34,7 +34,7 @@ import { meta as mock } from './mock/meta';
 
 // import { meta as pxRem } from './px-rem/meta';
 
-// import { meta as chmod } from './chmod/meta';
+import { meta as chmod } from './chmod/meta';
 
 // import { meta as fileSize } from './file-size/meta';
 
@@ -91,7 +91,7 @@ export const tools: ToolMeta[] = [
 
   // pxRem,
 
-  // chmod,
+  chmod,
 
   // fileSize,
 

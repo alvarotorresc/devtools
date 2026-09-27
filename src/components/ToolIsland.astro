@@ -34,7 +34,7 @@ import Mock from '../tools/mock/Mock.svelte';
 
 // import PxRem from '../tools/px-rem/PxRem.svelte';
 
-// import Chmod from '../tools/chmod/Chmod.svelte';
+import Chmod from '../tools/chmod/Chmod.svelte';
 
 // import FileSize from '../tools/file-size/FileSize.svelte';
 
@@ -97,7 +97,7 @@ const { id, locale } = Astro.props;
 
 {/* {id === 'px-rem' && <PxRem client:load locale={locale} />} */}
 
-{/* {id === 'chmod' && <Chmod client:load locale={locale} />} */}
+{id === 'chmod' && <Chmod client:load locale={locale} />}
 
 {/* {id === 'file-size' && <FileSize client:load locale={locale} />} */}
 
