@@ -50,7 +50,7 @@ import Iva from '../tools/iva/Iva.svelte';
 
 import Irpf from '../tools/irpf/Irpf.svelte';
 
-// import Percent from '../tools/percent/Percent.svelte';
+import Percent from '../tools/percent/Percent.svelte';
 
 // import RuleOfThree from '../tools/rule-of-three/RuleOfThree.svelte';
 
@@ -113,7 +113,7 @@ const { id, locale } = Astro.props;
 
 {id === 'irpf' && <Irpf client:load locale={locale} />}
 
-{/* {id === 'percent' && <Percent client:load locale={locale} />} */}
+{id === 'percent' && <Percent client:load locale={locale} />}
 
 {/* {id === 'rule-of-three' && <RuleOfThree client:load locale={locale} />} */}
 

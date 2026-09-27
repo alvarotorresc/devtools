@@ -50,7 +50,7 @@ import { meta as iva } from './iva/meta';
 
 import { meta as irpf } from './irpf/meta';
 
-// import { meta as percent } from './percent/meta';
+import { meta as percent } from './percent/meta';
 
 // import { meta as ruleOfThree } from './rule-of-three/meta';
 
@@ -107,7 +107,7 @@ export const tools: ToolMeta[] = [
 
   irpf,
 
-  // percent,
+  percent,
 
   // ruleOfThree,
 
