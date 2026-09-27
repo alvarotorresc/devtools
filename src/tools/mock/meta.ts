@@ -40,7 +40,7 @@ export const meta: ToolMeta = {
       },
       {
         q: '¿Qué hace la semilla?',
-        a: 'Con la misma semilla y la misma configuración obtienes exactamente las mismas filas en cualquier navegador. Sirve para tests reproducibles o para compartir un conjunto de datos sin enviar el archivo.',
+        a: 'Con la misma semilla y la misma configuración obtienes exactamente las mismas filas en cualquier navegador, salvo las fechas relativas a hoy (como la fecha de nacimiento), que se calculan con la fecha actual. Sirve para tests reproducibles o para compartir un conjunto de datos sin enviar el archivo.',
       },
     ],
     en: [
@@ -50,7 +50,7 @@ export const meta: ToolMeta = {
       },
       {
         q: 'What does the seed do?',
-        a: 'With the same seed and settings you get exactly the same rows in any browser. It is handy for reproducible tests or to share a data set without sending the file.',
+        a: 'With the same seed and settings you get exactly the same rows in any browser, except for dates relative to today (such as birth date), which are calculated from the current date. It is handy for reproducible tests or to share a data set without sending the file.',
       },
     ],
   },
