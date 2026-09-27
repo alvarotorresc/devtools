@@ -3,7 +3,7 @@
   import { t } from '../../i18n';
   import { fill } from '../../i18n/fill';
   import { cryptoRng } from '../../lib/random';
-  import { readJSON, writeJSON } from '../../lib/storage';
+  import { readJSON, removeKey, writeJSON } from '../../lib/storage';
   import Button from '../../ui/Button.svelte';
   import CopyButton from '../../ui/CopyButton.svelte';
   import Display from '../../ui/Display.svelte';
@@ -19,6 +19,7 @@
     MIN_LENGTH,
     entropyBits,
     generatePassword,
+    isDefaultOptions,
     sanitizeOptions,
     strength,
     validate,
@@ -52,7 +53,12 @@
 
   $effect(() => {
     if (!ready) return;
-    writeJSON(OPTIONS_KEY, $state.snapshot(opts));
+    const snapshot = $state.snapshot(opts);
+    // M5: a user who never touches the options should not have today's defaults pinned to
+    // storage; someone who changes them and then dials them back to the defaults gets the stale
+    // entry cleared instead of left behind.
+    if (isDefaultOptions(snapshot)) removeKey(OPTIONS_KEY);
+    else writeJSON(OPTIONS_KEY, snapshot);
   });
 
   $effect(() => {
