@@ -2,7 +2,7 @@ import type { IconName } from './icon-names';
 
 export const LOCALES = ['es', 'en'] as const;
 export type Locale = (typeof LOCALES)[number];
-export type CategoryId = 'gen' | 'enc' | 'data' | 'ids' | 'conv' | 'rand' | 'ref';
+export type CategoryId = 'gen' | 'enc' | 'data' | 'ids' | 'conv' | 'calc' | 'rand' | 'ref';
 export type Localized<T> = Record<Locale, T>;
 
 export interface ToolMeta {

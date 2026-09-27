@@ -54,6 +54,7 @@ export const en: Record<keyof typeof es, string> = {
   'ui.seedHelp': 'The same seed always gives the same result.',
   'ui.quantity': 'Quantity',
   'ui.testOnly': 'Fictitious data, for testing only.',
+  'ui.swap': 'Swap',
   'dir.label': 'Direction',
   'dir.auto': 'Automatic',
   'dir.encode': 'Encode',
