@@ -2,6 +2,7 @@
   import { t } from '../../i18n';
   import { fill } from '../../i18n/fill';
   import { MAX_LINES, splitLines } from '../../lib/ids';
+  import { plural } from '../../lib/plural';
   import Button from '../../ui/Button.svelte';
   import CopyButton from '../../ui/CopyButton.svelte';
   import Display from '../../ui/Display.svelte';
@@ -23,6 +24,10 @@
   const results = $derived(split.lines.map((line) => ({ line, r: validatePhone(line) })));
   const single = $derived(results.length === 1 ? results[0].r : null);
   const okCount = $derived(results.filter((x) => x.r.ok).length);
+  const badCount = $derived(results.length - okCount);
+  const countText = $derived(
+    `${plural(locale, okCount, s.validOne, s.validOther)} · ${plural(locale, badCount, s.invalidOne, s.invalidOther)}`,
+  );
 
   function reason(r: PhoneResult): string {
     if (r.ok) return kinds[r.kind];
@@ -69,7 +74,7 @@
           label={single.ok ? reason(single) : t(locale, 'led.bad')}
         />
       {:else}
-        <span>{fill(s.count, { ok: okCount, bad: results.length - okCount })}</span>
+        <span>{countText}</span>
       {/if}
     {/snippet}
     {#if results.length === 0}

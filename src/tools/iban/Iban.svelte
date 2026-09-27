@@ -3,6 +3,7 @@
   import { t } from '../../i18n';
   import { fill } from '../../i18n/fill';
   import { DEFAULT_QUANTITY, MAX_LINES, MAX_QUANTITY, repeat, splitLines } from '../../lib/ids';
+  import { plural } from '../../lib/plural';
   import { randomSeed, seededRng } from '../../lib/random';
   import Button from '../../ui/Button.svelte';
   import CopyButton from '../../ui/CopyButton.svelte';
@@ -51,6 +52,10 @@
   const results = $derived(split.lines.map((line) => ({ line, r: validateIban(line) })));
   const single = $derived(results.length === 1 ? results[0].r : null);
   const okCount = $derived(results.filter((x) => x.r.ok).length);
+  const badCount = $derived(results.length - okCount);
+  const countText = $derived(
+    `${plural(locale, okCount, s.validOne, s.validOther)} · ${plural(locale, badCount, s.invalidOne, s.invalidOther)}`,
+  );
 
   function reason(r: IbanResult): string {
     if (r.ok) return countryName(r.country);
@@ -125,7 +130,7 @@
               label={single.ok ? s.valid : t(locale, 'led.bad')}
             />
           {:else}
-            <span>{fill(s.count, { ok: okCount, bad: results.length - okCount })}</span>
+            <span>{countText}</span>
           {/if}
         {/snippet}
         {#if results.length === 0}
