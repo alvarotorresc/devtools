@@ -61,7 +61,7 @@ import { meta as mock } from './mock/meta';
 
 // import { meta as password } from './password/meta';
 
-// import { meta as qr } from './qr/meta';
+import { meta as qr } from './qr/meta';
 
 // import { meta as slug } from './slug/meta';
 
@@ -144,7 +144,7 @@ export const tools: ToolMeta[] = [
 
   // password,
 
-  // qr,
+  qr,
 
   // slug,
 
