@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { t } from '../../i18n';
-  import { fill } from '../../i18n/fill';
+  import { plural } from '../../lib/plural';
   import { rngFromSeed } from '../../lib/random';
   import Button from '../../ui/Button.svelte';
   import CopyButton from '../../ui/CopyButton.svelte';
@@ -106,7 +106,7 @@
 
   <Display live label={s.result}>
     {#snippet head()}
-      <span>{few ? s.few : fill(s.count, { n: count })}</span>
+      <span>{few ? s.few : plural(locale, count, s.countOne, s.countOther)}</span>
       {#if seeded}<span>{s.seeded}</span>{/if}
     {/snippet}
     {#if result.length}
