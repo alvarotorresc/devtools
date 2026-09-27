@@ -76,7 +76,6 @@
         class="control mono"
         bind:value={input.value}
         placeholder={s.placeholder}
-        inputmode="decimal"
         aria-describedby={describedby}
         aria-invalid={!!error}
         autocomplete="off"
