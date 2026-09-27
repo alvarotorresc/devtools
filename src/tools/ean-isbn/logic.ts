@@ -1,3 +1,5 @@
+import { compactId } from '../../lib/ids';
+
 export type Gs1Prefix = 'spain' | 'isbn' | 'ismn' | 'issn' | 'store' | null;
 
 export type CodeReason =
@@ -71,7 +73,7 @@ export function gs1Prefix(ean: string): Gs1Prefix {
 }
 
 export function validateCode(raw: string): CodeResult {
-  const s = raw.toUpperCase().replace(/[\s-]/g, '');
+  const s = compactId(raw);
   if (!s) return { ok: false, reason: 'empty' };
   if (!/^[\dX]+$/.test(s)) return { ok: false, reason: 'chars' };
   if (s.includes('X') && !/^\d{9}X$/.test(s)) return { ok: false, reason: 'xPosition' };
