@@ -65,7 +65,7 @@ import { meta as qr } from './qr/meta';
 
 import { meta as slug } from './slug/meta';
 
-// import { meta as dataConvert } from './data-convert/meta';
+import { meta as dataConvert } from './data-convert/meta';
 
 // import { meta as jsonDiff } from './json-diff/meta';
 
@@ -148,7 +148,7 @@ export const tools: ToolMeta[] = [
 
   slug,
 
-  // dataConvert,
+  dataConvert,
 
   // jsonDiff,
 
