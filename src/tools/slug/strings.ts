@@ -15,7 +15,7 @@ export const strings = {
     empty: 'Escribe un título por línea y aquí verás su slug.',
     noLatin: 'No queda ningún carácter latino: el slug estaría vacío',
     copyAll: 'Copiar slugs',
-    copyOne: 'Copiar {slug}',
+    copySlug: 'Copiar {slug}',
   },
   en: {
     input: 'Texts (one per line)',
@@ -31,6 +31,6 @@ export const strings = {
     empty: 'Type one title per line and you will see its slug here.',
     noLatin: 'No Latin character is left: the slug would be empty',
     copyAll: 'Copy slugs',
-    copyOne: 'Copy {slug}',
+    copySlug: 'Copy {slug}',
   },
 } satisfies Record<Locale, Record<string, string>>;

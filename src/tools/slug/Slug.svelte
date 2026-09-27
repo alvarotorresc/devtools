@@ -95,7 +95,7 @@
                 value={line.slug}
                 {locale}
                 compact
-                ariaLabel={fill(s.copyOne, { slug: line.slug })}
+                ariaLabel={fill(s.copySlug, { slug: line.slug })}
               />
             {:else}
               <span class="empty-slug">{s.noLatin}</span>
