@@ -541,6 +541,7 @@ test.describe('lote 2: one real interaction per tool', () => {
       .locator('.team')
       .evaluateAll((els) => els.map((el) => el.querySelectorAll('li').length));
     expect(sizes).toEqual([3, 3, 2, 2]);
+    await expect(page.getByText('10 personas en 4 equipos')).toBeVisible();
   });
 
   test('dice rolls 3d6+2 with a seed and explains a bad range', async ({ page }) => {
