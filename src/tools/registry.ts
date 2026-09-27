@@ -67,7 +67,7 @@ import { meta as mock } from './mock/meta';
 
 // import { meta as dataConvert } from './data-convert/meta';
 
-// import { meta as jsonDiff } from './json-diff/meta';
+import { meta as jsonDiff } from './json-diff/meta';
 
 // import { meta as markdown } from './markdown/meta';
 
@@ -150,7 +150,7 @@ export const tools: ToolMeta[] = [
 
   // dataConvert,
 
-  // jsonDiff,
+  jsonDiff,
 
   // markdown,
 
