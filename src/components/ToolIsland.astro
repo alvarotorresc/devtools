@@ -13,32 +13,17 @@ import Lorem from '../tools/lorem/Lorem.svelte';
 import Timestamp from '../tools/timestamp/Timestamp.svelte';
 import Color from '../tools/color/Color.svelte';
 import NumberBase from '../tools/number-base/NumberBase.svelte';
-
-// Lote 1: each tool task uncomments its import below and its line in the template.
-// Keep the blank lines between them: they let the parallel branches merge without conflicts.
-
 import Dni from '../tools/dni/Dni.svelte';
-
 import Cif from '../tools/cif/Cif.svelte';
-
 import Iban from '../tools/iban/Iban.svelte';
-
 import Plate from '../tools/plate/Plate.svelte';
-
 import Nss from '../tools/nss/Nss.svelte';
-
 import Card from '../tools/card/Card.svelte';
-
 import Phone from '../tools/phone/Phone.svelte';
-
 import Bic from '../tools/bic/Bic.svelte';
-
 import EanIsbn from '../tools/ean-isbn/EanIsbn.svelte';
-
 import PostalCode from '../tools/postal-code/PostalCode.svelte';
-
 import Mock from '../tools/mock/Mock.svelte';
-
 import type { Locale } from '../tools/types';
 
 interface Props {
@@ -62,25 +47,14 @@ const { id, locale } = Astro.props;
 {id === 'timestamp' && <Timestamp client:load locale={locale} />}
 {id === 'color' && <Color client:load locale={locale} />}
 {id === 'number-base' && <NumberBase client:load locale={locale} />}
-
 {id === 'dni' && <Dni client:load locale={locale} />}
-
 {id === 'cif' && <Cif client:load locale={locale} />}
-
 {id === 'iban' && <Iban client:load locale={locale} />}
-
 {id === 'plate' && <Plate client:load locale={locale} />}
-
 {id === 'nss' && <Nss client:load locale={locale} />}
-
 {id === 'card' && <Card client:load locale={locale} />}
-
 {id === 'phone' && <Phone client:load locale={locale} />}
-
 {id === 'bic' && <Bic client:load locale={locale} />}
-
 {id === 'ean-isbn' && <EanIsbn client:load locale={locale} />}
-
 {id === 'postal-code' && <PostalCode client:load locale={locale} />}
-
 {id === 'mock' && <Mock client:load locale={locale} />}

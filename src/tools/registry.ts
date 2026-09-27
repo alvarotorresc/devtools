@@ -13,32 +13,17 @@ import { meta as lorem } from './lorem/meta';
 import { meta as timestamp } from './timestamp/meta';
 import { meta as color } from './color/meta';
 import { meta as numberBase } from './number-base/meta';
-
-// Lote 1: each tool task uncomments its import and its entry in `tools`.
-// Keep the blank lines between them: they let the parallel branches merge without conflicts.
-
 import { meta as dni } from './dni/meta';
-
 import { meta as cif } from './cif/meta';
-
 import { meta as iban } from './iban/meta';
-
 import { meta as plate } from './plate/meta';
-
 import { meta as nss } from './nss/meta';
-
 import { meta as card } from './card/meta';
-
 import { meta as phone } from './phone/meta';
-
 import { meta as bic } from './bic/meta';
-
 import { meta as eanIsbn } from './ean-isbn/meta';
-
 import { meta as postalCode } from './postal-code/meta';
-
 import { meta as mock } from './mock/meta';
-
 import type { Category, CategoryId, Locale, ToolMeta } from './types';
 
 export const tools: ToolMeta[] = [
@@ -56,27 +41,16 @@ export const tools: ToolMeta[] = [
   timestamp,
   color,
   numberBase,
-
   dni,
-
   cif,
-
   iban,
-
   plate,
-
   nss,
-
   card,
-
   phone,
-
   bic,
-
   eanIsbn,
-
   postalCode,
-
   mock,
 ];
 
