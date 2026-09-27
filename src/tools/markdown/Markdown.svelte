@@ -1,6 +1,6 @@
 <script lang="ts">
   import { t } from '../../i18n';
-  import { fill } from '../../i18n/fill';
+  import { plural } from '../../lib/plural';
   import Button from '../../ui/Button.svelte';
   import CopyButton from '../../ui/CopyButton.svelte';
   import Display from '../../ui/Display.svelte';
@@ -80,7 +80,7 @@
             {@html html}
           </div>
           {#if safe && safe.blocked > 0}
-            <p class="display-note">{fill(s.blocked, { n: safe.blocked })}</p>
+            <p class="display-note">{plural(locale, safe.blocked, s.blockedOne, s.blockedOther)}</p>
           {/if}
         {:else}
           <p class="display-note">{s.empty}</p>

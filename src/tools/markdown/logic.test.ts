@@ -104,6 +104,15 @@ describe('PURIFY_CONFIG closes resource-loading vectors beyond plain <img src>',
   it("forbids dialog (an open one silently disables the site's single-key shortcuts)", () => {
     expect(PURIFY_CONFIG.FORBID_TAGS).toContain('dialog');
   });
+
+  it('strips popover/popovertarget (a pasted element could pop over the page)', () => {
+    expect(PURIFY_CONFIG.FORBID_ATTR).toContain('popover');
+    expect(PURIFY_CONFIG.FORBID_ATTR).toContain('popovertarget');
+  });
+
+  it('strips name (could shadow a global, e.g. name="location")', () => {
+    expect(PURIFY_CONFIG.FORBID_ATTR).toContain('name');
+  });
 });
 
 describe('keptClassValue (class survives only as language-* on <code>/<pre>)', () => {

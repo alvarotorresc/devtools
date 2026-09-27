@@ -9,7 +9,9 @@ export const strings = {
     preview: 'Vista previa',
     html: 'HTML saneado',
     empty: 'Escribe Markdown a la izquierda y aquí verás cómo queda.',
-    blocked:
+    blockedOne:
+      'Imagen externa sin cargar: {n}. Activa «Cargar imágenes externas» si te fías de su origen.',
+    blockedOther:
       'Imágenes externas sin cargar: {n}. Activa «Cargar imágenes externas» si te fías de su origen.',
     sanitized: 'Saneado con DOMPurify',
     copyHtml: 'Copiar HTML',
@@ -23,7 +25,9 @@ export const strings = {
     preview: 'Preview',
     html: 'Sanitised HTML',
     empty: 'Type Markdown on the left and you will see how it looks here.',
-    blocked: 'External images not loaded: {n}. Turn on “Load external images” if you trust them.',
+    blockedOne: 'External image not loaded: {n}. Turn on “Load external images” if you trust them.',
+    blockedOther:
+      'External images not loaded: {n}. Turn on “Load external images” if you trust them.',
     sanitized: 'Sanitised with DOMPurify',
     copyHtml: 'Copy HTML',
     sample: 'Load an example',

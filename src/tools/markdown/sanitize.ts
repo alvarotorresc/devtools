@@ -33,8 +33,20 @@ export const PURIFY_CONFIG = {
   // survives on <code>/<pre> only, filtered down to `language-*` tokens by the
   // uponSanitizeAttribute hook below, so GFM's fenced-code-block class keeps working; every other
   // tag/token loses `class` so pasted Markdown can't borrow the site's own CSS (`panel`,
-  // `display`, …) to redress the preview.
-  FORBID_ATTR: ['style', 'srcset', 'sizes', 'poster', 'background', 'id'],
+  // `display`, …) to redress the preview. `popover`/`popovertarget` let a pasted element pop over
+  // the rest of the page without needing the already-forbidden `dialog`; `name` lets a pasted `<a>`
+  // or `<img>` shadow a global by name (the classic `name="location"` or `name="getElementById"`).
+  FORBID_ATTR: [
+    'style',
+    'srcset',
+    'sizes',
+    'poster',
+    'background',
+    'id',
+    'popover',
+    'popovertarget',
+    'name',
+  ],
   // Pasted Markdown could otherwise carry a `data-copy-main`, `data-favorite` or `data-tabs-main`
   // attribute and hijack the site's global shortcuts/click handlers, which match on those
   // attributes anywhere in the document (see AppLayout.astro / ToolShell.astro). GFM output never
