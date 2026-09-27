@@ -54,7 +54,7 @@ import Mock from '../tools/mock/Mock.svelte';
 
 // import RuleOfThree from '../tools/rule-of-three/RuleOfThree.svelte';
 
-// import Workdays from '../tools/workdays/Workdays.svelte';
+import Workdays from '../tools/workdays/Workdays.svelte';
 
 import type { Locale } from '../tools/types';
 
@@ -117,4 +117,4 @@ const { id, locale } = Astro.props;
 
 {/* {id === 'rule-of-three' && <RuleOfThree client:load locale={locale} />} */}
 
-{/* {id === 'workdays' && <Workdays client:load locale={locale} />} */}
+{id === 'workdays' && <Workdays client:load locale={locale} />}
