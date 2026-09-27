@@ -29,31 +29,39 @@
   let count = $state(5);
   // null until mounted: the build machine's clock must never end up in the HTML.
   let now = $state<number | null>(null);
+  // The browser's own zone, detected on mount. It is only ever used as a fallback display value
+  // (I2 ruling): unlike a zone the user picks from the Select below, it is never written into
+  // `zone.value`, so it never reaches persistedInput's storage.
+  let browserZone = $state('UTC');
 
   onMount(() => {
     // persistedInput restores the saved zone in its own onMount, which runs before this one.
-    const browserZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-    if (!zone.value || !isValidTimeZone(zone.value)) zone.value = browserZone;
-    zones = listTimeZones(zone.value);
+    browserZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+    const effective = zone.value && isValidTimeZone(zone.value) ? zone.value : browserZone;
+    zones = listTimeZones(effective);
     now = Date.now();
     const id = setInterval(() => (now = Date.now()), 30_000);
     return () => clearInterval(id);
   });
 
+  // The zone actually in effect: the user's saved choice when it is valid, otherwise the
+  // browser's own zone. Every read below uses this, never `zone.value` directly.
+  const tz = $derived(zone.value && isValidTimeZone(zone.value) ? zone.value : browserZone);
+
   const parsed = $derived(expr.value.trim() ? parseCron(expr.value) : null);
   const explanation = $derived(parsed?.ok ? describeCron(parsed, locale) : '');
   const limit = $derived(Math.min(20, Math.max(1, Math.round(count) || 5)));
   const runs = $derived(
-    parsed?.ok && !parsed.reboot && now !== null && isValidTimeZone(zone.value)
-      ? nextRuns(parsed.cron, now, zone.value, limit)
+    parsed?.ok && !parsed.reboot && now !== null && isValidTimeZone(tz)
+      ? nextRuns(parsed.cron, now, tz, limit)
       : [],
   );
   const dateFormat = $derived(
-    isValidTimeZone(zone.value)
+    isValidTimeZone(tz)
       ? new Intl.DateTimeFormat(locale, {
           dateStyle: 'medium',
           timeStyle: 'short',
-          timeZone: zone.value,
+          timeZone: tz,
         })
       : null,
   );
@@ -92,7 +100,7 @@
       {#snippet children({ describedby })}
         <Select
           id="cron-zone"
-          bind:value={zone.value}
+          bind:value={() => tz, (v) => (zone.value = v)}
           {describedby}
           options={zones.map((z) => ({ value: z, label: z }))}
         />
@@ -120,7 +128,7 @@
     <Display label={s.next}>
       {#snippet head()}
         <span>{s.next}</span>
-        <span>{zone.value}</span>
+        <span>{tz}</span>
       {/snippet}
       {#if parsed.reboot}
         <p class="display-note">{s.reboot}</p>
