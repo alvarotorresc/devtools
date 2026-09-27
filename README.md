@@ -16,6 +16,7 @@ Todas tienen versión en español (`/es/…`) y en inglés (`/en/…`).
 |---|---|---|
 | Generadores | UUID v4 y v7, ULID y NanoID | [/es/generador-uuid](https://devtools.alvarotc.com/es/generador-uuid) |
 | Generadores | Lorem ipsum | [/es/generador-lorem-ipsum](https://devtools.alvarotc.com/es/generador-lorem-ipsum) |
+| Generadores | Datos de prueba (JSON, CSV y SQL) | [/es/generador-datos-de-prueba](https://devtools.alvarotc.com/es/generador-datos-de-prueba) |
 | Codificación | Base64 (texto y archivos) | [/es/codificar-decodificar-base64](https://devtools.alvarotc.com/es/codificar-decodificar-base64) |
 | Codificación | URL (codificar y analizar) | [/es/codificar-decodificar-url](https://devtools.alvarotc.com/es/codificar-decodificar-url) |
 | Codificación | Entidades HTML | [/es/codificar-entidades-html](https://devtools.alvarotc.com/es/codificar-entidades-html) |
@@ -25,6 +26,16 @@ Todas tienen versión en español (`/es/…`) y en inglés (`/en/…`).
 | Texto y datos | Comparar textos | [/es/comparar-textos](https://devtools.alvarotc.com/es/comparar-textos) |
 | Texto y datos | Regex | [/es/probador-regex](https://devtools.alvarotc.com/es/probador-regex) |
 | Texto y datos | Mayúsculas y líneas | [/es/convertir-mayusculas-minusculas](https://devtools.alvarotc.com/es/convertir-mayusculas-minusculas) |
+| Identificadores | DNI y NIE | [/es/validador-dni-nie](https://devtools.alvarotc.com/es/validador-dni-nie) |
+| Identificadores | CIF | [/es/validador-cif](https://devtools.alvarotc.com/es/validador-cif) |
+| Identificadores | IBAN y CCC | [/es/validador-iban](https://devtools.alvarotc.com/es/validador-iban) |
+| Identificadores | Matrículas | [/es/validador-matriculas](https://devtools.alvarotc.com/es/validador-matriculas) |
+| Identificadores | Número de la Seguridad Social | [/es/validador-numero-seguridad-social](https://devtools.alvarotc.com/es/validador-numero-seguridad-social) |
+| Identificadores | Tarjetas de prueba (Luhn) | [/es/tarjetas-de-credito-de-prueba](https://devtools.alvarotc.com/es/tarjetas-de-credito-de-prueba) |
+| Identificadores | Teléfonos de España (E.164) | [/es/validador-telefonos-espana](https://devtools.alvarotc.com/es/validador-telefonos-espana) |
+| Identificadores | SWIFT / BIC | [/es/validador-swift-bic](https://devtools.alvarotc.com/es/validador-swift-bic) |
+| Identificadores | EAN-13 e ISBN | [/es/validador-ean-isbn](https://devtools.alvarotc.com/es/validador-ean-isbn) |
+| Identificadores | Código postal → provincia | [/es/codigo-postal-provincia](https://devtools.alvarotc.com/es/codigo-postal-provincia) |
 | Conversores | Timestamp Unix | [/es/conversor-timestamp-unix](https://devtools.alvarotc.com/es/conversor-timestamp-unix) |
 | Conversores | Colores (HEX, RGB, HSL, OKLCH) | [/es/conversor-colores](https://devtools.alvarotc.com/es/conversor-colores) |
 | Conversores | Bases numéricas | [/es/conversor-bases-numericas](https://devtools.alvarotc.com/es/conversor-bases-numericas) |
