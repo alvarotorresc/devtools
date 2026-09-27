@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onDestroy, untrack } from 'svelte';
+  import { onDestroy, tick, untrack } from 'svelte';
   import { t } from '../../i18n';
   import { fill } from '../../i18n/fill';
   import { cryptoRng } from '../../lib/random';
@@ -173,6 +173,14 @@
     };
   });
 
+  // Editing the options invalidates any current highlight: the index might now point at a
+  // different option, or at nothing at all. Declared before the repaint effect below so it
+  // settles winnerIndex first and the repaint only ever runs once per change.
+  $effect(() => {
+    void options;
+    winnerIndex = null;
+  });
+
   // Full repaint when the options, the size or the highlighted winner change.
   $effect(() => {
     void options;
@@ -181,7 +189,7 @@
     untrack(redraw);
   });
 
-  function spin() {
+  async function spin() {
     if (spinning || problem) return;
     const frozen = [...options];
     const plan = planSpin(cryptoRng(), theta, frozen.length);
@@ -203,8 +211,12 @@
       redraw();
     };
 
-    // With reduced motion there is no spin: the wheel jumps to the result.
+    // With reduced motion there is no spin: the wheel jumps to the result. Flagging `spinning`
+    // and awaiting a tick first forces the live region through a distinct "Girando…" state, so
+    // a result that repeats the previous winner still changes the DOM and gets announced.
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      spinning = true;
+      await tick();
       finish();
       return;
     }
