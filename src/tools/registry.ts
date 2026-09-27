@@ -59,7 +59,7 @@ import { meta as mock } from './mock/meta';
 // Lote 3: each tool task uncomments its import and its entry in `tools`.
 // Keep the blank lines between them: they let the parallel branches merge without conflicts.
 
-// import { meta as password } from './password/meta';
+import { meta as password } from './password/meta';
 
 // import { meta as qr } from './qr/meta';
 
@@ -142,7 +142,7 @@ export const tools: ToolMeta[] = [
 
   // workdays,
 
-  // password,
+  password,
 
   // qr,
 
