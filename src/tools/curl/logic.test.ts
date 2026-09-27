@@ -112,6 +112,12 @@ describe('parseCurl', () => {
     ]);
   });
 
+  it('warns that fetch cannot read a --json @file value, same as -d (M2)', () => {
+    expect(warnings('curl https://a.test --json @body.json')).toEqual([
+      { kind: 'data-file', file: 'body.json' },
+    ]);
+  });
+
   it('encodes --data-urlencode values', () => {
     expect(
       request(
@@ -287,6 +293,31 @@ describe('toFetch', () => {
     );
     expect(out).toContain(`  body: '{"id":12345678901234567890}',`);
     expect(out).not.toContain('12345678901234567000');
+  });
+
+  it('sends a JSON body as-is, as a string, when it has a literal __proto__ key (M1)', () => {
+    const body = '{"__proto__":1,"b":2}';
+    const out = toFetch(
+      request(`curl https://a.test -H 'Content-Type: application/json' -d '${body}'`),
+      'es',
+    );
+    // Computed via jsString itself, so the assertion does not depend on hand-counting backslashes.
+    expect(out).toContain(`  body: ${jsString(body)},`);
+    expect(out).not.toContain('JSON.stringify(');
+  });
+
+  it('also catches a __proto__ key spelled with a unicode escape (M1)', () => {
+    // `_` is just "_": the raw JSON text never contains the literal substring `"__proto__"`,
+    // but JSON.parse decodes the key to "__proto__" all the same, so the pretty-printed object
+    // literal would still carry it. Checking the raw text (as the review's first pass suggested)
+    // would miss this; checking the canonical JSON.stringify output does not.
+    const body = '{"\\u005f_proto__":1,"b":2}';
+    const out = toFetch(
+      request(`curl https://a.test -H 'Content-Type: application/json' -d '${body}'`),
+      'es',
+    );
+    expect(out).toContain(`  body: ${jsString(body)},`);
+    expect(out).not.toContain('JSON.stringify(');
   });
 
   it('escapes JavaScript strings', () => {

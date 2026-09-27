@@ -312,6 +312,8 @@ export function parseCurl(input: string): ParseResult {
         data.push(encodeUrlencoded(value));
         break;
       case 'json':
+        // Same as -d: fetch cannot read a file off disk either (M2).
+        if (value.startsWith('@')) warnings.push({ kind: 'data-file', file: value.slice(1) });
         json = true;
         data.push(value);
         break;
@@ -553,7 +555,17 @@ export function toFetch(req: CurlRequest, locale: Locale): string {
     }
     if (isJson) {
       const pretty = JSON.stringify(parsed, null, 2).replace(/\n/g, '\n  ');
-      opts.push(`  body: JSON.stringify(${pretty}),`);
+      // A `"__proto__": …` property in an *object literal* (unlike in JSON.parse's input) sets
+      // the prototype instead of creating a real key, and a non-object value there is just
+      // ignored: splicing `pretty` in as source code would silently drop that key from the
+      // generated request (M1). Testing `pretty` itself (always canonical `"key": value`, however
+      // the key was spelled or escaped in the original text) catches every such key, not only a
+      // literal `"__proto__"` in the raw input. Send the original text as a string instead.
+      if (/"__proto__"\s*:/.test(pretty)) {
+        opts.push(`  body: ${jsString(req.body)},`);
+      } else {
+        opts.push(`  body: JSON.stringify(${pretty}),`);
+      }
     } else {
       opts.push(`  body: ${jsString(req.body)},`);
     }
