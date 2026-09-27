@@ -54,6 +54,7 @@ export const es = {
   'ui.quantity': 'Cantidad',
   'ui.testOnly': 'Datos ficticios, solo para pruebas.',
   'ui.swap': 'Intercambiar',
+  'ui.fixField': 'Corrige el campo marcado.',
   'dir.label': 'Dirección',
   'dir.auto': 'Automática',
   'dir.encode': 'Codificar',

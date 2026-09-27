@@ -29,12 +29,13 @@
   const a = $derived(num(A));
   const b = $derived(num(B));
   const c = $derived(num(C));
-  const x = $derived(a !== null && b !== null && c !== null ? ruleOfThree(kind, a, b, c) : null);
-  const error = $derived.by(() => {
-    if (a === null || b === null || c === null) return s.invalid;
-    if (x === null) return fill(s.zero, { v: divisorOf(kind) });
-    return undefined;
-  });
+  const fieldsInvalid = $derived(a === null || b === null || c === null);
+  const x = $derived(!fieldsInvalid ? ruleOfThree(kind, a!, b!, c!) : null);
+  // The zero-divisor error has no field of its own (T13/I1 ruling): A or C is a perfectly valid
+  // number, just 0, so it stays in the headline only, unlike the per-field `invalid` message.
+  const zeroError = $derived(
+    !fieldsInvalid && x === null ? fill(s.zero, { v: divisorOf(kind) }) : undefined,
+  );
   const formula = $derived(
     x === null
       ? ''
@@ -98,7 +99,13 @@
 
     <Display live label={s.result}>
       {#snippet head()}
-        {#if error}<span class="display-note">{error}</span>{:else}<span>{formula}</span>{/if}
+        {#if fieldsInvalid}
+          <span>{t(locale, 'ui.fixField')}</span>
+        {:else if zeroError}
+          <span class="display-note zero-error">{zeroError}</span>
+        {:else}
+          <span>{formula}</span>
+        {/if}
       {/snippet}
       {#if x !== null}<div class="display-value" id="rot-x">{fmt(x)}</div>{/if}
     </Display>
@@ -125,6 +132,13 @@
   .help {
     font-size: 14px;
     color: var(--text-dim);
+  }
+  /* --bad-text is tuned for error text on the light page surface, which is too dark to read
+     against the Display's always-dark panel in the light theme; --bad matches the same LED/border
+     hue but stays legible there in all three themes (T13 ruling, Minor 8). */
+  .zero-error {
+    color: var(--bad);
+    font-weight: 600;
   }
   .grid {
     display: grid;

@@ -68,7 +68,9 @@
     {#snippet head()}
       <span
         >{bytes === null
-          ? (error ?? s.empty)
+          ? error
+            ? t(locale, 'ui.fixField')
+            : s.empty
           : fill(s.readableLine, { si: human('si'), iec: human('iec') })}</span
       >
     {/snippet}
