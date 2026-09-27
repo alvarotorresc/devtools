@@ -193,6 +193,22 @@ describe('custom fields', () => {
     }
   });
 
+  it('reaches both ends of a 2-decimal range one floating-point step wide', () => {
+    // 0.28 * 100 and 0.29 * 100 both land off-integer in floating point; both endpoints must
+    // still come out, not just one or neither.
+    const c = withSeed({
+      ...enable(defaultConfig('es'), ['number']),
+      fields: defaultConfig('es').fields.map((f) =>
+        f.kind === 'number'
+          ? { ...f, enabled: true, min: 0.28, max: 0.29, decimals: 2 }
+          : { ...f, enabled: false },
+      ),
+      rows: 200,
+    });
+    const values = new Set(generateRows(c, NOW, '').map(([v]) => v));
+    expect(values).toEqual(new Set([0.28, 0.29]));
+  });
+
   it('draws booleans with the given probability, dates in range and list values', () => {
     const base = defaultConfig('es');
     const c = withSeed({
@@ -319,6 +335,29 @@ describe('errors', () => {
       reason: 'emptyList',
       name: 'valor',
     });
+  });
+
+  it('rejects a number range with no representable value at its decimals', () => {
+    const c = defaultConfig('es');
+    const set = (patch: object) => ({
+      ...c,
+      fields: c.fields.map((f) => (f.kind === 'number' ? { ...f, enabled: true, ...patch } : f)),
+    });
+    // 0 decimals only allows integers, and none falls between 0.5 and 0.9.
+    expect(validateConfig(set({ min: 0.5, max: 0.9, decimals: 0 }))).toEqual({
+      reason: 'numberStep',
+      name: 'numero',
+      min: 0.5,
+      max: 0.9,
+      decimals: 0,
+    });
+    // Exactly one integer (1) falls between 0.5 and 1.4: that single grid point is enough.
+    expect(validateConfig(set({ min: 0.5, max: 1.4, decimals: 0 }))).toBeNull();
+    // 0.29 * 100 is 28.999999999999996 in floating point: without correcting for that noise,
+    // a single valid grid point (0.29 itself) would look like an empty range.
+    expect(validateConfig(set({ min: 0.29, max: 0.29, decimals: 2 }))).toBeNull();
+    // Same noise, two valid points this time (0.28 and 0.29).
+    expect(validateConfig(set({ min: 0.28, max: 0.29, decimals: 2 }))).toBeNull();
   });
 
   it('checks the SQL table name only in SQL', () => {

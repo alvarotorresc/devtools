@@ -73,6 +73,10 @@ describe('validateIban: checked examples', () => {
   it('accepts lower case, spaces anywhere and an "IBAN" prefix', () => {
     expect(validateIban('iban es9121 00041845020 0051332').ok).toBe(true);
   });
+
+  it('accepts dots as separators too', () => {
+    expect(validateIban('ES91.2100.0418.4502.0005.1332').ok).toBe(true);
+  });
 });
 
 describe('validateIban: errors, in order', () => {

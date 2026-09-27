@@ -6,6 +6,7 @@
     max,
     step = 1,
     describedby,
+    ariaLabel,
   }: {
     id: string;
     value: number;
@@ -13,6 +14,8 @@
     max: number;
     step?: number;
     describedby?: string;
+    /** Overrides the accessible name, e.g. when an implicit `<label>` text is ambiguous. */
+    ariaLabel?: string;
   } = $props();
 
   function clamp() {
@@ -32,6 +35,7 @@
   onblur={clamp}
   class="control mono"
   aria-describedby={describedby}
+  aria-label={ariaLabel}
 />
 
 <style>
