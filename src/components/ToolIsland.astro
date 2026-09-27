@@ -52,7 +52,7 @@ import Mock from '../tools/mock/Mock.svelte';
 
 // import Percent from '../tools/percent/Percent.svelte';
 
-// import RuleOfThree from '../tools/rule-of-three/RuleOfThree.svelte';
+import RuleOfThree from '../tools/rule-of-three/RuleOfThree.svelte';
 
 // import Workdays from '../tools/workdays/Workdays.svelte';
 
@@ -115,6 +115,6 @@ const { id, locale } = Astro.props;
 
 {/* {id === 'percent' && <Percent client:load locale={locale} />} */}
 
-{/* {id === 'rule-of-three' && <RuleOfThree client:load locale={locale} />} */}
+{id === 'rule-of-three' && <RuleOfThree client:load locale={locale} />}
 
 {/* {id === 'workdays' && <Workdays client:load locale={locale} />} */}
