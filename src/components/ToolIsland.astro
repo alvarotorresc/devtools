@@ -81,7 +81,7 @@ import Mock from '../tools/mock/Mock.svelte';
 
 // import UserAgent from '../tools/user-agent/UserAgent.svelte';
 
-// import Semver from '../tools/semver/Semver.svelte';
+import Semver from '../tools/semver/Semver.svelte';
 
 // import Cidr from '../tools/cidr/Cidr.svelte';
 
@@ -170,6 +170,6 @@ const { id, locale } = Astro.props;
 
 {/* {id === 'user-agent' && <UserAgent client:load locale={locale} />} */}
 
-{/* {id === 'semver' && <Semver client:load locale={locale} />} */}
+{id === 'semver' && <Semver client:load locale={locale} />}
 
 {/* {id === 'cidr' && <Cidr client:load locale={locale} />} */}
