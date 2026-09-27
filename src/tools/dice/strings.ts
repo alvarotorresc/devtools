@@ -21,7 +21,10 @@ export const strings = {
     modifierRange: 'El modificador va de −1000 a 1000: has puesto {v}.',
     heads: 'Cara',
     tails: 'Cruz',
-    coinCount: '{h} caras · {t} cruces',
+    headsOne: '{n} cara',
+    headsOther: '{n} caras',
+    tailsOne: '{n} cruz',
+    tailsOther: '{n} cruces',
     history: 'Últimas tiradas',
   },
   en: {
@@ -44,7 +47,10 @@ export const strings = {
     modifierRange: 'The modifier goes from −1000 to 1000: you typed {v}.',
     heads: 'Heads',
     tails: 'Tails',
-    coinCount: '{h} heads · {t} tails',
+    headsOne: '{n} head',
+    headsOther: '{n} heads',
+    tailsOne: '{n} tail',
+    tailsOther: '{n} tails',
     history: 'Latest rolls',
   },
 } satisfies Record<Locale, Record<string, string>>;

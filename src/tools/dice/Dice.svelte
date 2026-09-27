@@ -1,6 +1,7 @@
 <script lang="ts">
   import { t } from '../../i18n';
   import { fill } from '../../i18n/fill';
+  import { plural } from '../../lib/plural';
   import { rngFromSeed } from '../../lib/random';
   import Button from '../../ui/Button.svelte';
   import CopyButton from '../../ui/CopyButton.svelte';
@@ -52,9 +53,9 @@
     Math.min(LIMITS.coins[1], Math.max(LIMITS.coins[0], Number(coinsStore.value) || 1)),
   );
   const coinCount = $derived(coins ? countCoins(coins) : null);
-  const coinText = $derived(
-    coinCount ? fill(s.coinCount, { h: coinCount.heads, t: coinCount.tails }) : '',
-  );
+  const coinCountText = (heads: number, tails: number) =>
+    `${plural(locale, heads, s.headsOne, s.headsOther)} · ${plural(locale, tails, s.tailsOne, s.tailsOther)}`;
+  const coinText = $derived(coinCount ? coinCountText(coinCount.heads, coinCount.tails) : '');
 
   function doRoll() {
     if (!parsed.ok) return;
@@ -65,7 +66,7 @@
   function doFlip() {
     coins = flipCoins(rng, nCoins);
     const c = countCoins(coins);
-    history = pushHistory(history, fill(s.coinCount, { h: c.heads, t: c.tails }));
+    history = pushHistory(history, coinCountText(c.heads, c.tails));
   }
 
   const headline = $derived.by(() => {
