@@ -55,6 +55,7 @@ export const en: Record<keyof typeof es, string> = {
   'ui.quantity': 'Quantity',
   'ui.testOnly': 'Fictitious data, for testing only.',
   'ui.swap': 'Swap',
+  'ui.fixField': 'Fix the highlighted field.',
   'dir.label': 'Direction',
   'dir.auto': 'Automatic',
   'dir.encode': 'Encode',

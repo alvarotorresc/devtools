@@ -106,7 +106,9 @@
 
   <Display live label={s.result}>
     {#snippet head()}
-      <span>{few ? s.few : plural(locale, count, s.countOne, s.countOther)}</span>
+      <!-- The list Field already shows s.few under itself (I1); the headline stays neutral. -->
+      <span>{few ? t(locale, 'ui.fixField') : plural(locale, count, s.countOne, s.countOther)}</span
+      >
       {#if seeded}<span>{s.seeded}</span>{/if}
     {/snippet}
     {#if result.length}

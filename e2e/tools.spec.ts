@@ -528,6 +528,8 @@ test.describe('lote 2: one real interaction per tool', () => {
       .locator('.team')
       .evaluateAll((els) => els.map((el) => el.querySelectorAll('li').length));
     expect(sizes).toEqual([3, 3, 2, 2]);
+    // C1 regression: the headline used to ship raw `{p}`/`{k}` placeholders instead of the count.
+    await expect(page.locator('.display-head')).toHaveText('10 personas en 4 equipos');
   });
 
   test('dice rolls 3d6+2 with a seed and explains a bad range', async ({ page }) => {
@@ -573,6 +575,19 @@ test.describe('lote 2: one real interaction per tool', () => {
     await expect(page.locator('#iva-base')).toContainText('100,00');
   });
 
+  test('iva points a bad custom rate at the rate field, not the amount', async ({ page }) => {
+    await page.goto('/es/calculadora-iva');
+    await page.locator('#iva-amount').fill('100');
+    await radio(page, 'Otro').click();
+    await page.locator('#iva-rate-other').fill('abc');
+    // I1: the rate error shows under the rate field, and the amount (which is fine) shows none.
+    await expect(page.locator('#iva-rate-other-error')).toHaveText(
+      'Escribe un porcentaje de 0 a 100, por ejemplo 7.',
+    );
+    await expect(page.locator('#iva-amount-error')).toHaveCount(0);
+    await expect(page.locator('.display-head')).toHaveText('Corrige el campo marcado.');
+  });
+
   test('irpf builds a 1000 € invoice with 21 % VAT and 15 % withholding', async ({ page }) => {
     await page.goto('/es/calculadora-retencion-irpf');
     await page.locator('#irpf-amount').fill('1000');
@@ -588,11 +603,10 @@ test.describe('lote 2: one real interaction per tool', () => {
     await expect(page.locator('#percent-result')).toHaveText('42');
     await radio(page, 'Variación').click();
     await page.locator('#percent-a').fill('0');
-    // The real string explains how to fix it (global constraint), unlike the brief's assumed
-    // text. It renders twice: once as the field error, once as the headline (see progress.md's
-    // T1 ruling, "show error once" — percent still shows it twice; not this task's call to
-    // change). `.first()` avoids a strict-mode violation on the duplicate match.
-    await expect(page.getByText('No hay variación porcentual desde 0').first()).toBeVisible();
+    // I1: the error shows once, under the field. The headline goes neutral instead of repeating
+    // it (it used to show the same sentence twice).
+    await expect(page.getByText('No hay variación porcentual desde 0')).toHaveCount(1);
+    await expect(page.locator('.display-head')).toHaveText('Corrige el campo marcado.');
   });
 
   test('rule-of-three solves the direct and the inverse rule', async ({ page }) => {
@@ -606,6 +620,18 @@ test.describe('lote 2: one real interaction per tool', () => {
     await page.locator('#rot-b').fill('6');
     await page.locator('#rot-c').fill('8');
     await expect(page.locator('#rot-x')).toHaveText('3');
+  });
+
+  test('rule-of-three flags a 0 divisor as an error in the headline (Minor 8)', async ({
+    page,
+  }) => {
+    await page.goto('/es/regla-de-tres');
+    await page.locator('#rot-a').fill('0');
+    await page.locator('#rot-b').fill('10');
+    await page.locator('#rot-c').fill('5');
+    const head = page.locator('.display-head');
+    await expect(head).toContainText('A no puede ser 0: no se puede dividir entre 0.');
+    await expect(head.locator('.zero-error')).toBeVisible();
   });
 
   test('workdays counts January 2026 and lists Epiphany', async ({ page }) => {

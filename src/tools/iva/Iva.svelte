@@ -116,7 +116,10 @@
   </div>
 
   <Display live label={s.result}>
-    {#snippet head()}<span>{line || s.invalid}</span>{/snippet}
+    <!-- `r` is null only because the amount or the custom rate failed to parse, and each of
+         those already shows its own error under its field (I1); a fixed s.invalid here used to
+         point at the amount even when the actual problem was the rate field. -->
+    {#snippet head()}<span>{line || t(locale, 'ui.fixField')}</span>{/snippet}
     {#if r}
       <dl class="display-kv">
         <dt>{s.base}</dt>

@@ -132,7 +132,10 @@
 
     <Display live label={s.result}>
       {#snippet head()}
-        <span>{out && 'lines' in out ? out.lines[0] : out ? out.error : s.invalid}</span>
+        <!-- Both cases here (a field that failed to parse, or a division by 0) are already
+             flagged under their own field, so the headline stays neutral instead of repeating
+             them (I1). -->
+        <span>{out && 'lines' in out ? out.lines[0] : t(locale, 'ui.fixField')}</span>
       {/snippet}
       {#if out && 'value' in out}
         <div class="display-value" id="percent-result">{out.value}</div>
