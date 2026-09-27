@@ -21,7 +21,10 @@
     "format": "prettier --write src e2e",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "og": "node scripts/og.mjs"
+    "og": "node scripts/og.mjs",
+    "media": "node media/shots/shots.mjs && node media/shots/labels.mjs && node media/shots/promo.mjs",
+    "media:shots": "node media/shots/shots.mjs",
+    "media:readme": "node media/shots/readme.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
