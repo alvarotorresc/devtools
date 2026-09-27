@@ -1,0 +1,36 @@
+import type { Locale } from '../types';
+
+export const strings = {
+  es: {
+    search: 'Buscar',
+    placeholder: '404, teapot, demasiadas peticiones…',
+    group: 'Familia',
+    all: 'Todos',
+    result: 'Códigos',
+    count: '{n} códigos',
+    one: '1 código',
+    none: 'Ningún código coincide con «{q}». Prueba con un número (40) o con otra palabra.',
+    when: 'Cuándo usarlo:',
+    joke: 'Broma',
+    unused: 'Sin uso',
+    historic: 'Histórico',
+    copyCode: 'Copiar',
+    copyCodeOf: 'Copiar el código {code}',
+  },
+  en: {
+    search: 'Search',
+    placeholder: '404, teapot, too many requests…',
+    group: 'Class',
+    all: 'All',
+    result: 'Codes',
+    count: '{n} codes',
+    one: '1 code',
+    none: 'No code matches “{q}”. Try a number (40) or another word.',
+    when: 'When to use it:',
+    joke: 'Joke',
+    unused: 'Unused',
+    historic: 'Historic',
+    copyCode: 'Copy',
+    copyCodeOf: 'Copy code {code}',
+  },
+} satisfies Record<Locale, Record<string, string>>;
