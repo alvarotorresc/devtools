@@ -73,7 +73,7 @@ import { meta as mock } from './mock/meta';
 
 // import { meta as curl } from './curl/meta';
 
-// import { meta as queryString } from './query-string/meta';
+import { meta as queryString } from './query-string/meta';
 
 // import { meta as httpStatus } from './http-status/meta';
 
@@ -156,7 +156,7 @@ export const tools: ToolMeta[] = [
 
   // curl,
 
-  // queryString,
+  queryString,
 
   // httpStatus,
 
