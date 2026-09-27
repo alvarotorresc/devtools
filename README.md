@@ -17,6 +17,9 @@ Todas tienen versión en español (`/es/…`) y en inglés (`/en/…`).
 | Generadores | UUID v4 y v7, ULID y NanoID | [/es/generador-uuid](https://devtools.alvarotc.com/es/generador-uuid) |
 | Generadores | Lorem ipsum | [/es/generador-lorem-ipsum](https://devtools.alvarotc.com/es/generador-lorem-ipsum) |
 | Generadores | Datos de prueba (JSON, CSV y SQL) | [/es/generador-datos-de-prueba](https://devtools.alvarotc.com/es/generador-datos-de-prueba) |
+| Generadores | Contraseñas seguras | [/es/generador-contrasenas](https://devtools.alvarotc.com/es/generador-contrasenas) |
+| Generadores | Código QR (texto, URL y WiFi) | [/es/generador-codigo-qr](https://devtools.alvarotc.com/es/generador-codigo-qr) |
+| Generadores | Slugs para URL | [/es/generador-slug](https://devtools.alvarotc.com/es/generador-slug) |
 | Codificación | Base64 (texto y archivos) | [/es/codificar-decodificar-base64](https://devtools.alvarotc.com/es/codificar-decodificar-base64) |
 | Codificación | URL (codificar y analizar) | [/es/codificar-decodificar-url](https://devtools.alvarotc.com/es/codificar-decodificar-url) |
 | Codificación | Entidades HTML | [/es/codificar-entidades-html](https://devtools.alvarotc.com/es/codificar-entidades-html) |
@@ -26,6 +29,11 @@ Todas tienen versión en español (`/es/…`) y en inglés (`/en/…`).
 | Texto y datos | Comparar textos | [/es/comparar-textos](https://devtools.alvarotc.com/es/comparar-textos) |
 | Texto y datos | Regex | [/es/probador-regex](https://devtools.alvarotc.com/es/probador-regex) |
 | Texto y datos | Mayúsculas y líneas | [/es/convertir-mayusculas-minusculas](https://devtools.alvarotc.com/es/convertir-mayusculas-minusculas) |
+| Texto y datos | JSON, YAML y CSV | [/es/conversor-json-yaml-csv](https://devtools.alvarotc.com/es/conversor-json-yaml-csv) |
+| Texto y datos | Comparar JSON | [/es/comparar-json](https://devtools.alvarotc.com/es/comparar-json) |
+| Texto y datos | Vista previa de Markdown | [/es/vista-previa-markdown](https://devtools.alvarotc.com/es/vista-previa-markdown) |
+| Texto y datos | cURL a fetch | [/es/convertir-curl-a-fetch](https://devtools.alvarotc.com/es/convertir-curl-a-fetch) |
+| Texto y datos | Query string y JSON | [/es/conversor-query-string-json](https://devtools.alvarotc.com/es/conversor-query-string-json) |
 | Identificadores | DNI y NIE | [/es/validador-dni-nie](https://devtools.alvarotc.com/es/validador-dni-nie) |
 | Identificadores | CIF | [/es/validador-cif](https://devtools.alvarotc.com/es/validador-cif) |
 | Identificadores | IBAN y CCC | [/es/validador-iban](https://devtools.alvarotc.com/es/validador-iban) |
@@ -53,6 +61,11 @@ Todas tienen versión en español (`/es/…`) y en inglés (`/en/…`).
 | Azar | Mezclar lista | [/es/mezclar-lista-aleatoria](https://devtools.alvarotc.com/es/mezclar-lista-aleatoria) |
 | Azar | Equipos aleatorios | [/es/generador-equipos-aleatorios](https://devtools.alvarotc.com/es/generador-equipos-aleatorios) |
 | Azar | Dados y moneda | [/es/lanzar-dados-moneda](https://devtools.alvarotc.com/es/lanzar-dados-moneda) |
+| Referencia | Códigos de estado HTTP | [/es/codigos-estado-http](https://devtools.alvarotc.com/es/codigos-estado-http) |
+| Referencia | Expresiones cron | [/es/explicar-expresion-cron](https://devtools.alvarotc.com/es/explicar-expresion-cron) |
+| Referencia | User-Agent | [/es/analizar-user-agent](https://devtools.alvarotc.com/es/analizar-user-agent) |
+| Referencia | Rangos semver | [/es/comprobar-rango-semver](https://devtools.alvarotc.com/es/comprobar-rango-semver) |
+| Referencia | Subredes CIDR (IPv4) | [/es/calculadora-subredes-cidr](https://devtools.alvarotc.com/es/calculadora-subredes-cidr) |
 
 ## Desarrollo
 
