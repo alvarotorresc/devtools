@@ -46,7 +46,7 @@ import { meta as mock } from './mock/meta';
 
 // import { meta as dice } from './dice/meta';
 
-// import { meta as iva } from './iva/meta';
+import { meta as iva } from './iva/meta';
 
 // import { meta as irpf } from './irpf/meta';
 
@@ -103,7 +103,7 @@ export const tools: ToolMeta[] = [
 
   // dice,
 
-  // iva,
+  iva,
 
   // irpf,
 

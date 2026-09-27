@@ -1,0 +1,38 @@
+import type { Locale } from '../types';
+
+export const strings = {
+  es: {
+    amount: 'Importe',
+    direction: 'El importe es',
+    base: 'Base imponible',
+    total: 'Total con IVA',
+    rate: 'Tipo de IVA',
+    other: 'Otro',
+    otherRate: 'Tipo (%)',
+    otherHelp: 'De 0 a 100. Por ejemplo, 7 para el IGIC canario.',
+    vat: 'IVA ({r} %)',
+    result: 'Desglose',
+    compare: 'La misma base con cada tipo',
+    line: 'Base {base} + IVA {r} % {vat} = {total}',
+    invalid: 'Escribe un número, por ejemplo 1234,5.',
+    rateInvalid: 'Escribe un porcentaje de 0 a 100, por ejemplo 7.',
+    copyLine: 'Copiar la línea',
+  },
+  en: {
+    amount: 'Amount',
+    direction: 'The amount is',
+    base: 'Net amount (base)',
+    total: 'Total with VAT',
+    rate: 'VAT rate',
+    other: 'Other',
+    otherRate: 'Rate (%)',
+    otherHelp: 'From 0 to 100. For example, 7 for the Canary Islands IGIC.',
+    vat: 'VAT ({r}%)',
+    result: 'Breakdown',
+    compare: 'The same base at each rate',
+    line: 'Base {base} + VAT {r}% {vat} = {total}',
+    invalid: 'Type a number, for example 1234.5.',
+    rateInvalid: 'Type a percentage from 0 to 100, for example 7.',
+    copyLine: 'Copy the line',
+  },
+} satisfies Record<Locale, Record<string, string>>;

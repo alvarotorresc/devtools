@@ -46,7 +46,7 @@ import Mock from '../tools/mock/Mock.svelte';
 
 // import Dice from '../tools/dice/Dice.svelte';
 
-// import Iva from '../tools/iva/Iva.svelte';
+import Iva from '../tools/iva/Iva.svelte';
 
 // import Irpf from '../tools/irpf/Irpf.svelte';
 
@@ -109,7 +109,7 @@ const { id, locale } = Astro.props;
 
 {/* {id === 'dice' && <Dice client:load locale={locale} />} */}
 
-{/* {id === 'iva' && <Iva client:load locale={locale} />} */}
+{id === 'iva' && <Iva client:load locale={locale} />}
 
 {/* {id === 'irpf' && <Irpf client:load locale={locale} />} */}
 
