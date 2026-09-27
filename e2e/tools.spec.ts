@@ -32,6 +32,17 @@ const PAGES: [string, string][] = [
   ['/es/conversor-timestamp-unix', 'Timestamp Unix'],
   ['/es/conversor-colores', 'Colores'],
   ['/es/conversor-bases-numericas', 'Bases numéricas'],
+  ['/es/validador-dni-nie', 'DNI y NIE'],
+  ['/es/validador-cif', 'CIF'],
+  ['/es/validador-iban', 'IBAN'],
+  ['/es/validador-matriculas', 'Matrículas'],
+  ['/es/validador-numero-seguridad-social', 'Nº Seguridad Social'],
+  ['/es/tarjetas-de-credito-de-prueba', 'Tarjetas de prueba'],
+  ['/es/validador-telefonos-espana', 'Teléfonos ES'],
+  ['/es/validador-swift-bic', 'SWIFT / BIC'],
+  ['/es/validador-ean-isbn', 'EAN e ISBN'],
+  ['/es/codigo-postal-provincia', 'Código postal'],
+  ['/es/generador-datos-de-prueba', 'Datos de prueba'],
 ];
 
 test.describe('every migrated tool page loads', () => {
@@ -233,5 +244,161 @@ test.describe('one real interaction per tool', () => {
     await expect(page.locator('#number-base-hex')).toHaveValue('10000000000000000');
     await page.locator('#number-base-bin').fill('102');
     await expect(page.getByText('no existen en base 2')).toBeVisible();
+  });
+});
+
+// Lote 1: `recent` and `favorites` hold tool ids as values, so "nothing stored" means no key
+// with the tool id and no value with what was typed, never "no value with the id".
+async function nothingStored(page: Page, toolId: string, typed: string) {
+  await page.waitForTimeout(500);
+  const hits = await page.evaluate(
+    ([id, text]) =>
+      Object.entries(localStorage)
+        .filter(([k, v]) => k.includes(id) || v.includes(text))
+        .map(([k]) => k),
+    [toolId, typed],
+  );
+  expect(hits).toEqual([]);
+}
+
+const rowsOf = (page: Page, display: string) =>
+  page.getByRole('region', { name: display }).locator('.display-row > span:first-child');
+
+test.describe('lote 1: identifiers and mock data', () => {
+  test('dni explains a wrong letter and never stores the input', async ({ page }) => {
+    await page.goto('/es/validador-dni-nie');
+    await page.locator('#dni-input').fill('12345678A');
+    await expect(page.getByText('Letra incorrecta: para 12345678 es Z.')).toBeVisible();
+    await page.locator('#dni-input').fill('12345678Z');
+    await expect(page.locator('.display-head')).toContainText('DNI válido');
+    await nothingStored(page, 'dni', '12345678Z');
+  });
+
+  test('cif validates a company and generates with a seed', async ({ page }) => {
+    await page.goto('/es/validador-cif');
+    await page.locator('#cif-input').fill('B65410011');
+    await expect(page.locator('.display-head')).toContainText('CIF válido');
+    await expect(page.locator('.display-kv')).toContainText('Sociedad de responsabilidad limitada');
+    await radio(page, 'Generar').click();
+    await page.locator('#cif-seed').fill('demo');
+    const rows = rowsOf(page, 'CIF generados');
+    await expect(rows).toHaveCount(10);
+    for (const v of await rows.allTextContents()) expect(v).toMatch(/^[A-HJNP-SUVW]\d{7}[0-9A-J]$/);
+  });
+
+  // CIF remembers input by default (it is public), so it cannot use nothingStored: a key
+  // containing "cif" legitimately exists. A positive control shows persistence works at all,
+  // which makes the negative check on the DNI-shaped line mean something.
+  test('cif remembers a plain CIF but never a DNI pasted alongside one', async ({ page }) => {
+    await page.goto('/es/validador-cif');
+    await page.locator('#cif-input').fill('B65410011');
+    await expect
+      .poll(async () =>
+        page.evaluate(() => Object.values(localStorage).some((v) => v.includes('B65410011'))),
+      )
+      .toBe(true);
+
+    await page.locator('#cif-input').fill('B65410011\n12345678Z');
+    await page.waitForTimeout(500);
+    const leaked = await page.evaluate(() =>
+      Object.values(localStorage).some((v) => v.includes('12345678Z')),
+    );
+    expect(leaked).toBe(false);
+  });
+
+  test('iban breaks down a Spanish IBAN, catches a typo and stores nothing', async ({ page }) => {
+    await page.goto('/es/validador-iban');
+    await page.locator('#iban-input').fill('ES91 2100 0418 4502 0005 1332');
+    await expect(page.locator('.display-head')).toContainText('IBAN válido');
+    await expect(page.locator('.display-kv')).toContainText('2100');
+    await page.locator('#iban-input').fill('ES91 2100 0418 4502 0005 1333');
+    await expect(page.locator('.display-head')).toContainText('No válido');
+    await nothingStored(page, 'iban', 'ES91');
+  });
+
+  test('plate rejects vowels and reads old provincial plates', async ({ page }) => {
+    await page.goto('/es/validador-matriculas');
+    await page.locator('#plate-input').fill('1234 BCA');
+    await expect(page.getByText('La letra A no se usa en las matrículas actuales')).toBeVisible();
+    await page.locator('#plate-input').fill('M-1234-AB');
+    await expect(page.locator('.display-head')).toContainText('Matrícula válida');
+    await expect(page.locator('.display-kv')).toContainText('Madrid');
+  });
+
+  test('nss shows the province and the right control, and stores nothing', async ({ page }) => {
+    await page.goto('/es/validador-numero-seguridad-social');
+    await page.locator('#nss-input').fill('28/12345678/40');
+    await expect(page.locator('.display-head')).toContainText('Número válido');
+    await expect(page.locator('.display-kv')).toContainText('Madrid');
+    await page.locator('#nss-input').fill('281234567841');
+    await expect(page.getByText('debería ser 40')).toBeVisible();
+    await nothingStored(page, 'nss', '281234567841');
+  });
+
+  test('card validates with Luhn, generates Amex and stores nothing', async ({ page }) => {
+    await page.goto('/es/tarjetas-de-credito-de-prueba');
+    await page.locator('#card-input').fill('4242 4242 4242 4242');
+    await expect(page.locator('.display-head')).toContainText('Luhn correcto');
+    await expect(page.locator('.display-kv')).toContainText('Visa');
+    await radio(page, 'Generar').click();
+    await radio(page, 'American Express').click();
+    await page.locator('#card-seed').fill('demo');
+    const rows = rowsOf(page, 'Tarjetas generadas');
+    await expect(rows).toHaveCount(10);
+    for (const v of await rows.allTextContents()) expect(v).toMatch(/^3[47]\d{13}$/);
+    await nothingStored(page, 'card', '4242 4242');
+  });
+
+  test('phone classifies a mobile, prints E.164 and stores nothing', async ({ page }) => {
+    await page.goto('/es/validador-telefonos-espana');
+    await page.locator('#phone-input').fill('+34 612 34 56 78');
+    await expect(page.locator('.display-head')).toContainText('Móvil');
+    await expect(page.locator('.display-value')).toHaveText('+34612345678');
+    await nothingStored(page, 'phone', '612 34 56 78');
+  });
+
+  test('bic reads the head office of a lower-case code', async ({ page }) => {
+    await page.goto('/es/validador-swift-bic');
+    await page.locator('#bic-input').fill('caixesbbxxx');
+    await expect(page.locator('.display-head')).toContainText('BIC válido');
+    await expect(page.locator('.display-kv')).toContainText('España');
+    await expect(page.locator('.display-kv')).toContainText('Oficina principal');
+  });
+
+  test('ean-isbn turns an ISBN-10 into its ISBN-13', async ({ page }) => {
+    await page.goto('/es/validador-ean-isbn');
+    await page.locator('#ean-isbn-input').fill('0306406152');
+    await expect(page.locator('.display-head')).toContainText('ISBN-10 válido');
+    await expect(page.locator('.display-kv')).toContainText('9780306406157');
+  });
+
+  test('postal-code restores the leading zero', async ({ page }) => {
+    await page.goto('/es/codigo-postal-provincia');
+    await page.locator('#postal-code-input').fill('8001');
+    await expect(page.getByText('Añadido el 0 inicial')).toBeVisible();
+    await expect(page.locator('.display-value')).toHaveText('08001');
+    await expect(page.locator('.display-kv')).toContainText('Barcelona');
+  });
+
+  test('mock builds CSV with a seed, drops Spanish fields and downloads SQL', async ({ page }) => {
+    await page.goto('/es/generador-datos-de-prueba');
+    await page.locator('#mock-seed').fill('demo');
+    await page.locator('#mock-rows').fill('5');
+    await radio(page, 'CSV').click();
+    const lines = async () =>
+      ((await page.locator('.display-code').textContent()) ?? '').split(/\r?\n/);
+    await expect
+      .poll(async () => (await lines())[0])
+      .toBe('nombre,apellidos,email,telefono,dni,ciudad');
+    expect(await lines()).toHaveLength(6);
+    await page.getByRole('switch', { name: 'Datos internacionales' }).check();
+    await expect
+      .poll(async () => (await lines())[0])
+      .toBe('nombre,apellidos,email,telefono,ciudad');
+    await radio(page, 'SQL').click();
+    await expect(page.locator('.display-code')).toContainText('INSERT INTO "usuarios"');
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Descargar' }).click();
+    expect((await download).suggestedFilename()).toBe('datos.sql');
   });
 });
