@@ -67,7 +67,7 @@ import Slug from '../tools/slug/Slug.svelte';
 
 import DataConvert from '../tools/data-convert/DataConvert.svelte';
 
-// import JsonDiff from '../tools/json-diff/JsonDiff.svelte';
+import JsonDiff from '../tools/json-diff/JsonDiff.svelte';
 
 // import Markdown from '../tools/markdown/Markdown.svelte';
 
@@ -156,7 +156,7 @@ const { id, locale } = Astro.props;
 
 {id === 'data-convert' && <DataConvert client:load locale={locale} />}
 
-{/* {id === 'json-diff' && <JsonDiff client:load locale={locale} />} */}
+{id === 'json-diff' && <JsonDiff client:load locale={locale} />}
 
 {/* {id === 'markdown' && <Markdown client:load locale={locale} />} */}
 
