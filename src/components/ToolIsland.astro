@@ -59,7 +59,7 @@ import Mock from '../tools/mock/Mock.svelte';
 // Lote 3: each tool task uncomments its import below and its line in the template.
 // Keep the blank lines between them: they let the parallel branches merge without conflicts.
 
-// import Password from '../tools/password/Password.svelte';
+import Password from '../tools/password/Password.svelte';
 
 // import Qr from '../tools/qr/Qr.svelte';
 
@@ -148,7 +148,7 @@ const { id, locale } = Astro.props;
 
 {/* {id === 'workdays' && <Workdays client:load locale={locale} />} */}
 
-{/* {id === 'password' && <Password client:load locale={locale} />} */}
+{id === 'password' && <Password client:load locale={locale} />}
 
 {/* {id === 'qr' && <Qr client:load locale={locale} />} */}
 
