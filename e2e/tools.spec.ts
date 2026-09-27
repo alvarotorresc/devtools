@@ -588,9 +588,10 @@ test.describe('lote 2: one real interaction per tool', () => {
     await expect(page.locator('#percent-result')).toHaveText('42');
     await radio(page, 'Variación').click();
     await page.locator('#percent-a').fill('0');
-    // The real string explains how to fix it (global constraint), and it renders twice by
-    // design: once as the field error, once as the headline. `.first()` avoids a strict-mode
-    // violation on the duplicate match.
+    // The real string explains how to fix it (global constraint), unlike the brief's assumed
+    // text. It renders twice: once as the field error, once as the headline (see progress.md's
+    // T1 ruling, "show error once" — percent still shows it twice; not this task's call to
+    // change). `.first()` avoids a strict-mode violation on the duplicate match.
     await expect(page.getByText('No hay variación porcentual desde 0').first()).toBeVisible();
   });
 
