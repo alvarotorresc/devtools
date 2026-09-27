@@ -15,6 +15,7 @@
 
   type Tab = 'of' | 'what' | 'change';
   type Stored = ReturnType<typeof persistedInput>;
+  type FieldSpec = { id: string; label: string; store: Stored; zeroMsg?: string };
 
   let { locale }: { locale: Locale } = $props();
   const s = $derived(strings[locale]);
@@ -37,13 +38,16 @@
       const y = num(ofY);
       if (x === null || y === null) return null;
       const r = percentOf(x, y);
-      const v = { x: fmt(x), y: fmt(y) };
+      // A negative X already carries its own "-" in {x}; picking the template whose baked-in
+      // operator matches its sign (and showing |X|) keeps each line to a single sign.
+      const ax = fmt(Math.abs(x));
+      const negX = x < 0;
       return {
         value: fmt(r.value),
         lines: [
-          fill(s.of, { ...v, v: fmt(r.value) }),
-          fill(s.plus, { ...v, v: fmt(r.plus) }),
-          fill(s.minus, { ...v, v: fmt(r.minus) }),
+          fill(s.of, { x: fmt(x), y: fmt(y), v: fmt(r.value) }),
+          fill(negX ? s.minus : s.plus, { x: ax, y: fmt(y), v: fmt(r.plus) }),
+          fill(negX ? s.plus : s.minus, { x: ax, y: fmt(y), v: fmt(r.minus) }),
         ],
       };
     }
@@ -67,7 +71,7 @@
     };
   });
 
-  const fields = $derived(
+  const fields: FieldSpec[] = $derived(
     tab === 'of'
       ? [
           { id: 'percent-x', label: s.x, store: ofX },
@@ -76,10 +80,10 @@
       : tab === 'what'
         ? [
             { id: 'percent-what-x', label: s.whatX, store: whatX },
-            { id: 'percent-what-y', label: s.whatY, store: whatY },
+            { id: 'percent-what-y', label: s.whatY, store: whatY, zeroMsg: s.zeroY },
           ]
         : [
-            { id: 'percent-a', label: s.a, store: chA },
+            { id: 'percent-a', label: s.a, store: chA, zeroMsg: s.zeroA },
             { id: 'percent-b', label: s.b, store: chB },
           ],
   );
@@ -100,8 +104,14 @@
   <div class="panel">
     <div class="fields">
       {#each fields as f (f.id)}
-        {@const bad = num(f.store) === null}
-        <Field id={f.id} label={f.label} error={bad ? s.invalid : undefined}>
+        {@const n = num(f.store)}
+        {@const zero = f.zeroMsg !== undefined && n === 0}
+        {@const bad = n === null || zero}
+        <Field
+          id={f.id}
+          label={f.label}
+          error={bad ? (n === null ? s.invalid : f.zeroMsg) : undefined}
+        >
           {#snippet children({ describedby })}
             <input
               id={f.id}

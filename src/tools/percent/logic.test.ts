@@ -11,7 +11,9 @@ describe('percentOf', () => {
 
   it('handles 0 and negatives', () => {
     expect(percentOf(0, 200)).toEqual({ value: 0, plus: 200, minus: 200 });
-    expect(percentOf(-10, 50).value).toBe(-5);
+    // A negative X is a discount that flips into a surcharge: Y + X% = Y − |X|% and
+    // Y − X% = Y + |X|%, which is what the UI relies on to show a single sign.
+    expect(percentOf(-10, 50)).toEqual({ value: -5, plus: 45, minus: 55 });
   });
 });
 

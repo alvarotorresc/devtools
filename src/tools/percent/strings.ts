@@ -19,7 +19,7 @@ export const strings = {
     none: 'De {a} a {b} no hay variación (0 %)',
     invalid: 'Escribe un número, por ejemplo 1234,5.',
     zeroY: 'No se puede dividir entre 0: Y debe ser distinto de 0.',
-    zeroA: 'No hay variación porcentual desde 0.',
+    zeroA: 'No hay variación porcentual desde 0: el valor inicial tiene que ser distinto de 0.',
   },
   en: {
     tabs: 'Calculation',
@@ -39,6 +39,6 @@ export const strings = {
     none: 'From {a} to {b} there is no change (0%)',
     invalid: 'Type a number, for example 1234.5.',
     zeroY: 'Cannot divide by 0: Y must not be 0.',
-    zeroA: 'There is no percentage change from 0.',
+    zeroA: 'There is no percentage change from 0: the starting value must be non-zero.',
   },
 } satisfies Record<Locale, Record<string, string>>;
