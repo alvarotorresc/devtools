@@ -52,7 +52,7 @@ import { meta as irpf } from './irpf/meta';
 
 import { meta as percent } from './percent/meta';
 
-// import { meta as ruleOfThree } from './rule-of-three/meta';
+import { meta as ruleOfThree } from './rule-of-three/meta';
 
 // import { meta as workdays } from './workdays/meta';
 
@@ -109,7 +109,7 @@ export const tools: ToolMeta[] = [
 
   percent,
 
-  // ruleOfThree,
+  ruleOfThree,
 
   // workdays,
 ];
