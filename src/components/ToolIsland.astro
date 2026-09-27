@@ -69,7 +69,7 @@ import Mock from '../tools/mock/Mock.svelte';
 
 // import JsonDiff from '../tools/json-diff/JsonDiff.svelte';
 
-// import Markdown from '../tools/markdown/Markdown.svelte';
+import Markdown from '../tools/markdown/Markdown.svelte';
 
 // import Curl from '../tools/curl/Curl.svelte';
 
@@ -158,7 +158,7 @@ const { id, locale } = Astro.props;
 
 {/* {id === 'json-diff' && <JsonDiff client:load locale={locale} />} */}
 
-{/* {id === 'markdown' && <Markdown client:load locale={locale} />} */}
+{id === 'markdown' && <Markdown client:load locale={locale} />}
 
 {/* {id === 'curl' && <Curl client:load locale={locale} />} */}
 
