@@ -16,10 +16,17 @@
   import { meta } from './meta';
   import { strings } from './strings';
 
+  const DEFAULT_LIST: Record<Locale, string> = {
+    es: 'Ana\nLuis\nEva\nMarta\nPablo',
+    en: 'Alice\nBob\nCarol\nDave\nEve',
+  };
+
   let { locale }: { locale: Locale } = $props();
   const s = $derived(strings[locale]);
   const remember = meta.rememberInput ?? true;
-  const list = persistedInput('shuffle', 'Ana\nLuis\nEva\nMarta\nPablo', remember);
+  // Only the initial locale matters: it names the default list before a saved value loads.
+  // svelte-ignore state_referenced_locally
+  const list = persistedInput('shuffle', DEFAULT_LIST[locale], remember);
   const seed = persistedInput('shuffle-seed', '', remember);
 
   let ignoreEmpty = $state(true);
@@ -34,6 +41,9 @@
   const items = $derived(parseItems(list.value, ignoreEmpty));
   const few = $derived(items.length < MIN_ITEMS);
   const seeded = $derived(seed.value.trim() !== '');
+  // Pure and mount-independent, so the built HTML already shows the right count;
+  // only the shuffled order itself needs the mount gate.
+  const count = $derived(limit ? Math.max(1, Math.min(keep, items.length)) : items.length);
   const result = $derived.by(() => {
     void nonce;
     if (!mounted || few) return [];
@@ -96,7 +106,7 @@
 
   <Display live label={s.result}>
     {#snippet head()}
-      <span>{few ? s.few : fill(s.count, { n: result.length })}</span>
+      <span>{few ? s.few : fill(s.count, { n: count })}</span>
       {#if seeded}<span>{s.seeded}</span>{/if}
     {/snippet}
     {#if result.length}
