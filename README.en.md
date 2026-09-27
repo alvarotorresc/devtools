@@ -116,13 +116,13 @@ Each one has its own page in English (`/en/…`) and Spanish (`/es/…`).
 ## What they all share
 
 - **Everything happens in your browser.** There is no backend: the site is
-  static files. The only things that go out are a self-hosted, cookieless visit
-  counter and the download of the ECB exchange rates; the currency converter
-  keeps the last table to work offline.
+  static files. The only things that go out are a visit counter and the download
+  of the ECB exchange rates; the currency converter keeps the last table to work
+  offline.
 - **They remember what you type only when it is safe.** Your JSON or regex is
-  still there when you come back, if you want. Anything that can be personal
-  (DNI, IBAN, NSS, phones, cards, JWT, cURL, passwords and hashes) is never
-  stored.
+  still there when you come back, and you can turn it off per tool. Anything
+  that can be personal (DNI, IBAN, NSS, phones, cards, JWT, cURL, passwords and
+  hashes) is never stored.
 - **Keyboard shortcuts.** `Ctrl K` or `/` to search, `?` for help, `c` to copy
   the result and `1`–`9` to switch tabs.
 - **Three themes:** light (aluminium, the default), dark (graphite) and

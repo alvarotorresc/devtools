@@ -116,12 +116,13 @@ Cada una tiene su página en español (`/es/…`) y en inglés (`/en/…`).
 ## Lo que comparten todas
 
 - **Todo pasa en tu navegador.** No hay backend: la web son ficheros estáticos.
-  Fuera de ella solo salen una analítica de visitas propia, sin cookies, y la
-  descarga de los tipos de cambio del BCE; el conversor de divisas guarda la
-  última tabla para funcionar sin conexión.
+  Fuera de ella solo salen un contador de visitas y la descarga de los tipos de
+  cambio del BCE; el conversor de divisas guarda la última tabla para funcionar
+  sin conexión.
 - **Recuerdan lo que escribes solo cuando es seguro.** El JSON o la regex siguen
-  ahí al volver, si quieres. Lo que puede ser personal (DNI, IBAN, NSS,
-  teléfonos, tarjetas, JWT, cURL, contraseñas y hashes) nunca se guarda.
+  ahí al volver, y puedes desactivarlo en cada herramienta. Lo que puede ser
+  personal (DNI, IBAN, NSS, teléfonos, tarjetas, JWT, cURL, contraseñas y
+  hashes) nunca se guarda.
 - **Atajos de teclado.** `Ctrl K` o `/` para buscar, `?` para la ayuda, `c` para
   copiar el resultado y `1`–`9` para cambiar de pestaña.
 - **Tres temas:** claro (aluminio, el de por defecto), oscuro (grafito) y
