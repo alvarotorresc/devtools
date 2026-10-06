@@ -1,5 +1,9 @@
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  test: { include: ['src/**/*.test.ts'], environment: 'node', passWithNoTests: true },
+  test: {
+    include: ['src/**/*.test.ts', 'netlify/**/*.test.ts'],
+    environment: 'node',
+    passWithNoTests: true,
+  },
 });

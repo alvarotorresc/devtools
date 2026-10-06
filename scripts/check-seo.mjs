@@ -19,6 +19,7 @@
 import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
+import { INDEXNOW_KEY } from '../netlify/plugins/indexnow/key.js';
 
 const DIST = 'dist';
 const SITE = 'https://devtools.alvarotc.com';
@@ -313,6 +314,12 @@ else {
     if (!rules.has(`${from} ${path} 301!`)) errors.push(`_redirects: falta «${from} ${path} 301!»`);
   }
 }
+
+// IndexNow verifies ownership by fetching /<key>.txt, which has to hold the key.
+const keyFile = join(DIST, `${INDEXNOW_KEY}.txt`);
+if (!existsSync(keyFile)) errors.push(`no existe dist/${INDEXNOW_KEY}.txt (clave de IndexNow)`);
+else if (readFileSync(keyFile, 'utf8').trim() !== INDEXNOW_KEY)
+  errors.push(`dist/${INDEXNOW_KEY}.txt no contiene la clave de IndexNow`);
 
 if (errors.length > 0) {
   console.error(`check-seo: ${errors.length} problema(s) en "${DIST}":\n`);

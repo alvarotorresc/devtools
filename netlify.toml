@@ -15,3 +15,7 @@
   [headers.values]
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Tells IndexNow about new or changed URLs after each production deploy.
+[[plugins]]
+  package = "./netlify/plugins/indexnow"
