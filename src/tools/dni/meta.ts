@@ -56,4 +56,5 @@ export const meta: ToolMeta = {
       },
     ],
   },
+  related: ['cif', 'nss', 'mock', 'iban'],
 };

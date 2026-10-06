@@ -50,6 +50,23 @@
         background: #2bd46b;
         box-shadow: 0 0 14px #2bd46b;
       }
+      .kicker {
+        margin: 36px 0 0;
+        font: 500 28px 'IBM Plex Mono', monospace;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #ffc266;
+      }
+      .kicker[hidden] {
+        display: none;
+      }
+      h1 small {
+        display: block;
+        margin-top: 14px;
+        font-size: 0.55em;
+        color: #a09f9b;
+        letter-spacing: -0.03em;
+      }
       .accent {
         width: 120px;
         height: 12px;
@@ -61,9 +78,12 @@
   <body>
     <div>
       <div class="accent"></div>
-      <h1 style="margin-top: 36px">devtools</h1>
-      <p>JSON, UUID, JWT, Base64, hashes… Todo en tu navegador · Everything in your browser.</p>
+      <p class="kicker" id="kicker" hidden>devtools</p>
+      <h1 id="title" style="margin-top: 36px">devtools</h1>
+      <p id="sub">
+        JSON, UUID, JWT, Base64, hashes… Todo en tu navegador · Everything in your browser.
+      </p>
     </div>
-    <div class="screen"><span class="led"></span>devtools.alvarotc.com</div>
+    <div class="screen"><span class="led"></span><span id="url">devtools.alvarotc.com</span></div>
   </body>
 </html>

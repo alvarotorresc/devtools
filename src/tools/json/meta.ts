@@ -59,4 +59,5 @@ export const meta: ToolMeta = {
       },
     ],
   },
+  related: ['json-diff', 'data-convert', 'query-string', 'jwt'],
 };

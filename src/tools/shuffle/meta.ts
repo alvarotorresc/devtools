@@ -23,4 +23,5 @@ export const meta: ToolMeta = {
     en: ['shuffle list', 'randomize list', 'random order', 'list randomizer', 'shuffle names'],
   },
   rememberInput: true,
+  related: ['teams', 'wheel', 'dice'],
 };

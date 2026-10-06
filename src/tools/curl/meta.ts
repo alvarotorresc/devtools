@@ -59,4 +59,5 @@ export const meta: ToolMeta = {
       },
     ],
   },
+  related: ['http-status', 'query-string', 'url', 'json'],
 };

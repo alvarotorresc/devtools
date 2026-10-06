@@ -1,6 +1,6 @@
 import { en } from './en';
 import { es } from './es';
-import { LOCALES, type Locale, type ToolMeta } from '../tools/types';
+import { LOCALES, type Category, type Locale, type ToolMeta } from '../tools/types';
 
 export type UiKey = keyof typeof es;
 
@@ -26,4 +26,8 @@ export function homeHref(l: Locale): string {
 
 export function toolHref(l: Locale, meta: Pick<ToolMeta, 'slug'>): string {
   return `/${l}/${meta.slug[l]}`;
+}
+
+export function categoryHref(l: Locale, category: Pick<Category, 'slug'>): string {
+  return `/${l}/${category.slug[l]}`;
 }

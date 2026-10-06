@@ -41,4 +41,5 @@ export const meta: ToolMeta = {
     en: ['Length', 'Mass', 'Temperature', 'Volume', 'Area', 'Speed', 'Data'],
   },
   rememberInput: true,
+  related: ['file-size', 'px-rem', 'currency'],
 };

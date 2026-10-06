@@ -3,7 +3,7 @@ import { writeFileSync } from 'node:fs';
 import { defineConfig } from 'astro/config';
 import svelte from '@astrojs/svelte';
 import sitemap from '@astrojs/sitemap';
-import { tools } from './src/tools/registry.ts';
+import { toolsInCategory, tools, visibleCategories } from './src/tools/registry.ts';
 
 const SITE = 'https://devtools.alvarotc.com';
 
@@ -24,13 +24,27 @@ function lastmodByPath() {
   if (git('rev-parse', '--is-shallow-repository') !== 'false') return new Map();
   const map = new Map();
   let newest = '';
+  const byTool = new Map();
   for (const tool of tools) {
     const date = git('log', '-1', '--format=%cI', '--', `src/tools/${tool.id}`);
     if (!date) continue;
+    byTool.set(tool.id, date);
     if (date > newest) newest = date;
     for (const [locale, slug] of Object.entries(tool.slug)) map.set(`/${locale}/${slug}`, date);
   }
   if (newest) for (const path of ['/', '/es', '/en']) map.set(path, newest);
+  // A category page changes when any of its tools does (or its own copy in
+  // categories.ts), so it takes the newest of those dates.
+  const copy = git('log', '-1', '--format=%cI', '--', 'src/tools/categories.ts');
+  for (const category of visibleCategories()) {
+    const dates = toolsInCategory(category.id)
+      .map((t) => byTool.get(t.id) ?? '')
+      .concat(copy);
+    const date = dates.reduce((a, b) => (b > a ? b : a), '');
+    if (!date) continue;
+    for (const [locale, slug] of Object.entries(category.slug))
+      map.set(`/${locale}/${slug}`, date);
+  }
   return map;
 }
 

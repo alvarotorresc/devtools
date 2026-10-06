@@ -123,3 +123,15 @@ export function toolsInCategory(id: CategoryId): ToolMeta[] {
 export function visibleCategories(): Category[] {
   return categories.filter((c) => toolsInCategory(c.id).length > 0);
 }
+
+export function categoryById(id: CategoryId): Category {
+  return categories.find((c) => c.id === id)!;
+}
+
+/** The tools linked at the end of a tool page: its own list, or up to 4 from its category. */
+export function relatedTools(tool: ToolMeta): ToolMeta[] {
+  if (tool.related?.length) return tool.related.map((id) => toolById(id)!).filter(Boolean);
+  return toolsInCategory(tool.category)
+    .filter((t) => t.id !== tool.id)
+    .slice(0, 4);
+}

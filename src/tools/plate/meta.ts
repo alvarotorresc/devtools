@@ -35,4 +35,5 @@ export const meta: ToolMeta = {
   },
   tabs: { es: ['Validar', 'Generar'], en: ['Validate', 'Generate'] },
   rememberInput: true,
+  related: ['postal-code', 'dni', 'phone'],
 };

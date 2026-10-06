@@ -60,4 +60,5 @@ export const meta: ToolMeta = {
       },
     ],
   },
+  related: ['bic', 'dni', 'card', 'cif'],
 };

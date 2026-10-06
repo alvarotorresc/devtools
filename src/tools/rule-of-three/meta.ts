@@ -50,4 +50,5 @@ export const meta: ToolMeta = {
     ],
   },
   rememberInput: true,
+  related: ['percent', 'units', 'iva'],
 };

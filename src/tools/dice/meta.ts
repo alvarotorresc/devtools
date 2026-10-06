@@ -31,4 +31,5 @@ export const meta: ToolMeta = {
   },
   tabs: { es: ['Dados', 'Moneda'], en: ['Dice', 'Coin'] },
   rememberInput: true,
+  related: ['wheel', 'shuffle', 'teams'],
 };

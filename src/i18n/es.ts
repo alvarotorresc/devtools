@@ -45,6 +45,8 @@ export const es = {
   'tool.remember': 'Recordar lo que escribo',
   'tool.howItWorks': 'Cómo funciona',
   'tool.faq': 'Preguntas frecuentes',
+  'tool.related': 'Herramientas relacionadas',
+  'category.list': 'Las {n} herramientas',
   'ui.copy': 'Copiar',
   'ui.copyFailed': 'No se pudo copiar. Selecciona el texto y pulsa Ctrl+C.',
   'ui.copyFailedMac': 'No se pudo copiar. Selecciona el texto y pulsa Cmd+C.',

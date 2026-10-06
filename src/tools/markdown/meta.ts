@@ -59,4 +59,5 @@ export const meta: ToolMeta = {
       },
     ],
   },
+  related: ['html-entities', 'lorem', 'text'],
 };

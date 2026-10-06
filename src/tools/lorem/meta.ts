@@ -37,4 +37,5 @@ export const meta: ToolMeta = {
     ],
   },
   tabs: { es: ['Párrafos', 'Frases', 'Palabras'], en: ['Paragraphs', 'Sentences', 'Words'] },
+  related: ['markdown', 'text', 'mock'],
 };

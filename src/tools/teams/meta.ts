@@ -29,4 +29,5 @@ export const meta: ToolMeta = {
     en: ['team generator', 'random teams', 'group generator', 'split into groups', 'random groups'],
   },
   rememberInput: true,
+  related: ['shuffle', 'wheel', 'dice'],
 };

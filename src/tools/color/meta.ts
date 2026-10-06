@@ -52,4 +52,5 @@ export const meta: ToolMeta = {
       },
     ],
   },
+  related: ['px-rem', 'number-base', 'units'],
 };

@@ -36,4 +36,5 @@ export const meta: ToolMeta = {
       'amp lt gt',
     ],
   },
+  related: ['url', 'base64', 'markdown'],
 };

@@ -1,7 +1,7 @@
 ---
 import Icon from '../ui/Icon.svelte';
-import { homeHref, t } from '../i18n';
-import { categories } from '../tools/categories';
+import { categoryHref, homeHref, t, toolHref } from '../i18n';
+import { categoryById, relatedTools } from '../tools/registry';
 import type { Locale, ToolMeta } from '../tools/types';
 
 interface Props {
@@ -9,7 +9,8 @@ interface Props {
   tool: ToolMeta;
 }
 const { locale, tool } = Astro.props;
-const category = categories.find((c) => c.id === tool.category)!;
+const category = categoryById(tool.category);
+const related = relatedTools(tool);
 const faq = tool.faq?.[locale] ?? [];
 ---
 
@@ -18,7 +19,7 @@ const faq = tool.faq?.[locale] ?? [];
     <nav aria-label={t(locale, 'nav.breadcrumb')} class="crumbs">
       <a href={homeHref(locale)}>{t(locale, 'nav.home')}</a>
       <span aria-hidden="true">/</span>
-      <span>{category.name[locale]}</span>
+      <a href={categoryHref(locale, category)}>{category.name[locale]}</a>
     </nav>
     <h1>{tool.heading[locale]}</h1>
     <p class="tool-desc">{tool.description[locale]}</p>
@@ -53,6 +54,19 @@ const faq = tool.faq?.[locale] ?? [];
           <p>{f.a}</p>
         </details>
       ))}
+    </>
+  )}
+  {related.length > 0 && (
+    <>
+      <h2 id="related-h">{t(locale, 'tool.related')}</h2>
+      <ul class="related" aria-labelledby="related-h">
+        {related.map((r) => (
+          <li>
+            <a href={toolHref(locale, r)}>{r.heading[locale]}</a>
+            <span>{r.description[locale]}</span>
+          </li>
+        ))}
+      </ul>
     </>
   )}
 </section>
@@ -145,5 +159,34 @@ const faq = tool.faq?.[locale] ?? [];
   }
   details p {
     margin-top: 8px;
+  }
+  .related {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--border);
+  }
+  .related li {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .related a {
+    width: fit-content;
+    color: var(--text);
+    font-weight: 600;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--border-strong);
+  }
+  .related a:hover {
+    color: var(--accent-text);
+    text-decoration-color: currentColor;
+  }
+  .related span {
+    font-size: 14px;
+    line-height: 1.5;
   }
 </style>

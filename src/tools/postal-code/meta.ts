@@ -33,4 +33,5 @@ export const meta: ToolMeta = {
     ],
   },
   rememberInput: true,
+  related: ['phone', 'plate', 'nss'],
 };

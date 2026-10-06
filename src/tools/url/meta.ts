@@ -44,4 +44,5 @@ export const meta: ToolMeta = {
       },
     ],
   },
+  related: ['query-string', 'base64', 'slug', 'html-entities'],
 };

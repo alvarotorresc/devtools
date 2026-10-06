@@ -45,4 +45,5 @@ export const meta: ToolMeta = {
     ],
   },
   rememberInput: true,
+  related: ['number-base', 'cidr', 'cron'],
 };

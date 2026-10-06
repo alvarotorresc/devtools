@@ -1,7 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { categories } from './categories';
 import { ICON_NAMES } from './icon-names';
-import { toolById, toolBySlug, tools, toolsInCategory, visibleCategories } from './registry';
+import {
+  categoryById,
+  relatedTools,
+  toolById,
+  toolBySlug,
+  tools,
+  toolsInCategory,
+  visibleCategories,
+} from './registry';
 import { LOCALES } from './types';
 
 const contents = import.meta.glob('./*/content.*.md', { query: '?raw', eager: true });
@@ -69,5 +77,66 @@ describe('registry', () => {
 
   it('only shows categories that have tools', () => {
     for (const c of visibleCategories()) expect(toolsInCategory(c.id).length).toBeGreaterThan(0);
+  });
+
+  it('links every tool to 3 or 4 existing, distinct tools other than itself', () => {
+    for (const tool of tools) {
+      const ids = tool.related ?? [];
+      expect(ids.length, `${tool.id}.related`).toBeGreaterThanOrEqual(3);
+      expect(ids.length, `${tool.id}.related`).toBeLessThanOrEqual(4);
+      expect(new Set(ids).size, `${tool.id}.related duplicates`).toBe(ids.length);
+      expect(ids, `${tool.id}.related`).not.toContain(tool.id);
+      for (const id of ids) expect(toolById(id), `${tool.id}.related → ${id}`).toBeDefined();
+    }
+  });
+
+  it('falls back to the same category when a tool has no related list', () => {
+    const tool = { ...toolById('iva')!, related: undefined };
+    const fallback = relatedTools(tool);
+    expect(fallback.length).toBeGreaterThan(0);
+    expect(fallback.length).toBeLessThanOrEqual(4);
+    for (const t of fallback) {
+      expect(t.category).toBe('calc');
+      expect(t.id).not.toBe('iva');
+    }
+  });
+});
+
+describe('categories', () => {
+  it.each(LOCALES)('have unique, url-safe slugs in %s that no tool uses', (l) => {
+    const slugs = categories.map((c) => c.slug[l]);
+    expect(new Set(slugs).size).toBe(slugs.length);
+    for (const s of slugs) {
+      expect(s).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*$/);
+      expect(toolBySlug(l, s), `${l}/${s} is also a tool`).toBeUndefined();
+    }
+  });
+
+  it.each(LOCALES)('have unique titles and headings in %s that no tool uses', (l) => {
+    const titles = [...categories.map((c) => c.title[l]), ...tools.map((t) => t.title[l])];
+    expect(new Set(titles).size).toBe(titles.length);
+    const headings = [...categories.map((c) => c.heading[l]), ...tools.map((t) => t.heading[l])];
+    expect(new Set(headings).size).toBe(headings.length);
+  });
+
+  it('have complete page copy in both languages', () => {
+    for (const c of categories) {
+      expect(categoryById(c.id)).toBe(c);
+      for (const l of LOCALES) {
+        expect(c.title[l].length, `${c.id}.title.${l}`).toBeLessThanOrEqual(49);
+        expect(c.heading[l], `${c.id}.heading.${l}`).toBeTruthy();
+        expect(c.seoDescription[l].length, `${c.id}.seoDescription.${l}`).toBeGreaterThanOrEqual(
+          120,
+        );
+        expect(c.seoDescription[l].length, `${c.id}.seoDescription.${l}`).toBeLessThanOrEqual(155);
+        expect(c.intro[l]).toHaveLength(2);
+        for (const p of c.intro[l]) expect(p.length, `${c.id}.intro.${l}`).toBeGreaterThan(200);
+      }
+    }
+  });
+
+  it('never repeat a paragraph between categories', () => {
+    const paragraphs = categories.flatMap((c) => [...c.intro.es, ...c.intro.en]);
+    expect(new Set(paragraphs).size).toBe(paragraphs.length);
   });
 });

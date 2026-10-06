@@ -10,10 +10,16 @@
 // clone is shallow and the dates would be wrong), `_redirects` has to send
 // each `.html` to its clean URL, JSON-LD must parse and tool pages carry a
 // BreadcrumbList.
+//
+// Internal linking: pages are told apart by their JSON-LD (WebApplication is a
+// tool, CollectionPage a category). Each tool's breadcrumb links to its
+// category page, both home pages link to every category of their language, no
+// indexable page is an orphan and every og:image exists in dist/.
 
 import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
+import { INDEXNOW_KEY } from '../netlify/plugins/indexnow/key.js';
 
 const DIST = 'dist';
 const SITE = 'https://devtools.alvarotc.com';
@@ -123,8 +129,17 @@ if (!existsSync(DIST) || !statSync(DIST).isDirectory()) {
   process.exit(1);
 }
 
+// Same-site href → clean path (/es/x), or null for external links and assets.
+function internalPath(href) {
+  let path = href.startsWith(SITE) ? href.slice(SITE.length) || '/' : href;
+  if (!path.startsWith('/') || path.startsWith('//')) return null;
+  path = path.replace(/[?#].*$/, '');
+  return path.length > 1 ? path.replace(/\/$/, '') : path;
+}
+
 const errors = [];
 const files = walk(DIST);
+const info = new Map(); // path → { types, links, crumbLinks, breadcrumb }
 const pages = files.filter((f) => f.endsWith('.html') && pathOf(f) !== '/404');
 const seen = { title: new Map(), description: new Map(), canonical: new Map(), h1: new Map() };
 
@@ -201,7 +216,65 @@ for (const file of pages) {
   }
   if (path.split('/').length === 3 && !types.includes('BreadcrumbList'))
     errors.push(`${path}: página de herramienta sin BreadcrumbList en el JSON-LD`);
+
+  const links = new Set(
+    [...html.matchAll(tagRe('a'))]
+      .map(([tag]) => internalPath(attrs(tag).href ?? ''))
+      .filter((p) => p !== null && p !== path),
+  );
+  const crumbNav = html.match(/<nav\s[^>]*class="crumbs[^"]*"[^>]*>([\s\S]*?)<\/nav>/i)?.[1] ?? '';
+  const crumbLinks = new Set(
+    [...crumbNav.matchAll(tagRe('a'))].map(([tag]) => internalPath(attrs(tag).href ?? '')),
+  );
+  const breadcrumb = [];
+  for (const [, json] of html.matchAll(
+    /<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi,
+  )) {
+    try {
+      const data = JSON.parse(json);
+      if (data['@type'] === 'BreadcrumbList')
+        for (const item of data.itemListElement ?? []) breadcrumb.push(item.item);
+    } catch {
+      // already reported above
+    }
+  }
+  info.set(path, { types, links, crumbLinks, breadcrumb });
+
+  const ogImages = metas.filter((m) => m.property === 'og:image').map((m) => m.content ?? '');
+  if (ogImages.length !== 1) errors.push(`${path}: ${ogImages.length} og:image (debe haber una)`);
+  for (const image of ogImages) {
+    const imagePath = internalPath(image);
+    if (!imagePath || !existsSync(join(DIST, imagePath)))
+      errors.push(`${path}: la og:image ${image} no existe en dist/`);
+  }
 }
+
+// Internal linking.
+const isCategory = (path) => info.get(path)?.types.includes('CollectionPage') ?? false;
+const categoryPaths = [...info.keys()].filter(isCategory);
+if (categoryPaths.length === 0) errors.push('no hay ninguna página de categoría (CollectionPage)');
+
+for (const [path, page] of info) {
+  if (!page.types.includes('WebApplication')) continue;
+  const category = page.breadcrumb.length === 3 ? internalPath(page.breadcrumb[1]) : null;
+  if (!category || !isCategory(category))
+    errors.push(`${path}: el BreadcrumbList debe ser Inicio → categoría → herramienta`);
+  else if (!page.crumbLinks.has(category))
+    errors.push(`${path}: la miga de pan no enlaza a su categoría ${category}`);
+}
+
+for (const path of categoryPaths) {
+  const home = '/' + path.split('/')[1];
+  if (!info.get(home)?.links.has(path))
+    errors.push(`${path}: la portada ${home} no enlaza a esta categoría`);
+}
+
+// An orphan page gets no internal link from any other indexable page. The
+// root is the entry point (x-default); nothing has to link back to it.
+const linked = new Set([...info.values()].flatMap((page) => [...page.links]));
+for (const path of info.keys())
+  if (path !== '/' && !linked.has(path))
+    errors.push(`${path}: página huérfana, ninguna otra página enlaza aquí`);
 
 // Sitemap ↔ pages, one to one.
 const pagePaths = new Set(pages.map(pathOf));
@@ -242,6 +315,12 @@ else {
   }
 }
 
+// IndexNow verifies ownership by fetching /<key>.txt, which has to hold the key.
+const keyFile = join(DIST, `${INDEXNOW_KEY}.txt`);
+if (!existsSync(keyFile)) errors.push(`no existe dist/${INDEXNOW_KEY}.txt (clave de IndexNow)`);
+else if (readFileSync(keyFile, 'utf8').trim() !== INDEXNOW_KEY)
+  errors.push(`dist/${INDEXNOW_KEY}.txt no contiene la clave de IndexNow`);
+
 if (errors.length > 0) {
   console.error(`check-seo: ${errors.length} problema(s) en "${DIST}":\n`);
   for (const e of errors) console.error(`  - ${e}`);
@@ -249,6 +328,6 @@ if (errors.length > 0) {
 }
 
 console.log(
-  `check-seo: ok — ${pages.length} página(s) con title, description, canonical y h1 únicos; sitemap y _redirects al día` +
+  `check-seo: ok — ${pages.length} página(s) (${categoryPaths.length} de categoría) con title, description, canonical y h1 únicos; enlazado interno, og:image, sitemap y _redirects al día` +
     (shallow ? ' (clon superficial: no se comprueba <lastmod>).' : '.'),
 );

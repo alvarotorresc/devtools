@@ -36,4 +36,5 @@ export const meta: ToolMeta = {
       'radix',
     ],
   },
+  related: ['chmod', 'color', 'cidr', 'file-size'],
 };

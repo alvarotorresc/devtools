@@ -39,4 +39,5 @@ export const meta: ToolMeta = {
     ],
   },
   tabs: { es: ['Mayúsculas', 'Líneas'], en: ['Case', 'Lines'] },
+  related: ['slug', 'diff', 'regex', 'lorem'],
 };

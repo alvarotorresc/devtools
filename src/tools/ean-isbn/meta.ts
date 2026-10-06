@@ -36,4 +36,5 @@ export const meta: ToolMeta = {
     ],
   },
   rememberInput: true,
+  related: ['card', 'iban', 'qr'],
 };

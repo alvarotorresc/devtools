@@ -90,6 +90,55 @@ test.describe('tool page', () => {
   });
 });
 
+test.describe('category pages', () => {
+  test.beforeEach(async ({ page }) => skipBoot(page));
+
+  test('a category page has its h1, its own copy and links to every tool', async ({ page }) => {
+    await page.goto('/es/calculadoras');
+    await expect(page.locator('h1')).toHaveText('Calculadoras para facturas y cuentas rápidas');
+    await expect(page.locator('.cat-intro p')).toHaveCount(2);
+    const list = page.locator('.cat-tools');
+    await expect(list.getByRole('heading', { name: 'Las 5 herramientas' })).toBeVisible();
+    await expect(list.getByRole('link')).toHaveCount(5);
+    const group = page.locator('#sidebar [data-cat="calc"]');
+    await expect(group.locator('.sb-cat-toggle')).toHaveAttribute('aria-current', 'page');
+    await expect(group.locator('.sb-tools')).toBeVisible();
+    await list.getByRole('link', { name: 'Calcular IVA' }).click();
+    await expect(page).toHaveURL(/\/es\/calculadora-iva$/);
+  });
+
+  test('works in English with the alternate pointing to the Spanish page', async ({ page }) => {
+    await page.goto('/en/random');
+    await expect(page.locator('h1')).toHaveText('Random picker and draw tools');
+    await expect(page.locator('link[rel="alternate"][hreflang="es"]')).toHaveAttribute(
+      'href',
+      /\/es\/azar$/,
+    );
+  });
+
+  test('the home catalog headings open the category pages', async ({ page }) => {
+    await page.goto('/en');
+    await page.locator('.catalog').getByRole('link', { name: 'Reference', exact: true }).click();
+    await expect(page).toHaveURL(/\/en\/reference$/);
+    await expect(page.locator('h1')).toHaveText('Developer cheat sheets');
+  });
+
+  test('a tool breadcrumb links to its category', async ({ page }) => {
+    await page.goto('/es/validador-iban');
+    await page.locator('.crumbs').getByRole('link', { name: 'Identificadores' }).click();
+    await expect(page).toHaveURL(/\/es\/identificadores$/);
+    await expect(page.locator('h1')).toHaveText('Validar DNI, NIE, CIF, IBAN y otros códigos');
+  });
+
+  test('a tool page ends with links to related tools', async ({ page }) => {
+    await page.goto('/es/calculadora-iva');
+    const related = page.getByRole('list', { name: 'Herramientas relacionadas' });
+    await expect(related.getByRole('link')).toHaveCount(3);
+    await related.getByRole('link', { name: 'Calculadora de retención de IRPF' }).click();
+    await expect(page).toHaveURL(/\/es\/calculadora-retencion-irpf$/);
+  });
+});
+
 test.describe('home and search', () => {
   test.beforeEach(async ({ page }) => skipBoot(page));
 

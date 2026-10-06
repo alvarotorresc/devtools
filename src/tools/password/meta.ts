@@ -59,4 +59,5 @@ export const meta: ToolMeta = {
       },
     ],
   },
+  related: ['hash', 'uuid', 'qr'],
 };

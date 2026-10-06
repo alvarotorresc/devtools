@@ -45,4 +45,5 @@ export const meta: ToolMeta = {
       },
     ],
   },
+  related: ['base64', 'timestamp', 'json', 'hash'],
 };

@@ -58,4 +58,5 @@ export const meta: ToolMeta = {
       },
     ],
   },
+  related: ['number-base', 'chmod', 'user-agent'],
 };
