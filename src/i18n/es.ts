@@ -18,6 +18,7 @@ export const es = {
   'lang.label': 'Idioma',
   'lang.switch': 'Read in English',
   'home.title': '¿Qué necesitas hoy?',
+  'home.heading': 'Herramientas para programadores online',
   'home.seoTitle': 'Herramientas para programadores: JSON, JWT, IBAN',
   'home.seoDescription':
     '{n} herramientas gratis para desarrolladores que funcionan en tu navegador: JSON, JWT, UUID, IBAN, DNI, IVA y más. Nada de lo que pegas sale de tu equipo.',

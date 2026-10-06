@@ -93,6 +93,16 @@ test.describe('tool page', () => {
 test.describe('home and search', () => {
   test.beforeEach(async ({ page }) => skipBoot(page));
 
+  test('home h1 states the search intent and keeps the question as the headline', async ({
+    page,
+  }) => {
+    await page.goto('/en');
+    await expect(page.locator('h1')).toHaveText('Developer tools online');
+    await expect(page.locator('.front-q')).toHaveText('What do you need today?');
+    await page.goto('/es');
+    await expect(page.locator('h1')).toHaveText('Herramientas para programadores online');
+  });
+
   test('lists every tool in the catalog', async ({ page }) => {
     await page.goto('/es');
     const catalog = page.locator('.catalog');

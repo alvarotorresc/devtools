@@ -33,6 +33,44 @@ function decode(text) {
   });
 }
 
+// The h1 has to state the same search intent as the title: it cannot be a
+// question and has to share at least one meaningful word with the title
+// (before " · devtools"). Words are compared without accents or case and by
+// their first five letters, so "Decodificador de JWT" matches "Decodificar JWT
+// online…". Looser than "the h1 starts the title", but it never needs a list
+// of exceptions and still catches a slogan or a question used as h1.
+const STOPWORDS = new Set([
+  'the',
+  'and',
+  'for',
+  'with',
+  'online',
+  'para',
+  'con',
+  'del',
+  'los',
+  'las',
+  'una',
+]);
+
+function stems(text) {
+  return (
+    text
+      .normalize('NFD')
+      .replace(/\p{M}/gu, '')
+      .toLowerCase()
+      .match(/[a-z0-9]+/g) ?? []
+  )
+    .filter((w) => w.length >= 3 && !STOPWORDS.has(w))
+    .map((w) => w.slice(0, 5));
+}
+
+function h1MatchesTitle(h1, title) {
+  if (/[?¿]/.test(h1)) return false;
+  const words = new Set(stems(title.split(' · ')[0]));
+  return stems(h1).some((w) => words.has(w));
+}
+
 function walk(dir) {
   const out = [];
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
@@ -144,7 +182,11 @@ for (const file of pages) {
       .trim(),
   );
   if (h1s.length !== 1) errors.push(`${path}: ${h1s.length} <h1> (debe haber uno)`);
-  else unique('h1', h1s[0], path);
+  else {
+    unique('h1', h1s[0], path);
+    if (titles.length === 1 && !h1MatchesTitle(h1s[0], titles[0]))
+      errors.push(`${path}: el h1 «${h1s[0]}» no repite la intención del title «${titles[0]}»`);
+  }
 
   const types = [];
   for (const [, json] of html.matchAll(
