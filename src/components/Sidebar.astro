@@ -271,8 +271,10 @@ const themes = [
   });
 
   document.addEventListener('astro:page-load', () => {
-    // The root page forwards returning visitors to the language they last used.
-    writeString('locale', document.documentElement.lang);
+    // The root page forwards returning visitors to the language they last used
+    // (not the 404's, which is always Spanish).
+    if (!document.querySelector('meta[name="robots"][content*="noindex"]'))
+      writeString('locale', document.documentElement.lang);
     for (const id of readJSON<string[]>('sidebar.open', [])) setCatOpen(id, true, false);
     syncThemeButtons();
     syncCollapseButton();

@@ -52,6 +52,14 @@ test.describe('routing', () => {
     await expect(page).toHaveURL(/\/en$/);
   });
 
+  test('the 404 page does not overwrite the stored language', async ({ page }) => {
+    await skipBoot(page);
+    await page.goto('/en');
+    await page.goto('/en/no-existe');
+    await page.goto('/');
+    await expect(page).toHaveURL(/\/en$/);
+  });
+
   test('old #hash links land on the new tool page', async ({ page }) => {
     await skipBoot(page);
     await page.goto('/#json');
