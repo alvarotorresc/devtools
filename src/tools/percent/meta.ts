@@ -7,8 +7,12 @@ export const meta: ToolMeta = {
   slug: { es: 'calculadora-porcentajes', en: 'percentage-calculator' },
   name: { es: 'Porcentajes', en: 'Percentages' },
   title: {
-    es: 'Calculadora de porcentajes: % de un número y variación',
-    en: 'Percentage calculator: percent of, ratio and change',
+    es: 'Calculadora de porcentajes: % y variación',
+    en: 'Percentage calculator: percent of and change',
+  },
+  heading: {
+    es: 'Calculadora de porcentajes',
+    en: 'Percentage calculator',
   },
   description: {
     es: 'Calcula el X % de un número, qué porcentaje es una cantidad de otra y la variación porcentual entre dos valores, con descuentos y recargos.',

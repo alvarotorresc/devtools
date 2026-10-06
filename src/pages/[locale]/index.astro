@@ -21,22 +21,26 @@ const jsonLd = [
     name: 'devtools',
     url: new URL(`/${locale}`, site).href,
     inLanguage: locale,
-    description: t(locale, 'site.description'),
+    description: t(locale, 'home.seoDescription', { n: tools.length }),
+    publisher: { '@type': 'Person', name: 'Álvaro Torres', url: 'https://alvarotc.com' },
   },
 ];
 ---
 
 <AppLayout
   locale={locale}
-  title={`devtools · ${t(locale, 'home.title')}`}
-  description={t(locale, 'site.description')}
+  title={`${t(locale, 'home.seoTitle')} · devtools`}
+  description={t(locale, 'home.seoDescription', { n: tools.length })}
   alternates={{ es: '/es', en: '/en' }}
   jsonLd={jsonLd}
 >
   <section class="front" aria-labelledby="home-h">
     <div class="front-grid">
       <div class="front-main">
-        <h1 id="home-h">{t(locale, 'home.title')}</h1>
+        <hgroup class="front-head">
+          <h1 id="home-h">{t(locale, 'home.heading')}</h1>
+          <p class="front-q">{t(locale, 'home.title')}</p>
+        </hgroup>
         <p class="lead">{t(locale, 'home.count', { n: tools.length })}</p>
         <label class="hero-search">
           <Icon name="search" size={22} />
@@ -162,8 +166,28 @@ const jsonLd = [
     gap: 18px;
     min-width: 0;
   }
+  /* The h1 carries the search intent; the question keeps the big headline look. */
+  .front-head {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+  }
   h1 {
+    font: 600 13px var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-shadow: none;
+    color: var(--accent-text);
+  }
+  .front-q {
+    margin: 0;
+    font-family: var(--font-display);
     font-size: clamp(32px, 4.2vw, 56px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    text-shadow: var(--glow);
   }
   .lead {
     max-width: 60ch;

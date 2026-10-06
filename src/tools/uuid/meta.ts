@@ -10,6 +10,10 @@ export const meta: ToolMeta = {
     es: 'Generador de UUID v4 y v7, ULID y NanoID',
     en: 'UUID v4 and v7, ULID and NanoID generator',
   },
+  heading: {
+    es: 'Generador de UUID',
+    en: 'UUID generator',
+  },
   description: {
     es: 'Genera hasta 500 UUID v4 o v7, ULID o NanoID de golpe y comprueba cualquier identificador: versión, validez y fecha que lleva dentro.',
     en: 'Generate up to 500 UUID v4 or v7, ULID or NanoID at once and check any identifier: version, validity and the date it carries.',

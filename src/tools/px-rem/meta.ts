@@ -10,6 +10,10 @@ export const meta: ToolMeta = {
     es: 'Conversor de px a rem y em con base configurable',
     en: 'PX to REM and EM converter with custom base size',
   },
+  heading: {
+    es: 'Conversor de px a rem',
+    en: 'PX to REM converter',
+  },
   description: {
     es: 'Convierte píxeles a rem y em, y al revés, con el tamaño base que uses. Incluye el CSS listo para copiar y una tabla de tamaños habituales.',
     en: 'Convert pixels to rem and em and back, with your own base font size. Includes ready-to-copy CSS and a table of common sizes.',

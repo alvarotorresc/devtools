@@ -7,8 +7,12 @@ export const meta: ToolMeta = {
   slug: { es: 'explicar-expresion-cron', en: 'cron-expression-explainer' },
   name: { es: 'Cron', en: 'Cron' },
   title: {
-    es: 'Explicar expresiones cron y ver próximas ejecuciones',
+    es: 'Expresión cron: explicar y próximas ejecuciones',
     en: 'Cron expression explainer with next run times',
+  },
+  heading: {
+    es: 'Explicador de expresiones cron',
+    en: 'Cron expression explainer',
   },
   description: {
     es: 'Traduce una expresión cron a palabras y calcula sus próximas ejecuciones en tu zona horaria, con los cambios de hora resueltos como en cron de Unix.',

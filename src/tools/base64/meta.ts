@@ -7,8 +7,12 @@ export const meta: ToolMeta = {
   slug: { es: 'codificar-decodificar-base64', en: 'base64-encode-decode' },
   name: { es: 'Base64', en: 'Base64' },
   title: {
-    es: 'Codificar y decodificar Base64 online (texto y archivos)',
+    es: 'Codificar y decodificar Base64 online',
     en: 'Base64 encode and decode online (text and files)',
+  },
+  heading: {
+    es: 'Codificar y decodificar Base64',
+    en: 'Base64 encode and decode',
   },
   description: {
     es: 'Codifica y decodifica Base64 al escribir, con detección automática y variante URL-safe. Convierte archivos en data URI y Base64 en archivos.',

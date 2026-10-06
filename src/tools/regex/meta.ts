@@ -7,8 +7,12 @@ export const meta: ToolMeta = {
   slug: { es: 'probador-regex', en: 'regex-tester' },
   name: { es: 'Regex', en: 'Regex' },
   title: {
-    es: 'Probador de expresiones regulares (regex) online en JavaScript',
-    en: 'JavaScript regex tester online: matches, groups and replace',
+    es: 'Probador de regex online: expresiones regulares',
+    en: 'Regex tester online: matches, groups, replace',
+  },
+  heading: {
+    es: 'Probador de regex',
+    en: 'Regex tester',
   },
   description: {
     es: 'Prueba expresiones regulares de JavaScript: resalta coincidencias, muestra grupos con nombre, reemplaza con $1 y explica los errores de sintaxis.',

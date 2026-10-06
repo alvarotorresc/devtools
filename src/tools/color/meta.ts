@@ -7,8 +7,12 @@ export const meta: ToolMeta = {
   slug: { es: 'conversor-colores', en: 'color-converter' },
   name: { es: 'Colores', en: 'Colors' },
   title: {
-    es: 'Conversor de colores HEX, RGB, HSL y OKLCH con contraste WCAG',
-    en: 'HEX, RGB, HSL and OKLCH color converter with WCAG contrast',
+    es: 'Conversor de colores HEX, RGB, HSL y OKLCH',
+    en: 'Color converter: HEX, RGB, HSL and OKLCH',
+  },
+  heading: {
+    es: 'Conversor de colores',
+    en: 'Color converter',
   },
   description: {
     es: 'Convierte colores entre HEX, RGB, HSL y OKLCH con todos los campos editables y sincronizados, y comprueba su contraste WCAG con blanco y negro.',

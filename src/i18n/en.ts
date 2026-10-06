@@ -20,6 +20,12 @@ export const en: Record<keyof typeof es, string> = {
   'lang.label': 'Language',
   'lang.switch': 'Leer en español',
   'home.title': 'What do you need today?',
+  'home.heading': 'Developer tools online',
+  'home.seoTitle': 'Developer tools online: JSON, JWT, UUID, IBAN',
+  'home.seoDescription':
+    '{n} free developer tools that run in your browser: format JSON, decode JWTs, generate UUIDs, validate IBANs and more. Nothing you paste leaves your device.',
+  'footer.by': 'Made by Álvaro Torres',
+  'footer.source': 'Source code',
   'home.count': '{n} tools that run in your browser. Nothing you paste here leaves your device.',
   'home.search': 'Search tools',
   'home.searchPlaceholder': 'Format JSON, generate UUIDs, decode a JWT…',

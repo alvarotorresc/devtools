@@ -10,8 +10,12 @@ export const meta: ToolMeta = {
   },
   name: { es: 'Nº Seguridad Social', en: 'Social Security number' },
   title: {
-    es: 'Validador y generador de número de la Seguridad Social',
+    es: 'Validador de número de la Seguridad Social (NSS)',
     en: 'Spanish Social Security number (NSS) validator',
+  },
+  heading: {
+    es: 'Validador de NSS de la Seguridad Social',
+    en: 'Spanish Social Security number validator',
   },
   description: {
     es: 'Comprueba los dígitos de control del número de afiliación a la Seguridad Social (NSS), muestra su provincia y genera números ficticios para pruebas.',

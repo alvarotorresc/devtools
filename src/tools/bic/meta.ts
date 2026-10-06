@@ -8,6 +8,10 @@ export const meta: ToolMeta = {
   name: { es: 'SWIFT / BIC', en: 'SWIFT / BIC' },
   title: {
     es: 'Validador de códigos SWIFT / BIC online',
+    en: 'SWIFT / BIC code validator online',
+  },
+  heading: {
+    es: 'Validador de códigos SWIFT / BIC',
     en: 'SWIFT / BIC code validator',
   },
   description: {

@@ -115,6 +115,11 @@ const pageAnim: TransitionDirectionalAnimations = {
         <main id="main" class="main" data-tool-page={toolId} transition:animate={pageAnim}>
           <slot />
         </main>
+        <footer class="site-foot">
+          <a href="https://alvarotc.com">{t(locale, 'footer.by')}</a>
+          <span aria-hidden="true">·</span>
+          <a href="https://github.com/alvarotorresc/devtools">{t(locale, 'footer.source')}</a>
+        </footer>
       </div>
     </div>
     <Toaster client:load transition:persist="toaster" />

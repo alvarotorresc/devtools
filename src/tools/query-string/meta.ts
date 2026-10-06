@@ -7,8 +7,12 @@ export const meta: ToolMeta = {
   slug: { es: 'conversor-query-string-json', en: 'query-string-to-json' },
   name: { es: 'Query string', en: 'Query string' },
   title: {
-    es: 'Conversor de query string a JSON y de JSON a query',
-    en: 'Query string to JSON converter (and JSON to query)',
+    es: 'Conversor de query string a JSON y viceversa',
+    en: 'Query string to JSON converter and back',
+  },
+  heading: {
+    es: 'Conversor de query string',
+    en: 'Query string to JSON',
   },
   description: {
     es: 'Convierte los parámetros de una URL en JSON y un JSON en query string, con notación de corchetes, claves repetidas y todo decodificado para leerlo.',

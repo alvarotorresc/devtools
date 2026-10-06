@@ -7,8 +7,12 @@ export const meta: ToolMeta = {
   slug: { es: 'comparar-json', en: 'json-diff' },
   name: { es: 'Comparar JSON', en: 'JSON diff' },
   title: {
-    es: 'Comparar dos JSON: diferencias sin importar el orden',
-    en: 'JSON diff: compare two JSON documents by structure',
+    es: 'Comparar dos JSON: diferencias sin orden',
+    en: 'JSON diff: compare two JSON by structure',
+  },
+  heading: {
+    es: 'Comparar dos JSON',
+    en: 'JSON diff',
   },
   description: {
     es: 'Compara dos JSON por estructura y lista las claves añadidas, eliminadas y cambiadas con su ruta, sin que importe el orden de las claves. En tu navegador.',

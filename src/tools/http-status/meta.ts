@@ -10,8 +10,12 @@ export const meta: ToolMeta = {
     es: 'Códigos de estado HTTP: lista completa explicada',
     en: 'HTTP status codes: complete list explained',
   },
+  heading: {
+    es: 'Códigos de estado HTTP',
+    en: 'HTTP status codes',
+  },
   description: {
-    es: 'Todos los códigos de estado HTTP, del 100 al 511, con su nombre oficial, qué significan, cuándo usarlos y el RFC que los define. Busca por número o palabra.',
+    es: 'Los códigos de estado HTTP, del 100 al 511, con su nombre oficial, qué significan, cuándo usarlos y el RFC que los define. Busca por número.',
     en: 'Every HTTP status code from 100 to 511, with its official name, what it means, when to use it and the RFC that defines it. Search by number or word.',
   },
   keywords: {

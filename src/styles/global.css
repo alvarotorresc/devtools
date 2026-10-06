@@ -336,6 +336,19 @@ button {
   }
 }
 
+.site-foot {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: auto;
+  padding: 0 16px 32px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+.site-foot a {
+  color: inherit;
+}
+
 /* Boot screen (terminal theme, once per session) */
 
 .boot {

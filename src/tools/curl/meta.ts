@@ -10,8 +10,12 @@ export const meta: ToolMeta = {
     es: 'Convertir comandos cURL a fetch de JavaScript',
     en: 'Convert cURL commands to JavaScript fetch',
   },
+  heading: {
+    es: 'Convertir cURL a fetch',
+    en: 'Convert cURL to fetch',
+  },
   description: {
-    es: 'Pega un comando cURL y obtén el código fetch de JavaScript equivalente, con método, cabeceras, cuerpo JSON o formulario y avisos de lo que fetch no puede hacer.',
+    es: 'Pega un cURL y obtén el código fetch de JavaScript equivalente, con método, cabeceras, cuerpo JSON o formulario y avisos de lo que fetch no puede hacer.',
     en: 'Paste a cURL command and get the equivalent JavaScript fetch code, with method, headers, JSON or form body and notes on what fetch cannot do.',
   },
   keywords: {

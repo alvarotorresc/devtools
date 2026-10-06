@@ -22,15 +22,26 @@ describe('registry', () => {
     for (const s of slugs) expect(s).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*$/);
   });
 
+  it.each(LOCALES)('has unique titles and headings in %s', (l) => {
+    const titles = tools.map((t) => t.title[l]);
+    expect(new Set(titles).size).toBe(titles.length);
+    const headings = tools.map((t) => t.heading[l]);
+    expect(new Set(headings).size).toBe(headings.length);
+  });
+
   it('gives every tool complete metadata in both languages', () => {
     for (const tool of tools) {
       expect(categories.map((c) => c.id)).toContain(tool.category);
       expect(ICON_NAMES).toContain(tool.icon);
       for (const l of LOCALES) {
         expect(tool.name[l], `${tool.id}.name.${l}`).toBeTruthy();
-        expect(tool.title[l].length, `${tool.id}.title.${l}`).toBeLessThanOrEqual(65);
-        expect(tool.description[l].length, `${tool.id}.description.${l}`).toBeGreaterThan(50);
-        expect(tool.description[l].length, `${tool.id}.description.${l}`).toBeLessThanOrEqual(160);
+        expect(tool.title[l].length, `${tool.id}.title.${l}`).toBeLessThanOrEqual(49);
+        expect(tool.heading[l], `${tool.id}.heading.${l}`).toBeTruthy();
+        expect(tool.heading[l].length, `${tool.id}.heading.${l}`).toBeLessThanOrEqual(40);
+        expect(tool.description[l].length, `${tool.id}.description.${l}`).toBeGreaterThanOrEqual(
+          120,
+        );
+        expect(tool.description[l].length, `${tool.id}.description.${l}`).toBeLessThanOrEqual(155);
         expect(tool.keywords[l].length, `${tool.id}.keywords.${l}`).toBeGreaterThan(0);
         if (tool.tabs) expect(tool.tabs[l].length).toBe(tool.tabs.es.length);
       }

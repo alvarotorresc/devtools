@@ -7,8 +7,12 @@ export const meta: ToolMeta = {
   slug: { es: 'validador-iban', en: 'iban-validator' },
   name: { es: 'IBAN', en: 'IBAN' },
   title: {
-    es: 'Validador de IBAN y generador de IBAN español',
+    es: 'Validar IBAN online y generar IBAN español',
     en: 'IBAN validator and Spanish IBAN generator',
+  },
+  heading: {
+    es: 'Validador de IBAN',
+    en: 'IBAN validator',
   },
   description: {
     es: 'Valida un IBAN de cualquier país, desglosa la cuenta española (entidad, oficina y DC), convierte un CCC en IBAN y genera IBAN ficticios para pruebas.',

@@ -10,8 +10,12 @@ export const meta: ToolMeta = {
     es: 'Conversor de divisas con tipos de cambio del BCE',
     en: 'Currency converter with ECB exchange rates',
   },
+  heading: {
+    es: 'Conversor de divisas',
+    en: 'Currency converter',
+  },
   description: {
-    es: 'Convierte entre euros, dólares, libras y otras 27 divisas con los tipos de referencia del BCE. El importe se calcula en tu navegador y funciona sin conexión.',
+    es: 'Convierte entre euros, dólares, libras y otras 27 divisas con los tipos de referencia del BCE. El importe se calcula en tu navegador, sin conexión.',
     en: 'Convert between euros, dollars, pounds and 27 other currencies with ECB reference rates. The amount is computed in your browser and it works offline.',
   },
   keywords: {

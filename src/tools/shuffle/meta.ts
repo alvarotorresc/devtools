@@ -10,6 +10,10 @@ export const meta: ToolMeta = {
     es: 'Mezclar una lista al azar: ordenar aleatoriamente',
     en: 'Random list shuffler: randomize any list',
   },
+  heading: {
+    es: 'Mezclar una lista al azar',
+    en: 'Random list shuffler',
+  },
   description: {
     es: 'Pega una lista, un elemento por línea, y ordénala al azar con un algoritmo uniforme. Con semilla, el orden se puede repetir y comprobar.',
     en: 'Paste a list, one item per line, and put it in random order with a uniform algorithm. With a seed, the order can be repeated and checked.',
