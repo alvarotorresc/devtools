@@ -216,9 +216,18 @@ const themes = [
       if (a.getAttribute('href') === path) a.setAttribute('aria-current', 'page');
       else a.removeAttribute('aria-current');
     });
+    el.querySelectorAll('.sb-cat-toggle').forEach((b) => b.removeAttribute('aria-current'));
     const current = el.querySelector('[data-cat] [aria-current="page"]');
-    const catId = current?.closest<HTMLElement>('[data-cat]')?.dataset.cat;
+    const catId =
+      current?.closest<HTMLElement>('[data-cat]')?.dataset.cat ??
+      document.querySelector<HTMLElement>('[data-category-page]')?.dataset.categoryPage;
     if (catId) setCatOpen(catId, true, false);
+    // On a category page its group is open and its toggle marked as the current page.
+    if (!current && catId)
+      el.querySelector(`[data-cat="${catId}"] .sb-cat-toggle`)?.setAttribute(
+        'aria-current',
+        'page',
+      );
     const lang = el.querySelector<HTMLAnchorElement>('[data-lang-link]');
     const alt = document.querySelector<HTMLLinkElement>(
       `link[rel="alternate"][hreflang="${lang?.getAttribute('hreflang')}"]`,

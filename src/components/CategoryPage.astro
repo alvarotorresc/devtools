@@ -56,7 +56,7 @@ const jsonLd = [
   jsonLd={jsonLd}
   ogImage={`/og/${category.id}.png`}
 >
-  <header class="cat-head">
+  <header class="cat-head" data-category-page={category.id}>
     <nav aria-label={t(locale, 'nav.breadcrumb')} class="crumbs">
       <a href={homeHref(locale)}>{t(locale, 'nav.home')}</a>
       <span aria-hidden="true">/</span>
