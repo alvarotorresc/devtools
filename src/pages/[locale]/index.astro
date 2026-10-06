@@ -21,15 +21,16 @@ const jsonLd = [
     name: 'devtools',
     url: new URL(`/${locale}`, site).href,
     inLanguage: locale,
-    description: t(locale, 'site.description'),
+    description: t(locale, 'home.seoDescription', { n: tools.length }),
+    publisher: { '@type': 'Person', name: 'Álvaro Torres', url: 'https://alvarotc.com' },
   },
 ];
 ---
 
 <AppLayout
   locale={locale}
-  title={`devtools · ${t(locale, 'home.title')}`}
-  description={t(locale, 'site.description')}
+  title={`${t(locale, 'home.seoTitle')} · devtools`}
+  description={t(locale, 'home.seoDescription', { n: tools.length })}
   alternates={{ es: '/es', en: '/en' }}
   jsonLd={jsonLd}
 >
