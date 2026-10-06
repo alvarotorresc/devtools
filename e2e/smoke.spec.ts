@@ -22,14 +22,34 @@ async function waitForIslands(page: Page) {
 }
 
 test.describe('routing', () => {
-  test('root redirects to the browser language', async ({ browser }) => {
-    const ctx = await browser.newContext({ locale: 'en-US' });
-    const page = await ctx.newPage();
-    await page.route('**/analytics.alvarotc.com/**', (r) => r.abort());
+  test('root without a stored language stays as a page with both languages', async ({ page }) => {
     await skipBoot(page);
     await page.goto('/');
+    await expect(page).toHaveURL(/\/$/);
+    await expect(page.locator('h1')).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Abrir devtools en español' })).toHaveAttribute(
+      'href',
+      '/es',
+    );
+    await expect(page.getByRole('link', { name: 'Open devtools in English' })).toHaveAttribute(
+      'href',
+      '/en',
+    );
+  });
+
+  test('root forwards to the stored language', async ({ page }) => {
+    await skipBoot(page);
+    await page.addInitScript(() => localStorage.setItem('devtools:locale', 'en'));
+    await page.goto('/');
     await expect(page).toHaveURL(/\/en$/);
-    await ctx.close();
+  });
+
+  test('root remembers the language of the last visited page', async ({ page }) => {
+    await skipBoot(page);
+    await page.goto('/en/jwt-decoder');
+    await expect(page.locator('h1')).toHaveText('JWT decoder');
+    await page.goto('/');
+    await expect(page).toHaveURL(/\/en$/);
   });
 
   test('old #hash links land on the new tool page', async ({ page }) => {
@@ -48,6 +68,17 @@ test.describe('routing', () => {
     await skipBoot(page);
     await page.goto('/#no-existe');
     await expect(page).toHaveURL(/\/es$/);
+  });
+});
+
+test.describe('tool page', () => {
+  test('shows the heading as h1 and links to the author in the footer', async ({ page }) => {
+    await skipBoot(page);
+    await page.goto('/es/decodificador-jwt');
+    await expect(page.locator('h1')).toHaveText('Decodificador de JWT');
+    await expect(
+      page.locator('.site-foot').getByRole('link', { name: 'Hecho por Álvaro Torres' }),
+    ).toHaveAttribute('href', 'https://alvarotc.com');
   });
 });
 
@@ -70,7 +101,7 @@ test.describe('home and search', () => {
     await page.keyboard.type('jsno');
     await page.keyboard.press('Enter');
     await expect(page).toHaveURL(/\/es\/formateador-json$/);
-    await expect(page.locator('h1')).toHaveText('JSON');
+    await expect(page.locator('h1')).toHaveText('Formatear y validar JSON');
   });
 
   test('typing "/" inside a text field types it instead of opening search', async ({ page }) => {
