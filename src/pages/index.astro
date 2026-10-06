@@ -1,44 +1,12 @@
 ---
-import '@fontsource-variable/unbounded';
-import '@fontsource-variable/instrument-sans';
 import '../styles/global.css';
-import { homeHref, toolHref } from '../i18n';
-import { toolById, tools } from '../tools/registry';
-import { LOCALES, type Locale, type ToolMeta } from '../tools/types';
+import { homeHref } from '../i18n';
 
-// The root is the x-default page: it has to be a real page, not a JS redirect,
-// so it only forwards people who already chose a language (or old #hash links).
-const site = Astro.site!;
-const n = tools.length;
-const title = 'Developer tools · Herramientas para devs · devtools';
-const description = `${n} free developer tools that run in your browser. ${n} herramientas gratis para desarrolladores: JSON, JWT, UUID, IBAN, DNI.`;
-const POPULAR = ['json', 'jwt', 'uuid', 'iban', 'chmod', 'cron'];
-const popular = POPULAR.map(toolById).filter((x): x is ToolMeta => Boolean(x));
-
-const copy: Record<Locale, { label: string; lead: string; cta: string; name: string }> = {
-  en: {
-    name: 'English',
-    label: 'Popular tools',
-    lead: `${n} free tools for developers that run in your browser: format JSON, decode JWTs, generate UUIDs, check cron expressions, validate IBANs and work out chmod permissions. Nothing you paste leaves your device.`,
-    cta: 'Open devtools in English',
-  },
-  es: {
-    name: 'Español',
-    label: 'Las más usadas',
-    lead: `${n} herramientas gratuitas para desarrolladores que funcionan en tu navegador: formatear JSON, decodificar JWT, generar UUID, validar IBAN, DNI y CIF o calcular el IVA. Nada de lo que pegas sale de tu equipo.`,
-    cta: 'Abrir devtools en español',
-  },
-};
-const order: Locale[] = ['en', 'es'];
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  name: 'devtools',
-  url: new URL('/', site).href,
-  inLanguage: [...LOCALES],
-  description,
-  publisher: { '@type': 'Person', name: 'Álvaro Torres', url: 'https://alvarotc.com' },
-};
+// On Netlify this page is never served: "/" answers with a 302 to /es or /en
+// (see ROOT_REDIRECTS in astro.config.mjs). It only runs where _redirects is
+// ignored (astro preview, e2e) and repeats the same choice in the browser:
+// stored language, then the browser's languages, then English. The #hash goes
+// along so the home page can forward old /#tool links.
 ---
 
 <!doctype html>
@@ -46,160 +14,51 @@ const jsonLd = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-    <meta name="description" content={description} />
-    <link rel="canonical" href={new URL('/', site).href} />
-    <link rel="alternate" hreflang="es" href={new URL('/es', site).href} />
-    <link rel="alternate" hreflang="en" href={new URL('/en', site).href} />
-    <link rel="alternate" hreflang="x-default" href={new URL('/', site).href} />
+    <meta name="robots" content="noindex" />
+    <title>devtools</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="devtools" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:url" content={new URL('/', site).href} />
-    <meta property="og:image" content={new URL('/og.png', site).href} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <script type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />
     <script is:inline>
       (() => {
+        const ok = (l) => (l === 'es' || l === 'en' ? l : null);
         let stored = null;
         try {
-          stored = localStorage.getItem('devtools:locale');
+          stored = ok(localStorage.getItem('devtools:locale'));
         } catch {
-          // Storage blocked: stay on this page.
+          // Storage blocked: try the cookie.
         }
-        const locale = stored === 'en' || stored === 'es' ? stored : null;
-        if (location.hash.length > 1) document.documentElement.dataset.redirecting = '';
-        else if (locale) location.replace('/' + locale);
+        if (!stored) stored = ok((document.cookie.match(/(?:^|;\s*)nf_lang=([^;]*)/) || [])[1]);
+        const browser = (navigator.languages || [navigator.language])
+          .map((l) => ok(String(l).toLowerCase().split('-')[0]))
+          .find(Boolean);
+        location.replace('/' + (stored || browser || 'en') + location.hash);
       })();
     </script>
   </head>
   <body>
     <main class="root">
-      <h1>
-        Developer tools <span>· Herramientas para desarrolladores</span>
-      </h1>
-      <div class="langs">
-        {order.map((l) => (
-          <section lang={l} aria-labelledby={`lang-${l}`}>
-            <h2 id={`lang-${l}`}>{copy[l].name}</h2>
-            <p>{copy[l].lead}</p>
-            <a class="cta" href={homeHref(l)} hreflang={l} data-lang-link>
-              {copy[l].cta}
-            </a>
-            <h3>{copy[l].label}</h3>
-            <ul>
-              {popular.map((tool) => (
-                <li>
-                  <a href={toolHref(l, tool)} hreflang={l} data-lang-link>
-                    {tool.heading[l]}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
-      </div>
-      <p class="by">
-        <a href="https://alvarotc.com">alvarotc.com</a>
+      <p>
+        <a href={homeHref('es')} hreflang="es" lang="es">
+          devtools en español
+        </a>
+        <span aria-hidden="true">·</span>
+        <a href={homeHref('en')} hreflang="en">
+          devtools in English
+        </a>
       </p>
     </main>
-    <script>
-      import { pickLocale, resolveLegacyHash } from '../lib/legacy';
-      import { readString, writeString } from '../lib/storage';
-
-      if (location.hash.length > 1) {
-        const locale = pickLocale(
-          readString('locale', ''),
-          navigator.languages ?? [navigator.language],
-        );
-        location.replace(resolveLegacyHash(location.hash, locale));
-      }
-
-      document.addEventListener('click', (e) => {
-        const link = (e.target as HTMLElement).closest<HTMLElement>('[data-lang-link]');
-        const lang = link?.getAttribute('hreflang');
-        if (lang) writeString('locale', lang);
-      });
-    </script>
   </body>
 </html>
 
 <style>
-  :global([data-redirecting]) body {
-    visibility: hidden;
-  }
   .root {
-    max-width: 1040px;
-    margin-inline: auto;
-    padding: clamp(32px, 6vw, 72px) 16px 56px;
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
+    padding: 48px 16px;
+    text-align: center;
   }
-  h1 {
-    font-size: clamp(30px, 5vw, 52px);
-  }
-  h1 span {
-    display: block;
-    margin-top: 6px;
-    font-size: 0.55em;
-    color: var(--text-dim);
-  }
-  .langs {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
-    gap: 20px;
-  }
-  section {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    padding: clamp(20px, 3vw, 32px);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-  }
-  section p {
-    margin: 0;
-    color: var(--text-dim);
-    font-size: 16px;
-    text-wrap: pretty;
-  }
-  .cta {
-    align-self: flex-start;
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    padding: 0 18px;
-    background: var(--accent);
-    border-radius: var(--radius);
-    color: var(--on-accent, #fff);
-    font-weight: 600;
-    text-decoration: none;
-  }
-  h3 {
-    margin-top: 6px;
-    font: 600 12.5px var(--font-mono);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    text-shadow: none;
-    color: var(--text-dim);
-  }
-  ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
+  .root p {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px 16px;
-  }
-  .by {
+    justify-content: center;
+    gap: 8px 12px;
     margin: 0;
-    font-size: 13px;
-    color: var(--text-dim);
   }
 </style>

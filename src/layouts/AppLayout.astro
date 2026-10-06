@@ -29,9 +29,11 @@ interface Props {
   noindex?: boolean;
   ogImage?: string;
   toolId?: string;
+  /** Old `#id` links → new page. Only the home pages pass it (see below). */
+  hashRoutes?: Record<string, string>;
 }
 
-const { locale, toolId, ...seo } = Astro.props;
+const { locale, toolId, hashRoutes, ...seo } = Astro.props;
 
 const entries: PaletteEntry[] = tools.map((tool) => ({
   id: tool.id,
@@ -61,6 +63,22 @@ const pageAnim: TransitionDirectionalAnimations = {
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#e3e1dc" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {hashRoutes && <script is:inline define:vars={{ hashRoutes }}>
+      // The old single-page app linked tools as /#id. The root now answers
+      // with a 302 to /es or /en and browsers keep the fragment, so the
+      // link lands here: forward it before anything paints, or drop it.
+      (() => {
+        let id = location.hash.slice(1);
+        try {
+          id = decodeURIComponent(id).trim();
+        } catch {
+          // Malformed escape: treat it as an unknown hash.
+        }
+        if (!id) return;
+        if (Object.hasOwn(hashRoutes, id)) location.replace(hashRoutes[id]);
+        else history.replaceState(history.state, '', location.pathname + location.search);
+      })();
+    </script>}
     <script is:inline>
       (() => {
         const THEMES = ['terminal', 'dark', 'light'];

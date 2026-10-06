@@ -21,60 +21,101 @@ async function waitForIslands(page: Page) {
   await page.locator('astro-island[ssr]').first().waitFor({ state: 'detached' });
 }
 
-test.describe('routing', () => {
-  test('root without a stored language stays as a page with both languages', async ({ page }) => {
-    await skipBoot(page);
+// On Netlify "/" is a 302 decided by _redirects. astro preview ignores that
+// file, so these cover the fallback root page, which makes the same choice in
+// the browser, and the #hash forwarding on the home pages.
+test.describe('routing (es-ES browser)', () => {
+  test.beforeEach(async ({ page }) => skipBoot(page));
+
+  test('root sends a Spanish browser to /es', async ({ page }) => {
     await page.goto('/');
-    await expect(page).toHaveURL(/\/$/);
-    await expect(page.locator('h1')).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Abrir devtools en español' })).toHaveAttribute(
-      'href',
-      '/es',
-    );
-    await expect(page.getByRole('link', { name: 'Open devtools in English' })).toHaveAttribute(
-      'href',
-      '/en',
-    );
+    await expect(page).toHaveURL(/\/es$/);
   });
 
-  test('root forwards to the stored language', async ({ page }) => {
-    await skipBoot(page);
-    await page.addInitScript(() => localStorage.setItem('devtools:locale', 'en'));
-    await page.goto('/');
-    await expect(page).toHaveURL(/\/en$/);
+  test('root keeps the #hash and old /#tool links land on the tool page', async ({ page }) => {
+    await page.goto('/#json');
+    await expect(page).toHaveURL(/\/es\/formateador-json$/);
   });
 
-  test('root remembers the language of the last visited page', async ({ page }) => {
-    await skipBoot(page);
+  test('old links to migrated tools land on the new page', async ({ page }) => {
+    await page.goto('/#number-base');
+    await expect(page).toHaveURL(/\/es\/conversor-bases-numericas$/);
+  });
+
+  test('the home page forwards a #tool to the tool page', async ({ page }) => {
+    await page.goto('/es#json');
+    await expect(page).toHaveURL(/\/es\/formateador-json$/);
+    await page.goto('/en#json');
+    await expect(page).toHaveURL(/\/en\/json-formatter$/);
+  });
+
+  test('an unknown #hash is dropped and the home page stays', async ({ page }) => {
+    await page.goto('/es#no-existe');
+    await expect(page).toHaveURL(/\/es$/);
+    await expect(page.locator('#home-search')).toBeVisible();
+    await page.goto('/#no-existe');
+    await expect(page).toHaveURL(/\/es$/);
+  });
+
+  test('visiting a page stores its language for the root, cookie included', async ({
+    page,
+    context,
+  }) => {
     await page.goto('/en/jwt-decoder');
     await expect(page.locator('h1')).toHaveText('JWT decoder');
+    const cookie = (await context.cookies()).find((c) => c.name === 'nf_lang');
+    expect(cookie?.value).toBe('en');
+    expect(cookie?.sameSite).toBe('Lax');
     await page.goto('/');
     await expect(page).toHaveURL(/\/en$/);
   });
 
   test('the 404 page does not overwrite the stored language', async ({ page }) => {
-    await skipBoot(page);
     await page.goto('/en');
     await page.goto('/en/no-existe');
     await page.goto('/');
     await expect(page).toHaveURL(/\/en$/);
   });
 
-  test('old #hash links land on the new tool page', async ({ page }) => {
-    await skipBoot(page);
-    await page.goto('/#json');
-    await expect(page).toHaveURL(/\/es\/formateador-json$/);
+  test('root without JS has plain links to both languages and noindex', async ({ browser }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
+    await page.goto('/');
+    await expect(page.getByRole('link', { name: 'devtools en español' })).toHaveAttribute(
+      'href',
+      '/es',
+    );
+    await expect(page.getByRole('link', { name: 'devtools in English' })).toHaveAttribute(
+      'href',
+      '/en',
+    );
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
+    await context.close();
+  });
+});
+
+test.describe('routing (en-US browser)', () => {
+  test.use({ locale: 'en-US' });
+  test.beforeEach(async ({ page }) => skipBoot(page));
+
+  test('root sends an English browser to /en', async ({ page }) => {
+    await page.goto('/');
+    await expect(page).toHaveURL(/\/en$/);
   });
 
-  test('old links to migrated tools land on the new page', async ({ page }) => {
-    await skipBoot(page);
-    await page.goto('/#number-base');
-    await expect(page).toHaveURL(/\/es\/conversor-bases-numericas$/);
+  test('a stored language wins over the browser one', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('devtools:locale', 'es'));
+    await page.goto('/');
+    await expect(page).toHaveURL(/\/es$/);
   });
 
-  test('old links to unknown tools land on the home page', async ({ page }) => {
-    await skipBoot(page);
-    await page.goto('/#no-existe');
+  test('the nf_lang cookie also counts as a stored language', async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    await context.addCookies([{ name: 'nf_lang', value: 'es', url: baseURL! }]);
+    await page.goto('/');
     await expect(page).toHaveURL(/\/es$/);
   });
 });

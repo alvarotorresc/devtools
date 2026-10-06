@@ -1,3 +1,5 @@
+import { LOCALES } from '../tools/types';
+
 export const STORAGE_PREFIX = 'devtools:';
 
 type Area = 'local' | 'session';
@@ -46,5 +48,23 @@ export function removeKey(key: string, kind: Area = 'local'): void {
     area(kind)?.removeItem(STORAGE_PREFIX + key);
   } catch {
     // Ignored on purpose, same as writeString.
+  }
+}
+
+const YEAR = 60 * 60 * 24 * 365;
+
+/**
+ * Remembers the language twice: in localStorage for the client and in the
+ * nf_lang cookie, which Netlify reads to send "/" straight to that language.
+ * Anything that is not a locale is ignored.
+ */
+export function rememberLocale(locale: string): void {
+  if (!(LOCALES as readonly string[]).includes(locale)) return;
+  writeString('locale', locale);
+  try {
+    const secure = location.protocol === 'https:' ? '; Secure' : '';
+    document.cookie = `nf_lang=${encodeURIComponent(locale)}; path=/; max-age=${YEAR}; SameSite=Lax${secure}`;
+  } catch {
+    // Cookies blocked: localStorage still has it.
   }
 }

@@ -2,7 +2,8 @@
 // Checks the built site the way a crawler sees it, so an SEO regression fails
 // CI instead of showing up weeks later in Search Console.
 //
-// Every indexable page in `dist/` (everything but 404.html) must have exactly
+// Every indexable page in `dist/` (everything but 404.html and the root, which
+// only forwards to /es or /en and must carry noindex) must have exactly
 // one <title>, one meta description, one absolute canonical pointing at its
 // own clean URL and one <h1>; all four unique across the site, with the title
 // and description inside the lengths search engines show. The sitemap and the
@@ -15,6 +16,10 @@
 // tool, CollectionPage a category). Each tool's breadcrumb links to its
 // category page, both home pages link to every category of their language, no
 // indexable page is an orphan and every og:image exists in dist/.
+//
+// Languages: every hreflang points at an indexable page (a 200 with no hop),
+// x-default is /en, and `_redirects` sends "/" to /es or /en with forced rules,
+// the Language=es one first.
 
 import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
@@ -140,7 +145,10 @@ function internalPath(href) {
 const errors = [];
 const files = walk(DIST);
 const info = new Map(); // path → { types, links, crumbLinks, breadcrumb }
-const pages = files.filter((f) => f.endsWith('.html') && pathOf(f) !== '/404');
+const htmlPages = files.filter((f) => f.endsWith('.html') && pathOf(f) !== '/404');
+const pages = htmlPages.filter((f) => pathOf(f) !== '/');
+const pagePaths = new Set(pages.map(pathOf));
+const hreflangs = new Map(); // path → [{ lang, href }]
 const seen = { title: new Map(), description: new Map(), canonical: new Map(), h1: new Map() };
 
 function unique(kind, value, path) {
@@ -240,6 +248,14 @@ for (const file of pages) {
   }
   info.set(path, { types, links, crumbLinks, breadcrumb });
 
+  hreflangs.set(
+    path,
+    [...html.matchAll(tagRe('link'))]
+      .map(([tag]) => attrs(tag))
+      .filter((l) => l.rel === 'alternate' && l.hreflang)
+      .map((l) => ({ lang: l.hreflang, href: l.href ?? '' })),
+  );
+
   const ogImages = metas.filter((m) => m.property === 'og:image').map((m) => m.content ?? '');
   if (ogImages.length !== 1) errors.push(`${path}: ${ogImages.length} og:image (debe haber una)`);
   for (const image of ogImages) {
@@ -269,15 +285,37 @@ for (const path of categoryPaths) {
     errors.push(`${path}: la portada ${home} no enlaza a esta categoría`);
 }
 
-// An orphan page gets no internal link from any other indexable page. The
-// root is the entry point (x-default); nothing has to link back to it.
+// An orphan page gets no internal link from any other indexable page.
 const linked = new Set([...info.values()].flatMap((page) => [...page.links]));
 for (const path of info.keys())
-  if (path !== '/' && !linked.has(path))
-    errors.push(`${path}: página huérfana, ninguna otra página enlaza aquí`);
+  if (!linked.has(path)) errors.push(`${path}: página huérfana, ninguna otra página enlaza aquí`);
+
+// hreflang: x-default is /en and every target answers 200 without a redirect,
+// which here means it is an indexable page of dist/ (never "/", now a 302).
+for (const [path, links] of hreflangs) {
+  const xDefault = links.filter((l) => l.lang === 'x-default');
+  if (xDefault.length !== 1 || xDefault[0].href !== `${SITE}/en`)
+    errors.push(`${path}: el hreflang x-default debe ser ${SITE}/en`);
+  for (const { lang, href } of links) {
+    const target = href.startsWith(SITE) ? internalPath(href) : null;
+    if (!target || !pagePaths.has(target))
+      errors.push(`${path}: el hreflang ${lang} apunta a ${href}, que no es una página indexable`);
+  }
+}
+
+// The root only forwards: on Netlify it is never served, elsewhere it is a
+// script page that must stay out of the index.
+const rootFile = join(DIST, 'index.html');
+if (!existsSync(rootFile)) errors.push('no existe dist/index.html (raíz de respaldo)');
+else {
+  const rootMetas = [...readFileSync(rootFile, 'utf8').matchAll(tagRe('meta'))].map(([tag]) =>
+    attrs(tag),
+  );
+  if (!rootMetas.some((m) => m.name === 'robots' && /noindex/.test(m.content ?? '')))
+    errors.push('/: la raíz debe llevar <meta name="robots" content="noindex">');
+}
 
 // Sitemap ↔ pages, one to one.
-const pagePaths = new Set(pages.map(pathOf));
 const sitemaps = files.filter((f) => /sitemap-(?!index)[^/\\]*\.xml$/.test(f));
 if (sitemaps.length === 0) errors.push('no hay ningún sitemap-*.xml en dist/');
 const shallow = isShallow();
@@ -289,8 +327,12 @@ for (const file of sitemaps) {
       errors.push(`sitemap: URL fuera del sitio: ${loc}`);
       continue;
     }
-    const path = loc.slice(SITE.length);
+    const path = loc.slice(SITE.length) || '/';
     inSitemap.add(path);
+    if (path === '/') {
+      errors.push('sitemap: la raíz no debe estar, solo redirige a /es o /en');
+      continue;
+    }
     if (!pagePaths.has(path)) errors.push(`sitemap: ${loc} no corresponde a ningún HTML de dist/`);
     if (!shallow && !/<lastmod>[^<]+<\/lastmod>/.test(entry))
       errors.push(`sitemap: ${loc} sin <lastmod>`);
@@ -309,10 +351,19 @@ else {
       .map((line) => line.trim().split(/\s+/).join(' '))
       .filter(Boolean),
   );
-  for (const path of pagePaths) {
+  for (const path of htmlPages.map(pathOf)) {
     const from = (path === '/' ? '/index' : path) + '.html';
     if (!rules.has(`${from} ${path} 301!`)) errors.push(`_redirects: falta «${from} ${path} 301!»`);
   }
+  // "/" by language: forced (dist/index.html exists) and Language=es first,
+  // because Netlify applies the first rule that matches.
+  const order = [...rules];
+  const es = order.indexOf('/ /es 302! Language=es');
+  const fallback = order.indexOf('/ /en 302!');
+  if (es === -1 || fallback === -1)
+    errors.push('_redirects: faltan «/ /es 302! Language=es» y «/ /en 302!» para la raíz');
+  else if (es > fallback)
+    errors.push('_redirects: «/ /es 302! Language=es» debe ir antes de «/ /en 302!»');
 }
 
 // IndexNow verifies ownership by fetching /<key>.txt, which has to hold the key.
@@ -328,6 +379,6 @@ if (errors.length > 0) {
 }
 
 console.log(
-  `check-seo: ok — ${pages.length} página(s) (${categoryPaths.length} de categoría) con title, description, canonical y h1 únicos; enlazado interno, og:image, sitemap y _redirects al día` +
+  `check-seo: ok — ${pages.length} página(s) (${categoryPaths.length} de categoría) con title, description, canonical y h1 únicos; ${inSitemap.size} URL en el sitemap; enlazado interno, og:image, hreflang, raíz y _redirects al día` +
     (shallow ? ' (clon superficial: no se comprueba <lastmod>).' : '.'),
 );
