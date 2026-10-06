@@ -2,9 +2,9 @@
 import '../styles/global.css';
 import { homeHref } from '../i18n';
 
-// On Netlify this page is never served: "/" answers with a 302 to /es or /en
-// (see ROOT_REDIRECTS in astro.config.mjs). It only runs where _redirects is
-// ignored (astro preview, e2e) and repeats the same choice in the browser:
+// On Netlify this page is never served: the edge function root-language
+// answers "/" with a 302 to /es or /en. It only runs without it (astro
+// preview, e2e) and repeats the same choice in the browser:
 // stored language, then the browser's languages, then English. The #hash goes
 // along so the home page can forward old /#tool links.
 ---

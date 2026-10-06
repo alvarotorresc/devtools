@@ -49,26 +49,20 @@ function lastmodByPath() {
 
 const lastmod = lastmodByPath();
 
-// The root sends each visitor straight to their language with a 302, decided
-// at the CDN: the nf_lang cookie (set when someone picks or visits a language)
-// wins, then the first language of Accept-Language (Netlify ignores q-values),
-// and everyone else, Googlebot included, goes to /en. dist/index.html exists,
-// so the rules must be forced (!) and the conditional one must come first.
-const ROOT_REDIRECTS = ['/ /es 302! Language=es', '/ /en 302!'];
-
 // Netlify serves every page at /page and at /page.html. The second one is a
 // duplicate, so it gets a 301 to the clean URL. /index.html keeps its 301 to
-// the root (and then the 302): a 301 that depended on the language would be
-// cached by the browser and stick to whoever got it first.
+// the root (and then the 302 of netlify/edge-functions/root-language.ts): a 301
+// that depended on the language would be cached by the browser for good.
 const htmlRedirects = {
   name: 'html-redirects',
   hooks: {
     'astro:build:done': ({ dir, pages }) => {
-      const htmlLines = pages
+      const lines = pages
         .map(({ pathname }) => `/${pathname}`.replace(/\/$/, ''))
         .filter((path) => path !== '/404')
         .map((path) => `${path || '/index'}.html ${path || '/'} 301!`);
-      const lines = [...ROOT_REDIRECTS, ...htmlLines];
+      // No Language= rules for "/": Netlify cached that 302 at the edge and
+      // served one visitor's language to the next. The edge function does it.
       writeFileSync(new URL('_redirects', dir), lines.join('\n') + '\n');
     },
   },

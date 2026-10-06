@@ -18,8 +18,8 @@
 // indexable page is an orphan and every og:image exists in dist/.
 //
 // Languages: every hreflang points at an indexable page (a 200 with no hop),
-// x-default is /en, and `_redirects` sends "/" to /es or /en with forced rules,
-// the Language=es one first.
+// x-default is /en, and "/" is answered by the edge function root-language
+// (path "/"), with no `_redirects` rule competing for it.
 
 import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
@@ -355,16 +355,18 @@ else {
     const from = (path === '/' ? '/index' : path) + '.html';
     if (!rules.has(`${from} ${path} 301!`)) errors.push(`_redirects: falta «${from} ${path} 301!»`);
   }
-  // "/" by language: forced (dist/index.html exists) and Language=es first,
-  // because Netlify applies the first rule that matches.
-  const order = [...rules];
-  const es = order.indexOf('/ /es 302! Language=es');
-  const fallback = order.indexOf('/ /en 302!');
-  if (es === -1 || fallback === -1)
-    errors.push('_redirects: faltan «/ /es 302! Language=es» y «/ /en 302!» para la raíz');
-  else if (es > fallback)
-    errors.push('_redirects: «/ /es 302! Language=es» debe ir antes de «/ /en 302!»');
+  // "/" is decided per visitor by the edge function. A _redirects rule on it
+  // (Language=…) gets cached at Netlify's edge and shared between visitors.
+  const rootRules = [...rules].filter((rule) => rule.split(' ')[0] === '/');
+  if (rootRules.length > 0)
+    errors.push(`_redirects: no puede haber reglas para «/» (${rootRules.join(' | ')})`);
 }
+
+// The edge function that sends "/" to /es or /en has to exist and own "/".
+const EDGE = 'netlify/edge-functions/root-language.ts';
+if (!existsSync(EDGE)) errors.push(`no existe ${EDGE} (redirección de la raíz por idioma)`);
+else if (!/export const config = \{ path: '\/' \}/.test(readFileSync(EDGE, 'utf8')))
+  errors.push(`${EDGE}: su config debe ser { path: '/' }`);
 
 // IndexNow verifies ownership by fetching /<key>.txt, which has to hold the key.
 const keyFile = join(DIST, `${INDEXNOW_KEY}.txt`);
