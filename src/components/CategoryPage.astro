@@ -1,0 +1,162 @@
+---
+import ToolList from './ToolList.astro';
+import AppLayout from '../layouts/AppLayout.astro';
+import Icon from '../ui/Icon.svelte';
+import { categoryHref, homeHref, t, toolHref } from '../i18n';
+import { toolsInCategory } from '../tools/registry';
+import type { Category, Locale } from '../tools/types';
+
+interface Props {
+  locale: Locale;
+  category: Category;
+}
+
+const { locale, category } = Astro.props;
+const list = toolsInCategory(category.id);
+const site = Astro.site!;
+const url = new URL(categoryHref(locale, category), site).href;
+const home = new URL(homeHref(locale), site).href;
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: category.heading[locale],
+    url,
+    description: category.seoDescription[locale],
+    inLanguage: locale,
+    isPartOf: { '@type': 'WebSite', name: 'devtools', url: home },
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: list.length,
+      itemListElement: list.map((tool, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: tool.heading[locale],
+        url: new URL(toolHref(locale, tool), site).href,
+      })),
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: t(locale, 'nav.home'), item: home },
+      { '@type': 'ListItem', position: 2, name: category.name[locale], item: url },
+    ],
+  },
+];
+---
+
+<AppLayout
+  locale={locale}
+  title={`${category.title[locale]} · devtools`}
+  description={category.seoDescription[locale]}
+  alternates={{ es: categoryHref('es', category), en: categoryHref('en', category) }}
+  jsonLd={jsonLd}
+>
+  <header class="cat-head">
+    <nav aria-label={t(locale, 'nav.breadcrumb')} class="crumbs">
+      <a href={homeHref(locale)}>{t(locale, 'nav.home')}</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{category.name[locale]}</span>
+    </nav>
+    <div class="cat-title">
+      <span class="cat-icon">
+        <Icon name={category.icon} size={24} />
+      </span>
+      <h1>{category.heading[locale]}</h1>
+    </div>
+  </header>
+
+  <div class="cat-intro">
+    {category.intro[locale].map((p) => (
+      <p>{p}</p>
+    ))}
+  </div>
+
+  <section class="cat-tools" aria-labelledby="cat-tools-h">
+    <header class="cat-tools-head">
+      <h2 id="cat-tools-h">{t(locale, 'category.list', { n: list.length })}</h2>
+    </header>
+    <ToolList locale={locale} tools={list} idPrefix="cat-desc" />
+  </section>
+</AppLayout>
+
+<style>
+  .cat-head {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .crumbs {
+    display: flex;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  .crumbs a {
+    color: inherit;
+  }
+  .cat-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .cat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    background: var(--well);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--inset);
+    color: var(--accent-text);
+  }
+  h1 {
+    text-wrap: balance;
+  }
+  .cat-intro {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-width: 68ch;
+    color: var(--text-dim);
+    font-size: 16px;
+    line-height: 1.65;
+    text-wrap: pretty;
+  }
+  .cat-intro p:first-child {
+    color: var(--text);
+  }
+  .cat-tools {
+    max-width: 880px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .cat-tools-head {
+    padding: 18px 24px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  h2 {
+    font: 600 12.5px var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-shadow: none;
+    color: var(--text-dim);
+  }
+  @media (max-width: 640px) {
+    .cat-icon {
+      width: 44px;
+      height: 44px;
+    }
+    .cat-tools-head {
+      padding: 14px 16px 12px;
+    }
+  }
+</style>

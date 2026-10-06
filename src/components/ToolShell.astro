@@ -1,7 +1,7 @@
 ---
 import Icon from '../ui/Icon.svelte';
-import { homeHref, t } from '../i18n';
-import { categories } from '../tools/categories';
+import { categoryHref, homeHref, t } from '../i18n';
+import { categoryById } from '../tools/registry';
 import type { Locale, ToolMeta } from '../tools/types';
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
   tool: ToolMeta;
 }
 const { locale, tool } = Astro.props;
-const category = categories.find((c) => c.id === tool.category)!;
+const category = categoryById(tool.category);
 const faq = tool.faq?.[locale] ?? [];
 ---
 
@@ -18,7 +18,7 @@ const faq = tool.faq?.[locale] ?? [];
     <nav aria-label={t(locale, 'nav.breadcrumb')} class="crumbs">
       <a href={homeHref(locale)}>{t(locale, 'nav.home')}</a>
       <span aria-hidden="true">/</span>
-      <span>{category.name[locale]}</span>
+      <a href={categoryHref(locale, category)}>{category.name[locale]}</a>
     </nav>
     <h1>{tool.heading[locale]}</h1>
     <p class="tool-desc">{tool.description[locale]}</p>

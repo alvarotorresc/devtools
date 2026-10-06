@@ -46,6 +46,7 @@ export const en: Record<keyof typeof es, string> = {
   'tool.remember': 'Remember what I type',
   'tool.howItWorks': 'How it works',
   'tool.faq': 'FAQ',
+  'category.list': 'All {n} tools',
   'ui.copy': 'Copy',
   'ui.copyFailed': 'Could not copy. Select the text and press Ctrl+C.',
   'ui.copyFailedMac': 'Could not copy. Select the text and press Cmd+C.',

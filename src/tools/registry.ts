@@ -123,3 +123,7 @@ export function toolsInCategory(id: CategoryId): ToolMeta[] {
 export function visibleCategories(): Category[] {
   return categories.filter((c) => toolsInCategory(c.id).length > 0);
 }
+
+export function categoryById(id: CategoryId): Category {
+  return categories.find((c) => c.id === id)!;
+}

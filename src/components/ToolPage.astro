@@ -1,0 +1,83 @@
+---
+import type { MarkdownInstance } from 'astro';
+import ToolIsland from './ToolIsland.astro';
+import ToolShell from './ToolShell.astro';
+import AppLayout from '../layouts/AppLayout.astro';
+import { categoryHref, homeHref, t, toolHref } from '../i18n';
+import { categoryById } from '../tools/registry';
+import type { Locale, ToolMeta } from '../tools/types';
+
+interface Props {
+  locale: Locale;
+  tool: ToolMeta;
+}
+
+const { locale, tool } = Astro.props;
+const category = categoryById(tool.category);
+const contents = import.meta.glob<MarkdownInstance<Record<string, unknown>>>(
+  '../tools/*/content.*.md',
+  { eager: true },
+);
+const { Content } = contents[`../tools/${tool.id}/content.${locale}.md`];
+const url = new URL(toolHref(locale, tool), Astro.site).href;
+
+const jsonLd: Record<string, unknown>[] = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: tool.heading[locale],
+    url,
+    description: tool.description[locale],
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'Any',
+    browserRequirements: 'Requires JavaScript',
+    inLanguage: locale,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: t(locale, 'nav.home'),
+        item: new URL(homeHref(locale), Astro.site).href,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: category.name[locale],
+        item: new URL(categoryHref(locale, category), Astro.site).href,
+      },
+      { '@type': 'ListItem', position: 3, name: tool.heading[locale], item: url },
+    ],
+  },
+];
+const faq = tool.faq?.[locale];
+if (faq?.length) {
+  jsonLd.push({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  });
+}
+---
+
+<AppLayout
+  locale={locale}
+  title={`${tool.title[locale]} · devtools`}
+  description={tool.description[locale]}
+  alternates={{ es: toolHref('es', tool), en: toolHref('en', tool) }}
+  jsonLd={jsonLd}
+  toolId={tool.id}
+>
+  <ToolShell locale={locale} tool={tool}>
+    <ToolIsland id={tool.id} locale={locale} />
+    <Content slot="content" />
+  </ToolShell>
+</AppLayout>
