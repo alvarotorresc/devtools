@@ -7,22 +7,7 @@ vi.mock('../tools/registry', () => ({
       : undefined,
 }));
 
-const { pickLocale, resolveLegacyHash } = await import('./legacy');
-
-describe('pickLocale', () => {
-  it('prefers a stored valid locale', () => {
-    expect(pickLocale('en', ['es-ES'])).toBe('en');
-  });
-
-  it('ignores an invalid stored value and uses the browser languages', () => {
-    expect(pickLocale('fr', ['fr-FR', 'en-GB', 'es'])).toBe('en');
-  });
-
-  it('falls back to Spanish', () => {
-    expect(pickLocale(null, ['de-DE'])).toBe('es');
-    expect(pickLocale(null, [])).toBe('es');
-  });
-});
+const { resolveLegacyHash } = await import('./legacy');
 
 describe('resolveLegacyHash', () => {
   it('maps an old #id to the new tool page', () => {

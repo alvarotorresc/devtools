@@ -142,7 +142,7 @@ const themes = [
 
 <script>
   import { getFavorites, PREFS_EVENT } from '../lib/prefs';
-  import { readJSON, writeJSON, writeString } from '../lib/storage';
+  import { readJSON, rememberLocale, writeJSON, writeString } from '../lib/storage';
 
   const root = document.documentElement;
   const sidebar = () => document.getElementById('sidebar');
@@ -244,7 +244,7 @@ const themes = [
   document.addEventListener('click', (e) => {
     const target = e.target as HTMLElement;
     const lang = target.closest<HTMLElement>('[data-lang-link]');
-    if (lang) writeString('locale', lang.getAttribute('hreflang') ?? 'es');
+    if (lang) rememberLocale(lang.getAttribute('hreflang') ?? '');
     const theme = target.closest<HTMLElement>('[data-theme-choice]');
     if (theme?.dataset.themeChoice) return setTheme(theme.dataset.themeChoice);
     if (target.closest('[data-collapse]'))
@@ -280,10 +280,10 @@ const themes = [
   });
 
   document.addEventListener('astro:page-load', () => {
-    // The root page forwards returning visitors to the language they last used
-    // (not the 404's, which is always Spanish).
+    // The root (a 302 on Netlify, a script page elsewhere) sends returning
+    // visitors to the language they last used (not the 404's, always Spanish).
     if (!document.querySelector('meta[name="robots"][content*="noindex"]'))
-      writeString('locale', document.documentElement.lang);
+      rememberLocale(document.documentElement.lang);
     for (const id of readJSON<string[]>('sidebar.open', [])) setCatOpen(id, true, false);
     syncThemeButtons();
     syncCollapseButton();

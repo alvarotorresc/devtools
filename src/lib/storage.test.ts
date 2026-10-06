@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { readJSON, readString, removeKey, writeJSON, writeString } from './storage';
+import { readJSON, readString, rememberLocale, removeKey, writeJSON, writeString } from './storage';
 
 function memoryStorage(): Storage {
   const map = new Map<string, string>();
@@ -60,5 +60,37 @@ describe('storage', () => {
     vi.stubGlobal('localStorage', throwingStorage());
     expect(readJSON('recent', [])).toEqual([]);
     expect(() => writeJSON('recent', ['json'])).not.toThrow();
+  });
+});
+
+describe('rememberLocale', () => {
+  function setup(protocol: string) {
+    const ls = memoryStorage();
+    const doc = { cookie: '' };
+    vi.stubGlobal('localStorage', ls);
+    vi.stubGlobal('document', doc);
+    vi.stubGlobal('location', { protocol });
+    return { ls, doc };
+  }
+
+  it('stores the locale and sets the nf_lang cookie Netlify reads on "/"', () => {
+    const { ls, doc } = setup('https:');
+    rememberLocale('en');
+    expect(ls.getItem('devtools:locale')).toBe('en');
+    expect(doc.cookie).toBe('nf_lang=en; path=/; max-age=31536000; SameSite=Lax; Secure');
+  });
+
+  it('leaves out Secure over plain http', () => {
+    const { doc } = setup('http:');
+    rememberLocale('es');
+    expect(doc.cookie).toBe('nf_lang=es; path=/; max-age=31536000; SameSite=Lax');
+  });
+
+  it('ignores anything that is not a locale', () => {
+    const { ls, doc } = setup('https:');
+    rememberLocale('fr');
+    rememberLocale('');
+    expect(ls.getItem('devtools:locale')).toBeNull();
+    expect(doc.cookie).toBe('');
   });
 });
