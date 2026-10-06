@@ -49,4 +49,5 @@ export const meta: ToolMeta = {
     ],
   },
   rememberInput: true,
+  related: ['shuffle', 'teams', 'dice'],
 };

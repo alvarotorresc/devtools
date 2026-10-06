@@ -23,4 +23,5 @@ export const meta: ToolMeta = {
     en: ['uuid', 'guid', 'uuid v7', 'ulid', 'nanoid', 'unique id', 'validate uuid'],
   },
   tabs: { es: ['Generar', 'Validar'], en: ['Generate', 'Validate'] },
+  related: ['password', 'mock', 'slug', 'timestamp'],
 };

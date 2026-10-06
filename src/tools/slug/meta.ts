@@ -36,4 +36,5 @@ export const meta: ToolMeta = {
       'title to url',
     ],
   },
+  related: ['text', 'url', 'uuid'],
 };

@@ -36,4 +36,5 @@ export const meta: ToolMeta = {
     ],
   },
   rememberInput: false,
+  related: ['postal-code', 'dni', 'mock'],
 };

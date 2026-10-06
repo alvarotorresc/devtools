@@ -52,4 +52,5 @@ export const meta: ToolMeta = {
       },
     ],
   },
+  related: ['url', 'html-entities', 'jwt', 'hash'],
 };

@@ -37,4 +37,5 @@ export const meta: ToolMeta = {
     ],
   },
   rememberInput: true,
+  related: ['color', 'units', 'percent'],
 };

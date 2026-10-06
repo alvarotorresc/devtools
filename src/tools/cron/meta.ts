@@ -66,4 +66,5 @@ export const meta: ToolMeta = {
       },
     ],
   },
+  related: ['timestamp', 'workdays', 'chmod'],
 };

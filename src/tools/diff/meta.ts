@@ -36,4 +36,5 @@ export const meta: ToolMeta = {
       'compare code',
     ],
   },
+  related: ['json-diff', 'text', 'regex'],
 };

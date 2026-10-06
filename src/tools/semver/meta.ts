@@ -44,4 +44,5 @@ export const meta: ToolMeta = {
       },
     ],
   },
+  related: ['json', 'regex', 'cron'],
 };

@@ -53,4 +53,5 @@ export const meta: ToolMeta = {
       },
     ],
   },
+  related: ['dni', 'iban', 'bic'],
 };

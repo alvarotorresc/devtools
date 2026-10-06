@@ -23,4 +23,5 @@ export const meta: ToolMeta = {
     en: ['swift code validator', 'bic code', 'check swift code', 'bic format', 'swift bic lookup'],
   },
   rememberInput: true,
+  related: ['iban', 'card', 'cif'],
 };

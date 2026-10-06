@@ -52,4 +52,5 @@ export const meta: ToolMeta = {
       },
     ],
   },
+  related: ['cron', 'workdays', 'uuid', 'jwt'],
 };

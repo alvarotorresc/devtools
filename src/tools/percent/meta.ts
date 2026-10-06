@@ -39,4 +39,5 @@ export const meta: ToolMeta = {
     en: ['X% of Y', 'What %', 'Change'],
   },
   rememberInput: true,
+  related: ['rule-of-three', 'iva', 'currency'],
 };

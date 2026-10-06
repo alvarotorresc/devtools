@@ -37,4 +37,5 @@ export const meta: ToolMeta = {
     ],
   },
   rememberInput: true,
+  related: ['units', 'number-base', 'hash'],
 };

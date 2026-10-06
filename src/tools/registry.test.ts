@@ -3,6 +3,7 @@ import { categories } from './categories';
 import { ICON_NAMES } from './icon-names';
 import {
   categoryById,
+  relatedTools,
   toolById,
   toolBySlug,
   tools,
@@ -76,6 +77,28 @@ describe('registry', () => {
 
   it('only shows categories that have tools', () => {
     for (const c of visibleCategories()) expect(toolsInCategory(c.id).length).toBeGreaterThan(0);
+  });
+
+  it('links every tool to 3 or 4 existing, distinct tools other than itself', () => {
+    for (const tool of tools) {
+      const ids = tool.related ?? [];
+      expect(ids.length, `${tool.id}.related`).toBeGreaterThanOrEqual(3);
+      expect(ids.length, `${tool.id}.related`).toBeLessThanOrEqual(4);
+      expect(new Set(ids).size, `${tool.id}.related duplicates`).toBe(ids.length);
+      expect(ids, `${tool.id}.related`).not.toContain(tool.id);
+      for (const id of ids) expect(toolById(id), `${tool.id}.related → ${id}`).toBeDefined();
+    }
+  });
+
+  it('falls back to the same category when a tool has no related list', () => {
+    const tool = { ...toolById('iva')!, related: undefined };
+    const fallback = relatedTools(tool);
+    expect(fallback.length).toBeGreaterThan(0);
+    expect(fallback.length).toBeLessThanOrEqual(4);
+    for (const t of fallback) {
+      expect(t.category).toBe('calc');
+      expect(t.id).not.toBe('iva');
+    }
   });
 });
 

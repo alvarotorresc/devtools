@@ -37,4 +37,5 @@ export const meta: ToolMeta = {
     ],
   },
   tabs: { es: ['Buscar', 'Reemplazar'], en: ['Find', 'Replace'] },
+  related: ['text', 'diff', 'slug'],
 };

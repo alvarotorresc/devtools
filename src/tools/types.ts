@@ -17,6 +17,8 @@ export interface ToolMeta {
   keywords: Localized<string[]>;
   tabs?: Localized<string[]>;
   faq?: Localized<{ q: string; a: string }[]>;
+  /** Ids of 3 or 4 tools linked at the end of the page. Defaults to the same category. */
+  related?: string[];
   rememberInput?: boolean;
 }
 
