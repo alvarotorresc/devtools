@@ -7,8 +7,12 @@ export const meta: ToolMeta = {
   slug: { es: 'conversor-unidades', en: 'unit-converter' },
   name: { es: 'Unidades', en: 'Units' },
   title: {
-    es: 'Conversor de unidades: longitud, peso, temperatura y más',
-    en: 'Unit converter: length, weight, temperature and more',
+    es: 'Conversor de unidades: longitud, peso y más',
+    en: 'Unit converter: length, weight, temperature',
+  },
+  heading: {
+    es: 'Conversor de unidades',
+    en: 'Unit converter',
   },
   description: {
     es: 'Convierte longitud, masa, temperatura, volumen, área, velocidad y datos, y ve el valor en todas las unidades a la vez, cada una con su botón de copiar.',

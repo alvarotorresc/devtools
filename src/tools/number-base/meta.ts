@@ -7,8 +7,12 @@ export const meta: ToolMeta = {
   slug: { es: 'conversor-bases-numericas', en: 'number-base-converter' },
   name: { es: 'Bases numéricas', en: 'Number bases' },
   title: {
-    es: 'Conversor de binario, octal, decimal y hexadecimal online',
-    en: 'Binary, octal, decimal and hexadecimal converter online',
+    es: 'Conversor de bases numéricas: binario y hex',
+    en: 'Number base converter: binary, decimal, hex',
+  },
+  heading: {
+    es: 'Conversor de bases numéricas',
+    en: 'Number base converter',
   },
   description: {
     es: 'Convierte números entre binario, octal, decimal, hexadecimal y cualquier base de 2 a 36, sin límite de tamaño y con agrupación de dígitos opcional.',

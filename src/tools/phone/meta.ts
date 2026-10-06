@@ -8,7 +8,11 @@ export const meta: ToolMeta = {
   name: { es: 'Teléfonos ES', en: 'Spanish phone numbers' },
   title: {
     es: 'Validador de teléfonos de España y formato E.164',
-    en: 'Spanish phone number validator and E.164 formatter',
+    en: 'Spanish phone number validator, E.164 format',
+  },
+  heading: {
+    es: 'Validador de teléfonos de España',
+    en: 'Spanish phone number validator',
   },
   description: {
     es: 'Comprueba teléfonos españoles, dice si son móviles, fijos o de tarificación especial y los pasa a E.164 (+34612345678) y a formato nacional.',

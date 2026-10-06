@@ -10,6 +10,10 @@ export const meta: ToolMeta = {
     es: 'Generador de contraseñas seguras con entropía',
     en: 'Strong password generator with entropy meter',
   },
+  heading: {
+    es: 'Generador de contraseñas seguras',
+    en: 'Strong password generator',
+  },
   description: {
     es: 'Genera contraseñas aleatorias y seguras con crypto.getRandomValues, elige longitud y tipos de carácter y mira su entropía en bits. No se guardan nunca.',
     en: 'Generate strong random passwords with crypto.getRandomValues, choose length and character types and see their entropy in bits. They are never stored.',

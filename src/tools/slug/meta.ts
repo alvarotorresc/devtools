@@ -7,8 +7,12 @@ export const meta: ToolMeta = {
   slug: { es: 'generador-slug', en: 'slug-generator' },
   name: { es: 'Slug', en: 'Slug' },
   title: {
-    es: 'Generador de slugs para URL: quita tildes y espacios',
+    es: 'Generador de slugs para URL: sin tildes',
     en: 'URL slug generator: remove accents and spaces',
+  },
+  heading: {
+    es: 'Generador de slugs para URL',
+    en: 'URL slug generator',
   },
   description: {
     es: 'Convierte títulos en slugs limpios para URL: sin tildes, eñes ni símbolos, con el separador que elijas y sin cortar palabras. Una línea, un slug.',

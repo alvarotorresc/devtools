@@ -7,8 +7,12 @@ export const meta: ToolMeta = {
   slug: { es: 'generador-hash-md5-sha256', en: 'md5-sha256-hash-generator' },
   name: { es: 'Hash (MD5, SHA)', en: 'Hash (MD5, SHA)' },
   title: {
-    es: 'Generador de hash MD5, SHA-1, SHA-256 y SHA-512 online',
-    en: 'MD5, SHA-1, SHA-256 and SHA-512 hash generator online',
+    es: 'Generador de hash MD5, SHA-1 y SHA-256 online',
+    en: 'Hash generator online: MD5, SHA-1, SHA-256',
+  },
+  heading: {
+    es: 'Generador de hash',
+    en: 'Hash generator',
   },
   description: {
     es: 'Calcula MD5, SHA-1, SHA-256, SHA-384 y SHA-512 de un texto o un archivo mientras escribes, y compara con un hash esperado para ver si coincide.',

@@ -8,7 +8,11 @@ export const meta: ToolMeta = {
   name: { es: 'Subredes CIDR', en: 'CIDR subnets' },
   title: {
     es: 'Calculadora de subredes IPv4 y CIDR online',
-    en: 'IPv4 CIDR subnet calculator',
+    en: 'CIDR calculator: IPv4 subnet calculator online',
+  },
+  heading: {
+    es: 'Calculadora de subredes',
+    en: 'CIDR calculator',
   },
   description: {
     es: 'Calcula red, máscara, broadcast, rango de hosts y direcciones útiles de una subred IPv4 en notación CIDR o con máscara, y di si la IP es privada o pública.',

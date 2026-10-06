@@ -7,8 +7,12 @@ export const meta: ToolMeta = {
   slug: { es: 'codificar-decodificar-url', en: 'url-encode-decode' },
   name: { es: 'URL', en: 'URL' },
   title: {
-    es: 'Codificar y decodificar URL online y analizar URLs',
+    es: 'Codificar y decodificar URL online',
     en: 'URL encode and decode online, plus a URL parser',
+  },
+  heading: {
+    es: 'Codificar y decodificar URL',
+    en: 'URL encode and decode',
   },
   description: {
     es: 'Codifica y decodifica URLs al escribir (encodeURIComponent o encodeURI) y desglosa cualquier URL: host, puerto, ruta, hash y parámetros.',

@@ -8,7 +8,11 @@ export const meta: ToolMeta = {
   name: { es: 'Markdown', en: 'Markdown' },
   title: {
     es: 'Vista previa de Markdown online (GFM) y a HTML',
-    en: 'Markdown preview online (GFM) and Markdown to HTML',
+    en: 'Markdown preview online with GFM and HTML',
+  },
+  heading: {
+    es: 'Vista previa de Markdown',
+    en: 'Markdown preview',
   },
   description: {
     es: 'Escribe Markdown y ve el resultado al momento, con tablas, listas de tareas y código de GitHub. Copia el HTML ya saneado. Todo en tu navegador.',

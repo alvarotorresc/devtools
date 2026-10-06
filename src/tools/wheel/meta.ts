@@ -10,6 +10,10 @@ export const meta: ToolMeta = {
     es: 'Ruleta aleatoria online para sorteos y decisiones',
     en: 'Spin the wheel: random name picker',
   },
+  heading: {
+    es: 'Ruleta aleatoria online',
+    en: 'Spin the wheel',
+  },
   description: {
     es: 'Escribe las opciones, gira la ruleta y deja que el azar decida. Hasta 100 opciones, historial de resultados y opción de quitar la ganadora.',
     en: 'Type your options, spin the wheel and let chance decide. Up to 100 options, a history of results and the option to remove the winner.',

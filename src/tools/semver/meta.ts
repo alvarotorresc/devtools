@@ -8,7 +8,11 @@ export const meta: ToolMeta = {
   name: { es: 'Semver', en: 'Semver' },
   title: {
     es: 'Comprobar versiones semver contra un rango (^, ~)',
-    en: 'Semver range checker: does a version satisfy ^ or ~',
+    en: 'Semver range checker: test a version vs ^ or ~',
+  },
+  heading: {
+    es: 'Comprobar versiones semver',
+    en: 'Semver range checker',
   },
   description: {
     es: 'Comprueba qué versiones cumplen un rango semver de npm (^, ~, x, guiones y ||), con el rango explicado en palabras y la versión más alta que encaja.',

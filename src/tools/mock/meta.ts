@@ -10,6 +10,10 @@ export const meta: ToolMeta = {
     es: 'Generador de datos de prueba: JSON, CSV y SQL',
     en: 'Mock data generator: JSON, CSV and SQL',
   },
+  heading: {
+    es: 'Generador de datos de prueba',
+    en: 'Mock data generator',
+  },
   description: {
     es: 'Genera hasta 1000 filas de datos ficticios coherentes (nombre, email, DNI, IBAN, dirección…) en JSON, CSV o SQL. Con semilla, siempre los mismos.',
     en: 'Generate up to 1000 rows of consistent fake data (name, email, Spanish IDs, IBAN, address…) as JSON, CSV or SQL. With a seed, always the same.',

@@ -7,8 +7,12 @@ export const meta: ToolMeta = {
   slug: { es: 'generador-lorem-ipsum', en: 'lorem-ipsum-generator' },
   name: { es: 'Lorem ipsum', en: 'Lorem ipsum' },
   title: {
-    es: 'Generador de Lorem ipsum: párrafos, frases y palabras',
-    en: 'Lorem ipsum generator: paragraphs, sentences and words',
+    es: 'Generador de Lorem ipsum: párrafos y frases',
+    en: 'Lorem ipsum generator: paragraphs, sentences',
+  },
+  heading: {
+    es: 'Generador de Lorem ipsum',
+    en: 'Lorem ipsum generator',
   },
   description: {
     es: 'Genera texto de relleno Lorem ipsum por párrafos, frases o palabras, empezando o no por «Lorem ipsum dolor sit amet», como texto o en <p> HTML.',

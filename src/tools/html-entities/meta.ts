@@ -10,9 +10,13 @@ export const meta: ToolMeta = {
     es: 'Codificar y decodificar entidades HTML online',
     en: 'HTML entities encoder and decoder online',
   },
+  heading: {
+    es: 'Codificar y decodificar entidades HTML',
+    en: 'HTML entities encoder and decoder',
+  },
   description: {
     es: 'Convierte < > & " y \' en entidades HTML, o todo lo que no sea ASCII, y decodifica &amp;, &aacute; o &#128512; al escribir.',
-    en: 'Turn < > & " and \' into HTML entities, or everything non-ASCII, and decode &amp;, &eacute; or &#128512; as you type.',
+    en: 'Turn < > & " and \' into HTML entities, or everything non-ASCII, and decode &amp;, &eacute; or &#128512; as you type, right in your browser.',
   },
   keywords: {
     es: [

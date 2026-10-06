@@ -10,6 +10,10 @@ export const meta: ToolMeta = {
     es: 'Calculadora de retención de IRPF para facturas',
     en: 'Spanish IRPF withholding calculator for invoices',
   },
+  heading: {
+    es: 'Calculadora de retención de IRPF',
+    en: 'Spanish IRPF withholding calculator',
+  },
   description: {
     es: 'Calcula una factura de autónomo con IVA y retención de IRPF (15, 7 o 19 %) desde la base o desde lo que quieres cobrar, con el desglose completo.',
     en: 'Work out a Spanish freelance invoice with VAT and IRPF withholding (15, 7 or 19%) from the base or from what you want to be paid, fully broken down.',

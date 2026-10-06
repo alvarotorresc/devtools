@@ -7,11 +7,15 @@ export const meta: ToolMeta = {
   slug: { es: 'codigo-postal-provincia', en: 'spanish-postal-code-province' },
   name: { es: 'Código postal', en: 'Postal codes' },
   title: {
-    es: 'Código postal a provincia: busca la provincia de un CP',
+    es: 'Código postal a provincia: buscador de CP',
     en: 'Spanish postal code to province lookup',
   },
+  heading: {
+    es: 'Código postal a provincia',
+    en: 'Postal code to province lookup',
+  },
   description: {
-    es: 'Escribe uno o muchos códigos postales y ve su provincia, comunidad y capital. Recupera el 0 que pierden las hojas de cálculo y busca el rango de cada provincia.',
+    es: 'Escribe uno o muchos códigos postales y ve su provincia, comunidad y capital. Recupera el 0 que pierden las hojas de cálculo y el rango de cada provincia.',
     en: 'Type one or many Spanish postal codes to see their province, region and capital. Restores the leading 0 spreadsheets drop and shows each province’s range.',
   },
   keywords: {

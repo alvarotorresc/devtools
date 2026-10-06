@@ -7,8 +7,12 @@ export const meta: ToolMeta = {
   slug: { es: 'conversor-timestamp-unix', en: 'unix-timestamp-converter' },
   name: { es: 'Timestamp Unix', en: 'Unix timestamp' },
   title: {
-    es: 'Conversor de timestamp Unix a fecha (segundos y milisegundos)',
-    en: 'Unix timestamp to date converter (seconds and milliseconds)',
+    es: 'Conversor de timestamp Unix a fecha online',
+    en: 'Unix timestamp to date converter online',
+  },
+  heading: {
+    es: 'Conversor de timestamp Unix',
+    en: 'Unix timestamp converter',
   },
   description: {
     es: 'Reloj Unix en vivo y conversión de timestamps en segundos o milisegundos a ISO 8601, UTC, hora local y relativa en cualquier zona horaria, y al revés.',

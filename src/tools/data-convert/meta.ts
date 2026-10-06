@@ -10,6 +10,10 @@ export const meta: ToolMeta = {
     es: 'Conversor JSON ↔ YAML ↔ CSV online',
     en: 'JSON to YAML and CSV converter (and back)',
   },
+  heading: {
+    es: 'Conversor JSON ↔ YAML ↔ CSV',
+    en: 'JSON to YAML and CSV converter',
+  },
   description: {
     es: 'Convierte entre JSON, YAML y CSV en tu navegador: detecta el formato y el separador, resuelve anclas de YAML y aplana objetos anidados para el CSV.',
     en: 'Convert between JSON, YAML and CSV in your browser: detects the format and separator, resolves YAML anchors and flattens nested objects for CSV.',

@@ -7,8 +7,12 @@ export const meta: ToolMeta = {
   slug: { es: 'validador-cif', en: 'spanish-cif-validator' },
   name: { es: 'CIF', en: 'CIF (Spanish company tax ID)' },
   title: {
-    es: 'Validador y generador de CIF (NIF de empresa) online',
-    en: 'Spanish CIF validator and generator (company tax ID)',
+    es: 'Validar CIF online: NIF de empresa y generador',
+    en: 'CIF validator: Spanish company tax ID',
+  },
+  heading: {
+    es: 'Validador de CIF',
+    en: 'CIF validator',
   },
   description: {
     es: 'Valida el CIF o NIF de una empresa, te dice el tipo de entidad y el carácter de control correcto, y genera CIF ficticios para pruebas.',

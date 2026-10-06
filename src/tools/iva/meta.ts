@@ -7,8 +7,12 @@ export const meta: ToolMeta = {
   slug: { es: 'calculadora-iva', en: 'spanish-vat-calculator' },
   name: { es: 'IVA', en: 'Spanish VAT' },
   title: {
-    es: 'Calculadora de IVA: sumar y quitar el IVA (21, 10, 4 %)',
+    es: 'Calcular IVA online: sumar y quitar el IVA',
     en: 'Spanish VAT (IVA) calculator: add or remove VAT',
+  },
+  heading: {
+    es: 'Calcular IVA',
+    en: 'Spanish VAT calculator',
   },
   description: {
     es: 'Suma el IVA a una base imponible o quítalo de un total, al 21, 10 o 4 % o con el tipo que quieras. Redondeo al céntimo que siempre cuadra.',

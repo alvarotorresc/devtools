@@ -10,6 +10,10 @@ export const meta: ToolMeta = {
     es: 'Calculadora chmod: permisos octales y simbólicos',
     en: 'Chmod calculator: octal and symbolic permissions',
   },
+  heading: {
+    es: 'Calculadora chmod',
+    en: 'Chmod calculator',
+  },
   description: {
     es: 'Pasa permisos Unix de octal (755) a simbólico (rwxr-xr-x) y al revés, marca casillas y copia la orden chmod lista para la terminal.',
     en: 'Convert Unix permissions from octal (755) to symbolic (rwxr-xr-x) and back, tick boxes and copy the chmod command ready for the terminal.',

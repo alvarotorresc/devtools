@@ -10,6 +10,10 @@ export const meta: ToolMeta = {
     es: 'Números de tarjeta de prueba y validador Luhn',
     en: 'Test credit card numbers and Luhn validator',
   },
+  heading: {
+    es: 'Números de tarjeta de prueba',
+    en: 'Test credit card numbers',
+  },
   description: {
     es: 'Genera números de tarjeta Visa, Mastercard y American Express que pasan Luhn para entornos de prueba, y valida cualquier número: marca y dígito de control.',
     en: 'Generate Visa, Mastercard and American Express numbers that pass Luhn for test environments, and validate any card number: brand and check digit.',

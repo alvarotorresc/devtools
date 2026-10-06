@@ -7,8 +7,12 @@ export const meta: ToolMeta = {
   slug: { es: 'analizar-user-agent', en: 'user-agent-parser' },
   name: { es: 'User-Agent', en: 'User-Agent' },
   title: {
-    es: 'Analizar User-Agent: navegador, sistema y dispositivo',
+    es: 'Analizar User-Agent: navegador y dispositivo',
     en: 'User-Agent parser: browser, OS and device',
+  },
+  heading: {
+    es: 'Analizador de User-Agent',
+    en: 'User-Agent parser',
   },
   description: {
     es: 'Pega un User-Agent y mira qué navegador, motor, sistema operativo, dispositivo y CPU indica, si parece un bot y las Client Hints de tu navegador.',

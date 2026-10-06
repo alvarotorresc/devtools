@@ -12,6 +12,7 @@ export interface ToolMeta {
   slug: Localized<string>;
   name: Localized<string>;
   title: Localized<string>;
+  heading: Localized<string>;
   description: Localized<string>;
   keywords: Localized<string[]>;
   tabs?: Localized<string[]>;

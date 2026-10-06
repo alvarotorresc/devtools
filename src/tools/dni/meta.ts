@@ -7,8 +7,12 @@ export const meta: ToolMeta = {
   slug: { es: 'validador-dni-nie', en: 'spanish-dni-nie-validator' },
   name: { es: 'DNI y NIE', en: 'DNI & NIE' },
   title: {
-    es: 'Validador y generador de DNI y NIE online',
-    en: 'Spanish DNI and NIE validator and generator',
+    es: 'Validar DNI y NIE: calcular letra del DNI',
+    en: 'DNI and NIE validator: Spanish ID letter',
+  },
+  heading: {
+    es: 'Validador de DNI y NIE',
+    en: 'DNI and NIE validator',
   },
   description: {
     es: 'Comprueba la letra de un DNI o NIE, calcula la que falta y genera documentos ficticios para pruebas. Valida cientos de golpe, uno por línea.',

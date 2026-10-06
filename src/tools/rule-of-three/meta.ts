@@ -10,6 +10,10 @@ export const meta: ToolMeta = {
     es: 'Calculadora de regla de tres directa e inversa',
     en: 'Rule of three calculator: direct and inverse',
   },
+  heading: {
+    es: 'Calculadora de regla de tres',
+    en: 'Rule of three calculator',
+  },
   description: {
     es: 'Resuelve reglas de tres directas e inversas: si A es a B, cuánto es C. Muestra la fórmula con tus valores para que veas de dónde sale el resultado.',
     en: 'Solve direct and inverse rules of three: if A goes with B, what goes with C. Shows the formula with your values so you can see where the result comes from.',

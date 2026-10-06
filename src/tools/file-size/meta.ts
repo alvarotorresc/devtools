@@ -10,6 +10,10 @@ export const meta: ToolMeta = {
     es: 'Conversor de tamaños: KB, MB, GB y KiB, MiB, GiB',
     en: 'File size converter: KB, MB, GB vs KiB, MiB, GiB',
   },
+  heading: {
+    es: 'Conversor de tamaños de archivo',
+    en: 'File size converter',
+  },
   description: {
     es: 'Escribe un tamaño como 1,5 GB o 750 MiB y velo en unidades SI y binarias, en bytes y en bits. Descubre por qué un disco de 1 TB muestra 931 GB.',
     en: 'Type a size like 1.5 GB or 750 MiB and see it in SI and binary units, in bytes and in bits. Find out why a 1 TB drive shows 931 GB.',

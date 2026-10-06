@@ -7,8 +7,12 @@ export const meta: ToolMeta = {
   slug: { es: 'formateador-json', en: 'json-formatter' },
   name: { es: 'JSON', en: 'JSON' },
   title: {
-    es: 'Formateador y validador de JSON online',
+    es: 'Formatear JSON online: formateador y validador',
     en: 'JSON formatter and validator online',
+  },
+  heading: {
+    es: 'Formatear y validar JSON',
+    en: 'JSON formatter and validator',
   },
   description: {
     es: 'Formatea, valida y minifica JSON mientras escribes. Te dice la línea exacta del error y deja explorar el árbol. Todo en tu navegador.',

@@ -7,8 +7,12 @@ export const meta: ToolMeta = {
   slug: { es: 'convertir-mayusculas-minusculas', en: 'text-case-converter' },
   name: { es: 'Mayúsculas y líneas', en: 'Case and lines' },
   title: {
-    es: 'Convertir mayúsculas, camelCase y snake_case y ordenar líneas',
-    en: 'Text case converter: camelCase, snake_case and line tools',
+    es: 'Convertir mayúsculas a minúsculas y camelCase',
+    en: 'Text case converter: camelCase, snake_case',
+  },
+  heading: {
+    es: 'Convertir mayúsculas y minúsculas',
+    en: 'Text case converter',
   },
   description: {
     es: 'Pasa un texto a las diez formas a la vez (MAYÚSCULAS, camelCase, snake_case, kebab-case…) y ordena, limpia o numera líneas. Con contador de caracteres.',

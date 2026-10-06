@@ -7,8 +7,12 @@ export const meta: ToolMeta = {
   slug: { es: 'generador-codigo-qr', en: 'qr-code-generator' },
   name: { es: 'Código QR', en: 'QR code' },
   title: {
-    es: 'Generador de códigos QR: texto, URL y WiFi (PNG y SVG)',
+    es: 'Generador de códigos QR: texto, URL y WiFi',
     en: 'QR code generator: text, URL and WiFi (PNG, SVG)',
+  },
+  heading: {
+    es: 'Generador de códigos QR',
+    en: 'QR code generator',
   },
   description: {
     es: 'Crea códigos QR de texto, enlaces o redes WiFi en tu navegador y descárgalos en PNG o SVG. Con tildes, emojis y el nivel de corrección que elijas.',

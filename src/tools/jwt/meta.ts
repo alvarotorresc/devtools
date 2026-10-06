@@ -7,8 +7,12 @@ export const meta: ToolMeta = {
   slug: { es: 'decodificador-jwt', en: 'jwt-decoder' },
   name: { es: 'JWT', en: 'JWT' },
   title: {
-    es: 'Decodificador de JWT online: cabecera, payload y caducidad',
+    es: 'Decodificar JWT online: cabecera y payload',
     en: 'JWT decoder online: header, payload and expiry',
+  },
+  heading: {
+    es: 'Decodificador de JWT',
+    en: 'JWT decoder',
   },
   description: {
     es: 'Pega un JWT y ve su cabecera, su payload y si está vigente, caducado o aún no es válido, con las fechas en tu hora local. No sale de tu navegador.',

@@ -8,10 +8,14 @@ export const meta: ToolMeta = {
   name: { es: 'Días hábiles', en: 'Business days' },
   title: {
     es: 'Calculadora de días hábiles y días entre fechas',
-    en: 'Spanish business days calculator between two dates',
+    en: 'Business days calculator between two dates',
+  },
+  heading: {
+    es: 'Calculadora de días hábiles',
+    en: 'Business days calculator',
   },
   description: {
-    es: 'Cuenta los días naturales, laborables y hábiles entre dos fechas, con los festivos nacionales de España calculados para cualquier año, Viernes Santo incluido.',
+    es: 'Cuenta los días naturales, laborables y hábiles entre dos fechas, con los festivos nacionales de España de cualquier año, Viernes Santo incluido.',
     en: 'Count calendar days, weekdays and business days between two dates, with Spain’s national holidays worked out for any year, Good Friday included.',
   },
   keywords: {

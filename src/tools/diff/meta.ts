@@ -7,8 +7,12 @@ export const meta: ToolMeta = {
   slug: { es: 'comparar-textos', en: 'text-diff-checker' },
   name: { es: 'Comparar textos', en: 'Text diff' },
   title: {
-    es: 'Comparar dos textos online: diferencias línea a línea',
+    es: 'Comparar dos textos online: diferencias',
     en: 'Compare two texts online: line-by-line diff',
+  },
+  heading: {
+    es: 'Comparar dos textos',
+    en: 'Compare two texts',
   },
   description: {
     es: 'Compara dos textos y marca las líneas añadidas y quitadas y las palabras que cambian. Vista unificada o en paralelo, ignorando espacios o mayúsculas.',
