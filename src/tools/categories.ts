@@ -44,7 +44,7 @@ export const categories: Category[] = [
       es: 'Codificar y decodificar online: Base64, URL, JWT',
       en: 'Encode and decode online: Base64, URL, JWT',
     },
-    heading: { es: 'Codificación y decodificación', en: 'Encoding and decoding tools' },
+    heading: { es: 'Codificar y decodificar datos', en: 'Encode and decode data' },
     seoDescription: {
       es: 'Codifica y decodifica Base64, URL y entidades HTML, inspecciona la cabecera y el payload de un JWT y calcula hashes MD5 o SHA-256 de textos y archivos.',
       en: 'Encode and decode Base64, URLs and HTML entities, inspect a JWT header and payload, and hash text or files with MD5 or SHA-256, all in your browser.',
@@ -73,7 +73,7 @@ export const categories: Category[] = [
       es: 'Texto y JSON online: formatear, comparar, regex',
       en: 'Text and JSON tools: format, compare, regex',
     },
-    heading: { es: 'Herramientas de texto y JSON', en: 'Tools for text and JSON' },
+    heading: { es: 'Herramientas de texto y JSON', en: 'Text and JSON tools for developers' },
     seoDescription: {
       es: 'Formatea y valida JSON, compara textos, prueba regex, convierte entre JSON, YAML y CSV, pasa un cURL a fetch y previsualiza Markdown en tu navegador.',
       en: 'Format and validate JSON, diff texts, test regex, convert JSON to YAML or CSV, turn cURL into fetch and preview Markdown, right in your browser.',
@@ -102,7 +102,10 @@ export const categories: Category[] = [
       es: 'Validar DNI, NIE, CIF, IBAN y matrículas online',
       en: 'Validate Spanish DNI, NIE, CIF, IBAN and more',
     },
-    heading: { es: 'Validadores de documentos y códigos', en: 'ID and code validators' },
+    heading: {
+      es: 'Validar DNI, NIE, CIF, IBAN y otros códigos',
+      en: 'Spanish ID and code validators',
+    },
     seoDescription: {
       es: 'Valida y genera DNI, NIE, CIF, NSS, IBAN, matrículas y teléfonos españoles, comprueba SWIFT, EAN e ISBN y crea tarjetas de prueba que pasan Luhn.',
       en: 'Validate and generate Spanish DNI, NIE, CIF, NSS, IBAN, plates and phone numbers, check SWIFT, EAN and ISBN codes and create Luhn-valid test cards.',
@@ -139,11 +142,11 @@ export const categories: Category[] = [
     intro: {
       es: [
         'Ocho conversores para valores que significan lo mismo escritos de otra forma. Un timestamp 1700000000 en un log es una fecha concreta en tu zona horaria; el color #ff5a1f es también rgb(255 90 31) y un oklch que puedes retocar; un permiso 755 es rwxr-xr-x. Escribes en cualquier campo y los demás se actualizan al momento, así que sirven igual para ir que para volver.',
-        'Algunos resuelven dudas que salen a menudo: por qué un disco de 1 TB aparece como 931 GB (unidades SI frente a binarias), cuánto son 18 px en rem con una base de 16, o qué contraste tiene un color sobre blanco según WCAG. El conversor de divisas usa los tipos de referencia del Banco Central Europeo y hace la cuenta en tu navegador, también sin conexión.',
+        'Algunos resuelven dudas que salen a menudo: por qué un disco de 1 TB aparece como 931 GB (unidades SI frente a binarias), cuánto son 18 px en rem con una base de 16, o qué contraste tiene un color sobre blanco según WCAG. El conversor de divisas usa los tipos de referencia del Banco Central Europeo y hace la cuenta en tu navegador, también sin conexión.',
       ],
       en: [
         'Eight converters for values that mean the same thing written another way. A timestamp of 1700000000 in a log is a specific date in your time zone; the color #ff5a1f is also rgb(255 90 31) and an oklch you can tweak; a 755 permission is rwxr-xr-x. Type into any field and the others update straight away, so they work just as well in both directions.',
-        'Some of them answer questions that come up a lot: why a 1 TB drive shows up as 931 GB (SI versus binary units), what 18 px is in rem with a 16 px base, or how much contrast a color has against white under WCAG. The currency converter uses the European Central Bank’s reference rates and does the maths in your browser, even offline.',
+        'Some of them answer questions that come up a lot: why a 1 TB drive shows up as 931 GB (SI versus binary units), what 18 px is in rem with a 16 px base, or how much contrast a color has against white under WCAG. The currency converter uses the European Central Bank’s reference rates and does the maths in your browser, even offline.',
       ],
     },
   },
@@ -170,8 +173,8 @@ export const categories: Category[] = [
     },
     intro: {
       es: [
-        'Cinco calculadoras para cuentas que se hacen a menudo y en las que es fácil equivocarse. Las de IVA e IRPF están pensadas para facturar como autónomo en España: partes de la base imponible o de lo que quieres cobrar, eliges el tipo de IVA (21, 10 o 4 %) y la retención (15, 7 o 19 %), y ves el desglose completo con un redondeo al céntimo que cuadra con la factura.',
-        'Las otras tres sirven para cualquiera. La de porcentajes saca el X % de un número, qué parte es una cantidad de otra y cuánto ha subido o bajado un precio. La regla de tres enseña la fórmula con tus valores para que veas de dónde sale el resultado. Y la de días hábiles cuenta los laborables entre dos fechas con los festivos nacionales de cualquier año, Viernes Santo incluido, para estimar un plazo de entrega sin contar con los dedos.',
+        'Cinco calculadoras para cuentas que se hacen a menudo y en las que es fácil equivocarse. Las de IVA e IRPF están pensadas para facturar como autónomo en España: partes de la base imponible o de lo que quieres cobrar, eliges el tipo de IVA (21, 10 o 4 %) y la retención (15, 7 o 19 %), y ves el desglose completo con un redondeo al céntimo que cuadra con la factura.',
+        'Las otras tres sirven para cualquiera. La de porcentajes saca el X % de un número, qué parte es una cantidad de otra y cuánto ha subido o bajado un precio. La regla de tres enseña la fórmula con tus valores para que veas de dónde sale el resultado. Y la de días hábiles cuenta los laborables entre dos fechas con los festivos nacionales de cualquier año, Viernes Santo incluido, para estimar un plazo de entrega sin contar con los dedos.',
       ],
       en: [
         'Five calculators for sums that come up often and are easy to get wrong. The VAT and IRPF ones are built for invoicing as a freelancer in Spain: start from the net amount or from what you want to be paid, pick the VAT rate (21, 10 or 4%) and the withholding (15, 7 or 19%), and get the full breakdown with cent rounding that matches the invoice.',
@@ -189,7 +192,7 @@ export const categories: Category[] = [
       es: 'Sorteos online: ruleta, equipos, dados y listas',
       en: 'Random picker online: wheel, teams, dice, lists',
     },
-    heading: { es: 'Herramientas de azar y sorteos', en: 'Random draws and chance tools' },
+    heading: { es: 'Sorteos y herramientas de azar', en: 'Random picker and draw tools' },
     seoDescription: {
       es: 'Gira una ruleta con tus opciones, reparte personas en equipos al azar, mezcla una lista o lanza dados y monedas. Con semilla para repetir el resultado.',
       en: 'Spin a wheel with your own options, split people into random teams, shuffle a list or roll dice and flip coins. Use a seed to repeat any result.',
@@ -220,7 +223,7 @@ export const categories: Category[] = [
     },
     heading: {
       es: 'Chuletas y referencia para programadores',
-      en: 'Quick reference for developers',
+      en: 'Developer cheat sheets',
     },
     seoDescription: {
       es: 'Consulta los códigos de estado HTTP, traduce expresiones cron a palabras, comprueba rangos semver, calcula subredes CIDR y analiza cualquier User-Agent.',

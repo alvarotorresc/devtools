@@ -100,13 +100,16 @@ test.describe('category pages', () => {
     const list = page.locator('.cat-tools');
     await expect(list.getByRole('heading', { name: 'Las 5 herramientas' })).toBeVisible();
     await expect(list.getByRole('link')).toHaveCount(5);
+    const group = page.locator('#sidebar [data-cat="calc"]');
+    await expect(group.locator('.sb-cat-toggle')).toHaveAttribute('aria-current', 'page');
+    await expect(group.locator('.sb-tools')).toBeVisible();
     await list.getByRole('link', { name: 'Calcular IVA' }).click();
     await expect(page).toHaveURL(/\/es\/calculadora-iva$/);
   });
 
   test('works in English with the alternate pointing to the Spanish page', async ({ page }) => {
     await page.goto('/en/random');
-    await expect(page.locator('h1')).toHaveText('Random draws and chance tools');
+    await expect(page.locator('h1')).toHaveText('Random picker and draw tools');
     await expect(page.locator('link[rel="alternate"][hreflang="es"]')).toHaveAttribute(
       'href',
       /\/es\/azar$/,
@@ -117,14 +120,14 @@ test.describe('category pages', () => {
     await page.goto('/en');
     await page.locator('.catalog').getByRole('link', { name: 'Reference', exact: true }).click();
     await expect(page).toHaveURL(/\/en\/reference$/);
-    await expect(page.locator('h1')).toHaveText('Quick reference for developers');
+    await expect(page.locator('h1')).toHaveText('Developer cheat sheets');
   });
 
   test('a tool breadcrumb links to its category', async ({ page }) => {
     await page.goto('/es/validador-iban');
     await page.locator('.crumbs').getByRole('link', { name: 'Identificadores' }).click();
     await expect(page).toHaveURL(/\/es\/identificadores$/);
-    await expect(page.locator('h1')).toHaveText('Validadores de documentos y códigos');
+    await expect(page.locator('h1')).toHaveText('Validar DNI, NIE, CIF, IBAN y otros códigos');
   });
 
   test('a tool page ends with links to related tools', async ({ page }) => {
