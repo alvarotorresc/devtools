@@ -74,6 +74,7 @@ if (faq?.length) {
   description={tool.description[locale]}
   alternates={{ es: toolHref('es', tool), en: toolHref('en', tool) }}
   jsonLd={jsonLd}
+  ogImage={`/og/${category.id}.png`}
   toolId={tool.id}
 >
   <ToolShell locale={locale} tool={tool}>

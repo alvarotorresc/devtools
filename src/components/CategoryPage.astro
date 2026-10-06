@@ -54,6 +54,7 @@ const jsonLd = [
   description={category.seoDescription[locale]}
   alternates={{ es: categoryHref('es', category), en: categoryHref('en', category) }}
   jsonLd={jsonLd}
+  ogImage={`/og/${category.id}.png`}
 >
   <header class="cat-head">
     <nav aria-label={t(locale, 'nav.breadcrumb')} class="crumbs">

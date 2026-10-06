@@ -8,12 +8,22 @@ interface Props {
   alternates: Record<Locale, string>;
   jsonLd?: Record<string, unknown>[];
   noindex?: boolean;
+  /** Site path of a 1200×630 PNG; defaults to the generic /og.png. */
+  ogImage?: string;
 }
 
-const { locale, title, description, alternates, jsonLd = [], noindex = false } = Astro.props;
+const {
+  locale,
+  title,
+  description,
+  alternates,
+  jsonLd = [],
+  noindex = false,
+  ogImage: ogPath = '/og.png',
+} = Astro.props;
 const site = Astro.site!;
 const canonical = new URL(alternates[locale], site).href;
-const ogImage = new URL('/og.png', site).href;
+const ogImage = new URL(ogPath, site).href;
 ---
 
 <title>{title}</title>
